@@ -54,15 +54,6 @@ tie.directive('learnerView', [function() {
                   <speech-balloons-container></speech-balloons-container>
                 </div>
               </div>
-              <div>
-                <select class="tie-select-menu protractor-test-theme-select"
-                    ng-change="changeTheme(currentThemeName)"
-                    ng-model="currentThemeName"
-                    ng-options="i.themeName as i.themeName for i in themes"
-                    ng-disabled="MonospaceDisplayModalService.isDisplayed()"
-                    title="Change between light and dark themes">
-                </select>
-              </div>
             </div>
 
             <div class="tie-coding-ui protractor-test-coding-ui">
@@ -88,30 +79,20 @@ tie.directive('learnerView', [function() {
                     </div>
                   </div>
                 </div>
-                <button class="tie-code-reset tie-button protractor-test-reset-code-button" name="code-reset" ng-click="resetCode()" title="Click to clear your code and start over">
-                  Start Over
-                </button>
-                <p class="tie-language-label">Language: <span ng-if="supportedLanguageCount === 1">{{languageLabel}}</span></p>
-                <select
-                    ng-if="supportedLanguageCount > 1"
-                    ng-model="codeMirrorOptions.mode"
-                    ng-options="key as value for ( key, value ) in supportedLanguageLabels"
 
-                    class="tie-select-menu"
-                    name="lang-select-menu">
-                </select>
-
-                <a ng-if="!SERVER_URL" class="tie-primer-link tie-python-primer protractor-test-python-primer-link" target="_blank" ng-href="{{getPythonPrimerUrl()}}" title="Click to view a short introduction to Python">New to Python?</a>
-                <div class="tie-code-auto-save"
-                    ng-show="autosaveTextIsDisplayed">
-                  Saving code...
+                <div class="tie-button-container">
+                  <button class="tie-step-button tie-button tie-button-gray" title="Click to step through your code">
+                    STEP THROUGH
+                  </button>
+                  <div>
+                    <select class="tie-select-menu"
+                        title="Click to see your previous submissions">
+                    </select>
+                  </div>
+                  <button class="tie-run-button tie-button tie-button-green protractor-test-run-code-button" ng-class="{'tie-button-green': !pageIsIframed}" ng-click="submitCode(editorContents.code)" ng-disabled="SessionHistoryService.isNewBalloonPending()" title="Click anytime you want feedback on your code">
+                    RUN
+                  </button>
                 </div>
-                <button class="tie-submit-button tie-button tie-button-green protractor-test-submit-code-button" ng-if="pageIsIframed" ng-click="submitToParentPage(editorContents.code)" title="Click anytime you want to submit your code">
-                  Submit for Grading
-                </button>
-                <button class="tie-run-button tie-button protractor-test-run-code-button" ng-class="{'tie-button-green': !pageIsIframed}" ng-click="submitCode(editorContents.code)" ng-disabled="SessionHistoryService.isNewBalloonPending()" title="Click anytime you want feedback on your code">
-                  Get Feedback
-                </button>
               </div>
             </div>
 
@@ -119,7 +100,6 @@ tie.directive('learnerView', [function() {
               <div class="tie-lang-terminal">
                 <div class="tie-user-terminal" ng-class="{'print-mode': printingIsSupported}">
                   <div class="tie-print-terminal" ng-if="printingIsSupported">
-                    <h1 class="tie-print-title"> Printed Output </h1>
                     <div class="tie-stdout">{{stdout}}</div>
                   </div>
                 </div>
@@ -162,6 +142,10 @@ tie.directive('learnerView', [function() {
           top: calc(50% - 25px);
           width: 50px;
         }
+        .tie-button-container {
+          display: flex;
+          justify-content: flex-end;
+        }
         .tie-button {
           background-color: #ffffff;
           border-radius: 4px;
@@ -171,7 +155,7 @@ tie.directive('learnerView', [function() {
           display: block;
           font-family: Roboto, 'Helvetica Neue', 'Lucida Grande', sans-serif;
           font-size: 12px;
-          height: 24px;
+          height: 30px;
           margin-right: 10px;
           outline: none;
           padding: 1px 6px;
@@ -228,16 +212,16 @@ tie.directive('learnerView', [function() {
           background-color: #b0b0b0;
         }
         .tie-button-green {
-          background-color: #3C5C14;
+          background-color: #a2d6a4;
           border: none;
           color: #ffffff;
           outline: none;
         }
         .tie-button-green:hover {
-          border-color: #82bf36;
+          border-color: #669e68;
         }
         .tie-button-green:active {
-          background-color: #265221;
+          background-color: #669e68;
         }
         .tie-button-green[disabled] {
           opacity: 0.4;
@@ -259,6 +243,24 @@ tie.directive('learnerView', [function() {
           opacity: 0.4;
         }
         .night-mode .tie-button-green[disabled]:hover {
+          border: none;
+        }
+        .tie-button-gray {
+          background-color: #a7a7a7;
+          border: none;
+          color: #ffffff;
+          outline: none;
+        }
+        .tie-button-gray:hover {
+          border-color: #777777;
+        }
+        .tie-button-gray:active {
+          background-color: #777777;
+        }
+        .tie-button-gray[disabled] {
+          opacity: 0.4;
+        }
+        .tie-button-gray[disabled]:hover {
           border: none;
         }
         .tie-code-auto-save {
@@ -417,6 +419,7 @@ tie.directive('learnerView', [function() {
           height: 228px;
           overflow: auto;
           width: 100%;
+          padding-top: 10px;
         }
         .night-mode .tie-print-terminal {
           background-color: #2c2c2c;
@@ -492,6 +495,13 @@ tie.directive('learnerView', [function() {
           margin-right: 0;
           margin-top: 10px;
           position: relative;
+          color: black;
+        }
+        .tie-step-button, .tie-previous-button {
+          margin-right: 8px;
+          margin-top: 10px;
+          position: relative;
+          color: black;
         }
         .tie-select-menu {
           background-color: #ffffff;
@@ -499,7 +509,7 @@ tie.directive('learnerView', [function() {
           border-radius: 4px;
           cursor: pointer;
           float: left;
-          height: 24px;
+          height: 30px;
           margin-right: 5px;
           margin-top: 10px;
           min-width: 100px;
