@@ -86,10 +86,6 @@ tie.directive('learnerView', [function() {
                       </ui-codemirror>
                     </div>
                   </div>
-                  <div class="tie-print-terminal" ng-if="printingIsSupported">
-                    <h1 class="tie-print-title"> Printed Output </h1>
-                    <div class="tie-stdout">{{stdout}}</div>
-                  </div>
                 </div>
                 <button class="tie-code-reset tie-button protractor-test-reset-code-button" name="code-reset" ng-click="resetCode()" title="Click to clear your code and start over">
                   Start Over
@@ -99,11 +95,9 @@ tie.directive('learnerView', [function() {
                     ng-if="supportedLanguageCount > 1"
                     ng-model="codeMirrorOptions.mode"
                     ng-options="key as value for ( key, value ) in supportedLanguageLabels"
-
                     class="tie-select-menu"
                     name="lang-select-menu">
                 </select>
-
                 <a ng-if="!SERVER_URL" class="tie-primer-link tie-python-primer protractor-test-python-primer-link" target="_blank" ng-href="{{getPythonPrimerUrl()}}" title="Click to view a short introduction to Python">New to Python?</a>
                 <div class="tie-code-auto-save"
                     ng-show="autosaveTextIsDisplayed">
@@ -115,6 +109,16 @@ tie.directive('learnerView', [function() {
                 <button class="tie-run-button tie-button protractor-test-run-code-button" ng-class="{'tie-button-green': !pageIsIframed}" ng-click="submitCode(editorContents.code)" ng-disabled="SessionHistoryService.isNewBalloonPending()" title="Click anytime you want feedback on your code">
                   Get Feedback
                 </button>
+              </div>
+            </div>
+            <div class="tie-output-ui protractor-test-coding-ui">
+              <div class="tie-lang-terminal">
+                <div class="tie-user-terminal" ng-class="{'print-mode': printingIsSupported}">
+                  <div class="tie-print-terminal" ng-if="printingIsSupported">
+                    <h1 class="tie-print-title"> Printed Output </h1>
+                    <div class="tie-stdout">{{stdout}}</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -284,15 +288,15 @@ tie.directive('learnerView', [function() {
           font-size: 13px;
           height: 100%;
           position: relative;
-          width: 662px;
+          width: 100%;
           -webkit-font-smoothing: antialiased;
         }
         .print-mode .tie-coding-terminal {
           display: flex;
           font-size: 13px;
-          height: 338px;
+          height: 228px;
           position: relative;
-          width: 662px;
+          width: 100%;
         }
         .tie-coding-window {
           display: flex;
@@ -301,10 +305,16 @@ tie.directive('learnerView', [function() {
             .tie-select-menu:focus {
           outline: 0;
         }
-        .tie-coding-ui, .tie-question-ui {
+        .tie-coding-ui, .tie-question-ui, .tie-output-ui {
           display: inline-block;
           margin: 8px;
           white-space: normal;
+        }
+        .tie-output-ui { 
+          width: 25%;
+        }
+        .tie-coding-ui {
+          width: 50%;
         }
         .tie-feedback-error-string {
           color: #F44336;
@@ -399,18 +409,15 @@ tie.directive('learnerView', [function() {
         }
         .tie-print-terminal {
           background-color: #ffffff;
-          height: 182px;
-          margin-top: 8px;
+          height: 228px;
           overflow: auto;
-          position: absolute;
-          width: 662px;
+          width: 100%;
         }
         .night-mode .tie-print-terminal {
           background-color: #2c2c2c;
-          height: 182px;
-          margin-top: 8px;
+          height: 228px;
           overflow: auto;
-          width: 662px;
+          width: 100%;
         }
         .tie-question-code {
           background: rgb(242, 242, 242);
@@ -438,8 +445,7 @@ tie.directive('learnerView', [function() {
           color: #ececec;
         }
         .tie-question-ui {
-          flex: auto;
-          min-width: 300px;
+          width: 25%;
           vertical-align: top;
         }
         .tie-question-ui-inner {
@@ -447,24 +453,23 @@ tie.directive('learnerView', [function() {
           padding-left: 32px;
           padding-right: 32px;
           white-space: nowrap;
+          max-width: 1170px;
         }
         .tie-question-ui-outer {
           margin-left: auto;
           margin-right: auto;
-          max-width: 1458px;
+          max-width: 1170px;
           min-width: 1058px;
           padding-top: 30px;
         }
         .tie-question-window {
           background-color: #FFFFF7;
           font-size: 14px;
-          height: 528px;
+          height: 228px;
+          width: 100%;
           max-width: 700px;
-          min-height: 300px;
-          min-width: 300px;
           overflow: auto;
           padding: 0;
-          width: 100%;
         }
         .night-mode .tie-question-window {
           background-color: #333A42;
@@ -530,7 +535,8 @@ tie.directive('learnerView', [function() {
           width: 122px;
         }
         .tie-user-terminal {
-          height: 528px;
+          height: 228px;
+          display: flex;
         }
         .CodeMirror-linenumber {
           /* Increase the contrast of the line numbers from the background. */
@@ -587,6 +593,9 @@ tie.directive('learnerView', [function() {
             min-height: 300px;
             overflow: auto;
             padding: 0;
+            width: 662px;
+          }
+          .tie-coding-ui, .tie-question-ui, .tie-output-ui {
             width: 662px;
           }
           .tie-question-ui-inner .tie-monospace-modal-container {
