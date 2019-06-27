@@ -54,7 +54,7 @@ tie.directive('learnerView', [function() {
                   <speech-balloons-container></speech-balloons-container>
                 </div>
               </div>
-                <div>
+              <div>
                 <select class="tie-select-menu protractor-test-theme-select"
                     ng-change="changeTheme(currentThemeName)"
                     ng-model="currentThemeName"
@@ -64,7 +64,6 @@ tie.directive('learnerView', [function() {
                 </select>
               </div>
             </div>
-
             <div class="tie-coding-ui protractor-test-coding-ui">
               <div class="tie-lang-terminal">
                 <div class="tie-user-terminal" ng-class="{'print-mode': printingIsSupported}">
@@ -112,8 +111,7 @@ tie.directive('learnerView', [function() {
                 </button>
               </div>
             </div>
-
-             <div class="tie-output-ui protractor-test-coding-ui">
+            <div class="tie-output-ui protractor-test-coding-ui">
               <div class="tie-lang-terminal">
                 <div class="tie-user-terminal" ng-class="{'print-mode': printingIsSupported}">
                   <div class="tie-print-terminal" ng-if="printingIsSupported">
@@ -123,7 +121,6 @@ tie.directive('learnerView', [function() {
                 </div>
               </div>
             </div>
-
           </div>
           <div class="tie-options-row">
             <ul>
