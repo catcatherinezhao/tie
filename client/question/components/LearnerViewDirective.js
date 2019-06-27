@@ -91,9 +91,24 @@ tie.directive('learnerView', [function() {
                 <button class="tie-code-reset tie-button protractor-test-reset-code-button" name="code-reset" ng-click="resetCode()" title="Click to clear your code and start over">
                   Start Over
                 </button>
-              
+                <p class="tie-language-label">Language: <span ng-if="supportedLanguageCount === 1">{{languageLabel}}</span></p>
+                <select
+                    ng-if="supportedLanguageCount > 1"
+                    ng-model="codeMirrorOptions.mode"
+                    ng-options="key as value for ( key, value ) in supportedLanguageLabels"
+                    class="tie-select-menu"
+                    name="lang-select-menu">
+                </select>
+                <a ng-if="!SERVER_URL" class="tie-primer-link tie-python-primer protractor-test-python-primer-link" target="_blank" ng-href="{{getPythonPrimerUrl()}}" title="Click to view a short introduction to Python">New to Python?</a>
+                <div class="tie-code-auto-save"
+                    ng-show="autosaveTextIsDisplayed">
+                  Saving code...
+                </div>
+                <button class="tie-submit-button tie-button tie-button-green protractor-test-submit-code-button" ng-if="pageIsIframed" ng-click="submitToParentPage(editorContents.code)" title="Click anytime you want to submit your code">
+                  Submit for Grading
+                </button>
                 <button class="tie-run-button tie-button protractor-test-run-code-button" ng-class="{'tie-button-green': !pageIsIframed}" ng-click="submitCode(editorContents.code)" ng-disabled="SessionHistoryService.isNewBalloonPending()" title="Click anytime you want feedback on your code">
-                  RUN
+                  Get Feedback
                 </button>
               </div>
             </div>
