@@ -15,31 +15,16 @@
  * @fileoverview A service that stores the user's light/dark mode preference.
  */
 
-tie.constant('THEME_NAME_LIGHT', 'Light Theme');
-tie.constant('THEME_NAME_DARK', 'Dark Theme');
-
 tie.factory('ThemeNameService', [
-  'PRIMER_DIRECTORY_URL', 'THEME_NAME_LIGHT', 'THEME_NAME_DARK',
-  function(PRIMER_DIRECTORY_URL, THEME_NAME_LIGHT, THEME_NAME_DARK) {
-    var currentThemeName = THEME_NAME_LIGHT;
-
+  'PRIMER_DIRECTORY_URL',
+  function(PRIMER_DIRECTORY_URL) {
     return {
-      setThemeName: function(newThemeName) {
-        currentThemeName = newThemeName;
-      },
-      getCurrentThemeName: function() {
-        return currentThemeName;
-      },
-      isDarkModeEnabled: function() {
-        return currentThemeName === THEME_NAME_DARK;
-      },
       /**
        * Provides the URL to the appropriately themed python primer file.
        */
       getPythonPrimerUrl: function() {
-        var primerTheme = this.isDarkModeEnabled() ? 'dark' : 'light';
         return (
-          PRIMER_DIRECTORY_URL + 'py-primer-' + primerTheme + '.html');
+          PRIMER_DIRECTORY_URL + 'py-primer.html');
       }
     };
   }

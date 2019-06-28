@@ -21,15 +21,11 @@ describe('HtmlWithMarkdownLinksSnippetDirective', function() {
   var parentScope;
   var scope;
   var template;
-  var ThemeNameService;
   var PRIMER_DIRECTORY_URL;
-  var THEME_NAME_DARK;
 
   beforeEach(module('tie'));
   beforeEach(inject(function($injector, $compile, $rootScope) {
-    ThemeNameService = $injector.get('ThemeNameService');
     PRIMER_DIRECTORY_URL = $injector.get('PRIMER_DIRECTORY_URL');
-    THEME_NAME_DARK = $injector.get('THEME_NAME_DARK');
 
     parentScope = $rootScope.$new();
     parentScope.parentContent = '';
@@ -77,38 +73,7 @@ describe('HtmlWithMarkdownLinksSnippetDirective', function() {
       scope.$digest();
       expect(template.html()).toContain(
         'abc <a href="' + PRIMER_DIRECTORY_URL +
-        'py-primer-light.html" target="_blank">def</a>');
-    });
-
-    it('should interpolate primer links based on current theme', function() {
-      expect(ThemeNameService.isDarkModeEnabled()).toEqual(false);
-
-      parentScope.parentContent = 'abc [def](primer-url)';
-      scope.$digest();
-      expect(template.html()).toContain(
-        'abc <a href="' + PRIMER_DIRECTORY_URL +
-        'py-primer-light.html" target="_blank">def</a>');
-
-      parentScope.parentContent = 'abc [def](primer-url#a)';
-      scope.$digest();
-      expect(template.html()).toContain(
-        'abc <a href="' + PRIMER_DIRECTORY_URL +
-        'py-primer-light.html#a" target="_blank">def</a>');
-
-      ThemeNameService.setThemeName(THEME_NAME_DARK);
-      expect(ThemeNameService.isDarkModeEnabled()).toEqual(true);
-
-      parentScope.parentContent = 'abc [def](primer-url)';
-      scope.$digest();
-      expect(template.html()).toContain(
-        'abc <a href="' + PRIMER_DIRECTORY_URL +
-        'py-primer-dark.html" target="_blank">def</a>');
-
-      parentScope.parentContent = 'abc [def](primer-url#a)';
-      scope.$digest();
-      expect(template.html()).toContain(
-        'abc <a href="' + PRIMER_DIRECTORY_URL +
-        'py-primer-dark.html#a" target="_blank">def</a>');
+        'py-primer.html" target="_blank">def</a>');
     });
 
     it('should reject badly-formatted links', function() {
