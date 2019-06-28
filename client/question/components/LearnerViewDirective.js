@@ -89,7 +89,6 @@ tie.directive('learnerView', [function() {
                     class="tie-select-menu"
                     name="lang-select-menu">
                 </select>
-                <a ng-if="!SERVER_URL" class="tie-primer-link tie-python-primer protractor-test-python-primer-link" target="_blank" ng-href="{{getPythonPrimerUrl()}}" title="Click to view a short introduction to Python">New to Python?</a>
                 <div class="tie-code-auto-save"
                     ng-show="autosaveTextIsDisplayed">
                   Saving code...
@@ -218,7 +217,7 @@ tie.directive('learnerView', [function() {
           margin-top: 14px;
           margin-left: 0;
         }
-        .tie-code-reset, .tie-python-primer, .tie-language-label {
+        .tie-code-reset, .tie-language-label {
           float: left;
           margin-top: 10px;
           margin-bottom: 0;
@@ -320,11 +319,6 @@ tie.directive('learnerView', [function() {
         }
         .tie-previous-instructions {
           opacity: 0.5;
-        }
-        .tie-primer-link {
-          color: blue;
-          font-size: 12px;
-          padding: 4px 10px 0px 4px;
         }
         .tie-print-title {
           font-size: 18px;
@@ -541,11 +535,6 @@ tie.directive('learnerView', [function() {
          * @type {string}
          */
         var language = LANGUAGE_PYTHON;
-
-        /**
-         * Provides the URL to the python primer file.
-         */
-        $scope.getPythonPrimerUrl = ThemeNameService.getPythonPrimerUrl;
 
         /**
          * A dictionary of labels, keyed by their supported language

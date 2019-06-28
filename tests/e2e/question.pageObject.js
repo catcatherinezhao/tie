@@ -73,20 +73,6 @@ var QuestionPage = function() {
       element.all(by.css('.protractor-test-feedback-paragraph'));
 
   /**
-   * Theme selector.
-   *
-   * @type {webdriver.WebElement}
-   */
-  var themeSelector = element(by.css('.protractor-test-theme-select'));
-
-  /**
-   * Python primer link.
-   *
-   * @type {webdriver.WebElement}
-   */
-  var pythonPrimerLink = element(by.css('.protractor-test-python-primer-link'));
-
-  /**
    * TIE About link.
    *
    * @type {webdriver.WebElement}

@@ -50,8 +50,6 @@ describe('Question Page', function() {
   });
 
   it('should display all expected links', async function() {
-    // Python Primer link.
-    expect(await questionPage.isPythonPrimerLinkDisplayed()).toBe(true);
     // Privacy link.
     expect(await questionPage.isPrivacyLinkDisplayed()).toBe(true);
     // About link.
