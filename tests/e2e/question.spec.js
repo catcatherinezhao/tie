@@ -49,12 +49,6 @@ describe('Question Page', function() {
     expect(await questionPage.countFeedbackParagraphs()).toBe(1);
   });
 
-  it('should allow switching theme with the theme selector', async function() {
-    // Themes: 0=light, 1=dark.
-    await questionPage.applyTheme(1);
-    expect(await questionPage.hasDarkTheme()).toBe(true);
-  });
-
   it('should display all expected links', async function() {
     // Python Primer link.
     expect(await questionPage.isPythonPrimerLinkDisplayed()).toBe(true);

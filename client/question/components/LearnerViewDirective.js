@@ -21,7 +21,7 @@ tie.directive('learnerView', [function() {
     restrict: 'E',
     scope: {},
     template: `
-      <div class="tie-wrapper protractor-test-tie-wrapper" ng-class="{'night-mode': isDarkModeEnabled()}">
+      <div class="tie-wrapper protractor-test-tie-wrapper">
         <div class="tie-question-ui-outer">
           <div class="tie-question-ui-inner">
             <monospace-display-modal
@@ -53,15 +53,6 @@ tie.directive('learnerView', [function() {
                   </div>
                   <speech-balloons-container></speech-balloons-container>
                 </div>
-              </div>
-              <div>
-                <select class="tie-select-menu protractor-test-theme-select"
-                    ng-change="changeTheme(currentThemeName)"
-                    ng-model="currentThemeName"
-                    ng-options="i.themeName as i.themeName for i in themes"
-                    ng-disabled="MonospaceDisplayModalService.isDisplayed()"
-                    title="Change between light and dark themes">
-                </select>
               </div>
             </div>
             <div class="tie-coding-ui protractor-test-coding-ui">
@@ -175,16 +166,6 @@ tie.directive('learnerView', [function() {
         .tie-button:hover {
           border: 1px solid #e4e4e4;
         }
-        .night-mode .tie-button {
-          background-color: #333a42;
-          color: white;
-        }
-        .night-mode .tie-button:hover {
-          border-color: #646464;
-        }
-        .night-mode .tie-button:active {
-          border-color: #c1c1c1;
-        }
         .tie-button:active {
           border-color: #a0a0a0;
         }
@@ -199,16 +180,6 @@ tie.directive('learnerView', [function() {
         }
         .tie-button-blue:active {
           background-color: #2962FF;
-        }
-        .night-mode .tie-button-blue {
-          background-color: rgb(70, 90, 110);
-          color: #ffffff;
-        }
-        .night-mode .tie-button-blue:hover {
-          border-color: #e4e4e4;
-        }
-        .night-mode .tie-button-blue:active {
-          background-color: rgb(62, 81, 99);
         }
         .tie-button-red {
           background-color: #d8d8d8;
@@ -240,22 +211,6 @@ tie.directive('learnerView', [function() {
         .tie-button-green[disabled]:hover {
           border: none;
         }
-        .night-mode .tie-button-green {
-          background-color: #3C5C14;
-          color: #ffffff;
-        }
-        .night-mode .tie-button-green:hover {
-          border-color: #e4e4e4;
-        }
-        .night-mode .tie-button-green:active {
-          background-color: #265221;
-        }
-        .night-mode .tie-button-green[disabled] {
-          opacity: 0.4;
-        }
-        .night-mode .tie-button-green[disabled]:hover {
-          border: none;
-        }
         .tie-code-auto-save {
           font-family: Roboto, 'Helvetica Neue', 'Lucida Grande', sans-serif;
           font-size: 13px;
@@ -263,17 +218,10 @@ tie.directive('learnerView', [function() {
           margin-top: 14px;
           margin-left: 0;
         }
-        .night-mode .tie-code-auto-save {
-          color: #E0E0E0;
-        }
         .tie-code-reset, .tie-python-primer, .tie-language-label {
           float: left;
           margin-top: 10px;
           margin-bottom: 0;
-        }
-        .night-mode .tie-code-reset {
-          background-color: #333a42;
-          color: white;
         }
         .tie-coding-terminal .CodeMirror {
           /* Overwriting codemirror defaults */
@@ -329,17 +277,6 @@ tie.directive('learnerView', [function() {
           width: 642px;
           -webkit-font-smoothing: antialiased;
         }
-        .night-mode .tie-feedback-window {
-          background-color: #37474F;
-          color: #E0E0E0;
-          font-size: 14px;
-          height: 128px;
-          overflow: auto;
-          padding: 10px;
-          resize: both;
-          width: 642px;
-          -webkit-font-smoothing: antialiased;
-        }
         .tie-footer-left-aligned-link {
           float: left;
         }
@@ -369,9 +306,6 @@ tie.directive('learnerView', [function() {
           padding: 5px;
           text-decoration: none;
         }
-        .night-mode .tie-options-row a {
-          color: #E0E0E0;
-        }
         .tie-options-row li {
           margin: 5px;
         }
@@ -392,29 +326,13 @@ tie.directive('learnerView', [function() {
           font-size: 12px;
           padding: 4px 10px 0px 4px;
         }
-        .night-mode .tie-primer-link,
-        .night-mode .tie-language-label {
-          color: white;
-        }
         .tie-print-title {
-          font-size: 18px;
-          padding-top: 3px;
-          text-align: center;
-        }
-        .night-mode .tie-print-title {
-          color: #ffffff;
           font-size: 18px;
           padding-top: 3px;
           text-align: center;
         }
         .tie-print-terminal {
           background-color: #ffffff;
-          height: 228px;
-          overflow: auto;
-          width: 100%;
-        }
-        .night-mode .tie-print-terminal {
-          background-color: #2c2c2c;
           height: 228px;
           overflow: auto;
           width: 100%;
@@ -431,18 +349,12 @@ tie.directive('learnerView', [function() {
           white-space: pre-wrap;
           word-wrap: break-word;
         }
-        .night-mode .tie-question-code {
-          background: #333;
-        }
         .tie-question-container {
           padding: 10px;
         }
         .tie-question-title {
           color: #212121;
           font-size: 18px;
-        }
-        .night-mode .tie-question-title {
-          color: #ececec;
         }
         .tie-question-ui {
           width: 25%;
@@ -471,16 +383,9 @@ tie.directive('learnerView', [function() {
           overflow: auto;
           padding: 0;
         }
-        .night-mode .tie-question-window {
-          background-color: #333A42;
-          color: #E0E0E0;
-        }
         .tie-monospace-modal-container {
           border: 1px solid #d3d3d3;
           resize: none;
-        }
-        .night-mode .tie-monospace-modal-container {
-          border: 1px solid #333;
         }
         .tie-run-button {
           float: right;
@@ -503,21 +408,7 @@ tie.directive('learnerView', [function() {
         .tie-select-menu:hover {
           border-color: #e4e4e4;
         }
-        .night-mode .tie-select-menu {
-          background-color: #333a42;
-          color: white;
-        }
         .tie-stdout {
-          font-family: monospace;
-          font-size: 13px;
-          line-height: 1.2em;
-          padding-bottom: 12px;
-          padding-left: 5%;
-          padding-right: 5%;
-          white-space: pre-wrap;
-        }
-        .night-mode .tie-stdout {
-          color: #ffffff;
           font-family: monospace;
           font-size: 13px;
           line-height: 1.2em;
@@ -545,26 +436,8 @@ tie.directive('learnerView', [function() {
         .CodeMirror-line.tie-syntax-error-line {
           background: #FBC2C4;
         }
-        .tie-wrapper.night-mode .CodeMirror-line.tie-syntax-error-line {
-          background: #891111;
-        }
         .tie-wrapper {
           height: 100%;
-        }
-        .tie-wrapper.night-mode {
-          background-color: #212121;
-        }
-        .night-mode ::-webkit-scrollbar {
-          background-color: #555555;
-        }
-        .night-mode ::-webkit-scrollbar-corner {
-          background-color: #3c3c4b;
-        }
-        .night-mode ::-webkit-scrollbar-thumb {
-          background-color: #888888;
-          background-clip: content-box;
-          border: 3px solid transparent;
-          border-radius: 7px;
         }
         @media screen and (max-width: 1058px) {
           .tie-options-row {
@@ -617,9 +490,8 @@ tie.directive('learnerView', [function() {
       'SECONDS_TO_MILLISECONDS', 'CODE_CHANGE_DEBOUNCE_SECONDS',
       'DISPLAY_AUTOSAVE_TEXT_SECONDS', 'SERVER_URL', 'DEFAULT_QUESTION_ID',
       'FEEDBACK_CATEGORIES', 'DEFAULT_EVENT_BATCH_PERIOD_SECONDS',
-      'DELAY_STYLE_CHANGES', 'THEME_NAME_LIGHT', 'THEME_NAME_DARK',
-      'CODE_RESET_CONFIRMATION_MESSAGE', 'PRIVACY_URL', 'ABOUT_TIE_URL',
-      'ABOUT_TIE_LABEL', 'TERMS_OF_USE_URL',
+      'DELAY_STYLE_CHANGES', 'CODE_RESET_CONFIRMATION_MESSAGE', 'PRIVACY_URL',
+      'ABOUT_TIE_URL', 'ABOUT_TIE_LABEL', 'TERMS_OF_USE_URL',
       function(
           $scope, $interval, $timeout, $location, $window,
           ConversationManagerService, QuestionDataService, LANGUAGE_PYTHON,
@@ -633,9 +505,8 @@ tie.directive('learnerView', [function() {
           SECONDS_TO_MILLISECONDS, CODE_CHANGE_DEBOUNCE_SECONDS,
           DISPLAY_AUTOSAVE_TEXT_SECONDS, SERVER_URL, DEFAULT_QUESTION_ID,
           FEEDBACK_CATEGORIES, DEFAULT_EVENT_BATCH_PERIOD_SECONDS,
-          DELAY_STYLE_CHANGES, THEME_NAME_LIGHT, THEME_NAME_DARK,
-          CODE_RESET_CONFIRMATION_MESSAGE, PRIVACY_URL, ABOUT_TIE_URL,
-          ABOUT_TIE_LABEL, TERMS_OF_USE_URL) {
+          DELAY_STYLE_CHANGES, CODE_RESET_CONFIRMATION_MESSAGE, PRIVACY_URL,
+          ABOUT_TIE_URL, ABOUT_TIE_LABEL, TERMS_OF_USE_URL) {
         $scope.PRIVACY_URL = PRIVACY_URL;
         $scope.ABOUT_TIE_URL = ABOUT_TIE_URL;
         $scope.ABOUT_TIE_LABEL = ABOUT_TIE_LABEL;
@@ -670,19 +541,9 @@ tie.directive('learnerView', [function() {
         var language = LANGUAGE_PYTHON;
 
         /**
-         * Gets the initial theme name for display in the UI.
-         */
-        $scope.currentThemeName = ThemeNameService.getCurrentThemeName();
-
-        /**
-         * Provides the URL to the appropriately themed python primer file.
+         * Provides the URL to the python primer file.
          */
         $scope.getPythonPrimerUrl = ThemeNameService.getPythonPrimerUrl;
-        /**
-         * A function that returns a boolean indicating whether the current
-         * mode is "dark mode".
-         */
-        $scope.isDarkModeEnabled = ThemeNameService.isDarkModeEnabled;
 
         /**
          * A dictionary of labels, keyed by their supported language
@@ -690,16 +551,6 @@ tie.directive('learnerView', [function() {
         $scope.supportedLanguageLabels = SUPPORTED_LANGUAGE_LABELS;
         $scope.supportedLanguageCount = Object.keys(
           SUPPORTED_LANGUAGE_LABELS).length;
-
-        /**
-         * Defines the accepted UI Themes for the editor.
-         *
-         * @type {Array}
-         */
-        $scope.themes = [
-          {themeName: THEME_NAME_LIGHT},
-          {themeName: THEME_NAME_DARK}
-        ];
 
         /**
          * Defines whether printing is supported, and thus whether the print
@@ -933,7 +784,7 @@ tie.directive('learnerView', [function() {
           // The pulseAnimationEnabled var is set to false to prevent balloon
           // pulse animation when switching from light to dark mode and
           // vise versa. This is set to false in resetCode.
-          $scope.pulseAnimationEnabled = true;
+          $scope.pulseAnimationEnabled = false;
           SessionIdService.resetSessionId();
 
           // Load the feedback, tasks, and stored code and initialize the
@@ -1072,24 +923,6 @@ tie.directive('learnerView', [function() {
             $scope.$apply();
           }
           $scope.scrollToTopOfFeedbackWindow();
-        };
-
-        /**
-         * Sets the UI theme to the theme passed in as a parameter.
-         *
-         * @param {string} newTheme
-         */
-        $scope.changeTheme = function(newThemeName) {
-          $scope.pulseAnimationEnabled = false;
-          if (newThemeName === THEME_NAME_DARK) {
-            $scope.codeMirrorOptions.theme = 'mbo';
-          } else {
-            $scope.codeMirrorOptions.theme = 'default';
-          }
-          ThemeNameService.setThemeName(newThemeName);
-          $timeout(function() {
-            $scope.pulseAnimationEnabled = true;
-          }, DELAY_STYLE_CHANGES);
         };
 
         /**
