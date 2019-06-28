@@ -29,6 +29,7 @@ tie.directive('learnerView', [function() {
                 content="content">
             </monospace-display-modal>
             <div class="tie-question-ui protractor-test-question-ui">
+              
               <div class="tie-question-window">
                 <div class="tie-question-container" ng-class="{'pulse-animation-enabled': pulseAnimationEnabled}" ng-attr-aria-hidden="{{MonospaceDisplayModalService.isDisplayed()}}">
                   <h1 class="tie-question-title">{{title}}</h1>
@@ -54,6 +55,7 @@ tie.directive('learnerView', [function() {
                   <speech-balloons-container></speech-balloons-container>
                 </div>
               </div>
+            
             </div>
             <div class="tie-coding-ui protractor-test-coding-ui">
               <div class="tie-lang-terminal">
