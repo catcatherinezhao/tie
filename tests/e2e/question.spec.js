@@ -29,7 +29,6 @@ describe('Question Page', function() {
   beforeAll(async function() {
     await testUtils.expectNoConsoleLogs();
     await questionPage.get(questionId);
-    await questionPage.resetCode();
   });
 
   afterEach(async function() {
@@ -38,15 +37,15 @@ describe('Question Page', function() {
   });
 
   it('should successfully submit code', async function() {
-    await questionPage.resetCode();
     await questionPage.runCode();
   });
 
   it('should display a feedback text paragraph after a run', async function() {
-    await questionPage.resetCode();
     await questionPage.runCode();
 
-    expect(await questionPage.countFeedbackParagraphs()).toBe(1);
+    // After running code, there should be one or more paragraphs of feedback,
+    // since there's no way to reset.
+    expect(await questionPage.countFeedbackParagraphs()).toBeGreaterThanOrEqual(1);
   });
 
   it('should display all expected links', async function() {

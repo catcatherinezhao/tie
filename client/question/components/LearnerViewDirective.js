@@ -78,9 +78,7 @@ tie.directive('learnerView', [function() {
                     </div>
                   </div>
                 </div>
-                <button class="tie-code-reset tie-button protractor-test-reset-code-button" name="code-reset" ng-click="resetCode()" title="Click to clear your code and start over">
-                  Start Over
-                </button>
+
                 <div class="tie-code-auto-save"
                     ng-show="autosaveTextIsDisplayed">
                   Saving code...
