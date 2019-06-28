@@ -78,7 +78,6 @@ tie.directive('learnerView', [function() {
                     </div>
                   </div>
                 </div>
-
                 <div class="tie-code-auto-save"
                     ng-show="autosaveTextIsDisplayed">
                   Saving code...
@@ -93,6 +92,7 @@ tie.directive('learnerView', [function() {
                   <select class="tie-select-menu"
                       ng-disabled="MonospaceDisplayModalService.isDisplayed()"
                       title="Click to see your previous submissions">
+                      <option>PREVIOUS</option>
                   </select>
                 </div>
                 <button class="tie-step-button tie-button tie-button-gray" title="Click to step through your code">
@@ -230,11 +230,6 @@ tie.directive('learnerView', [function() {
           float: left;
           margin-top: 14px;
           margin-left: 0;
-        }
-        .tie-code-reset {
-          float: left;
-          margin-top: 10px;
-          margin-bottom: 0;
         }
         .tie-coding-terminal .CodeMirror {
           /* Overwriting codemirror defaults */
