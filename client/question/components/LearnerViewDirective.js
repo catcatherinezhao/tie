@@ -485,7 +485,7 @@ tie.directive('learnerView', [function() {
       'EventHandlerService', 'LocalStorageService',
       'ServerHandlerService', 'SessionIdService', 'ThemeNameService',
       'UnpromptedFeedbackManagerService', 'MonospaceDisplayModalService',
-      'CurrentQuestionService', 'PrintTerminalService',
+      'CurrentQuestionService', 'PrintTerminalService', 'FeedbackWindowService',
       'ParentPageService', 'ALL_SUPPORTED_LANGUAGES',
       'SUPPORTED_LANGUAGE_LABELS', 'SessionHistoryService', 'AutosaveService',
       'SECONDS_TO_MILLISECONDS', 'CODE_CHANGE_DEBOUNCE_SECONDS',
@@ -501,7 +501,7 @@ tie.directive('learnerView', [function() {
           EventHandlerService, LocalStorageService,
           ServerHandlerService, SessionIdService, ThemeNameService,
           UnpromptedFeedbackManagerService, MonospaceDisplayModalService,
-          CurrentQuestionService, PrintTerminalService,
+          CurrentQuestionService, PrintTerminalService, FeedbackWindowService,
           ParentPageService, ALL_SUPPORTED_LANGUAGES,
           SUPPORTED_LANGUAGE_LABELS, SessionHistoryService, AutosaveService,
           SECONDS_TO_MILLISECONDS, CODE_CHANGE_DEBOUNCE_SECONDS,
@@ -555,6 +555,13 @@ tie.directive('learnerView', [function() {
          * terminal should be displayed.
          */
         $scope.printingIsSupported = PrintTerminalService.isPrintingSupported();
+
+        /**
+         * Defines whether feedback is supported, and thus whether the feedback
+         * window should be displayed.
+         */
+        $scope.feedbackIsSupported =
+          FeedbackWindowService.isFeedbackSupported();
 
         /**
          * Defines whether TIE is currently being framed by the expected
