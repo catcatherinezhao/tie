@@ -90,9 +90,11 @@ tie.directive('learnerView', [function() {
                 </button>
                 <div>
                   <select class="tie-select-menu"
+                      ng-change="changeSubmission(currentSubmissionNumber)"
+                      ng-model="currentSubmissionNumber"
+                      ng-options="i.number as i.title for i in totalSubmissions"
                       ng-disabled="MonospaceDisplayModalService.isDisplayed()"
                       title="Click to see your previous submissions">
-                      <option>PREVIOUS</option>
                   </select>
                 </div>
                 <button class="tie-step-button tie-button tie-button-gray" title="Click to step through your code">
@@ -549,6 +551,21 @@ tie.directive('learnerView', [function() {
           SUPPORTED_LANGUAGE_LABELS).length;
 
         /**
+         * Sets a local variable currentSubmission to the current
+         * submission object for display in the editor.
+         *
+         * @type {integer}
+         */
+        $scope.currentSubmissionNumber = 0;
+
+        /**
+         * Defines the total number of submissions in the editor.
+         *
+         * @type {Array}
+         */
+        $scope.totalSubmissions = [];
+
+        /**
          * Defines whether printing is supported, and thus whether the print
          * terminal should be displayed.
          */
@@ -922,6 +939,20 @@ tie.directive('learnerView', [function() {
         };
 
         /**
+         * Sets the code in the code editor to the previous submission
+         * passed in as a parameter.
+         *
+         * @param {integer} displaySubmissionNumber The submission number
+         * selected in the previous submissions dropdown.
+         */
+        $scope.changeSubmission = function(displaySubmissionNumber) {
+          var previousSubmission = SessionHistoryService.getPreviousSubmission(
+            language,
+            displaySubmissionNumber)[1].feedbackParagraphDicts[0].content;
+          $scope.editorContents.code = previousSubmission;
+        };
+
+        /**
          * Stores the CodeMirror editor instance.
          */
         var codemirrorEditorInstance = null;
@@ -1026,6 +1057,12 @@ tie.directive('learnerView', [function() {
         $scope.submitCode = function(code) {
           MonospaceDisplayModalService.hideModal();
           SessionHistoryService.addCodeBalloon(code);
+
+          // Creates a new submission in the previous submissions drop down.
+          var submissionNumber = SessionHistoryService.getSubmissionNumber();
+          $scope.totalSubmissions.push({number: submissionNumber,
+            title: 'Snapshot ' + String(submissionNumber)});
+          $scope.currentSubmissionNumber = submissionNumber;
 
           // Gather all tasks from the first one up to the current one.
           var question = CurrentQuestionService.getCurrentQuestion();

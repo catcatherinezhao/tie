@@ -32,7 +32,8 @@ tie.factory('SessionHistoryService', [
       // A list of SpeechBalloon objects, from newest to oldest.
       sessionTranscript: [],
       // The number of pending speech balloons to add to the transcript.
-      numBalloonsPending: 0
+      numBalloonsPending: 0,
+      submissionNumber: 0
     };
 
     var localStorageKey = null;
@@ -51,10 +52,12 @@ tie.factory('SessionHistoryService', [
 
         data.sessionTranscript.length = 0;
         data.numBalloonsPending = 0;
+        data.submissionNumber = 0;
 
         var questionId = CurrentQuestionService.getCurrentQuestionId();
         localStorageKey = (
-          LocalStorageKeyManagerService.getSessionHistoryKey(questionId));
+          LocalStorageKeyManagerService.getSessionHistoryKey(
+            questionId, data.submissionNumber));
 
         var potentialSessionTranscript = LocalStorageService.get(
           localStorageKey);
@@ -74,11 +77,40 @@ tie.factory('SessionHistoryService', [
         return data.sessionTranscript;
       },
       /**
+       * Returns the current submission number.
+       */
+      getSubmissionNumber: function() {
+        return data.submissionNumber;
+      },
+      /**
+       * Returns the code from a previous submission.
+       */
+      getPreviousSubmission: function(language, submissionNumber) {
+        if (!CurrentQuestionService.isInitialized()) {
+          throw Error(
+            'CurrentQuestionService must be initialized before ' +
+            'SessionHistoryService.getPreviousSubmissionCode() is called.');
+        }
+
+        var questionId = CurrentQuestionService.getCurrentQuestionId();
+        localStorageKey = (
+          LocalStorageKeyManagerService.getSessionHistoryKey(
+            questionId, submissionNumber));
+        return LocalStorageService.get(localStorageKey);
+      },
+      /**
        * Adds a new code balloon to the beginning of the list.
        */
       addCodeBalloon: function(submittedCode) {
         data.sessionTranscript.unshift(
           SpeechBalloonObjectFactory.createCodeBalloon(submittedCode));
+        var questionId = CurrentQuestionService.getCurrentQuestionId();
+        // Increment the submission number to create a new submission key.
+        // Store as a new submission.
+        data.submissionNumber++;
+        localStorageKey = (
+          LocalStorageKeyManagerService.getSessionHistoryKey(
+            questionId, data.submissionNumber));
         LocalStorageService.put(
           localStorageKey,
           data.sessionTranscript.map(function(speechBalloon) {

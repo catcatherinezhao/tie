@@ -45,7 +45,7 @@ tie.factory('LocalStorageService', [
       },
 
       /**
-       * Deletes an item in local storage.
+       * Returns an item in local storage.
        *
        * @param {string} localStorageKey
        *

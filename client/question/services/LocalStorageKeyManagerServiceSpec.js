@@ -37,9 +37,9 @@ describe('LocalStorageKeyManagerService', function() {
   describe('session history key generation', function() {
     it('should correctly generate session history key', function() {
       expect(LocalStorageKeyManagerService.getSessionHistoryKey(
-        'qid')).toBe('tie:1:sessionHistory:qid');
+        'qid', 1)).toBe('tie:1:sessionHistory:qid:1');
       expect(LocalStorageKeyManagerService.getSessionHistoryKey(
-        'qid2')).toBe('tie:1:sessionHistory:qid2');
+        'qid2', 2)).toBe('tie:1:sessionHistory:qid2:2');
     });
   });
 });
