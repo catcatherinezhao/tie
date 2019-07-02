@@ -88,7 +88,7 @@ tie.directive('learnerView', [function() {
                 <button class="tie-run-button tie-button protractor-test-run-code-button" ng-class="{'tie-button-green': !pageIsIframed}" ng-click="submitCode(editorContents.code)" ng-disabled="SessionHistoryService.isNewBalloonPending()" title="Click anytime you want feedback on your code">
                   RUN
                 </button>
-                <div>
+                <div class="tie-select-menu-container">
                   <select class="tie-select-menu protractor-test-submission-select"
                       ng-change="changeSubmission(currentSubmissionNumber)"
                       ng-model="currentSubmissionNumber"
@@ -393,6 +393,10 @@ tie.directive('learnerView', [function() {
         }
         .tie-step-button {
           margin-right: 5px;
+        }
+        .tie-select-menu-container {
+          top: auto;
+          bottom: 40px;
         }
         .tie-select-menu {
           background-color: #ffffff;
