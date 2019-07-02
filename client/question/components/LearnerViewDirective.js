@@ -947,8 +947,8 @@ tie.directive('learnerView', [function() {
          */
         $scope.changeSubmission = function(displaySubmissionNumber) {
           var previousSubmission = SessionHistoryService.getPreviousSubmission(
-            language,
-            displaySubmissionNumber)[1].feedbackParagraphDicts[0].content;
+            displaySubmissionNumber
+          );
           $scope.editorContents.code = previousSubmission;
         };
 

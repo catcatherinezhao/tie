@@ -85,18 +85,15 @@ tie.factory('SessionHistoryService', [
       /**
        * Returns the code from a previous submission.
        */
-      getPreviousSubmission: function(language, submissionNumber) {
-        if (!CurrentQuestionService.isInitialized()) {
-          throw Error(
-            'CurrentQuestionService must be initialized before ' +
-            'SessionHistoryService.getPreviousSubmissionCode() is called.');
-        }
-
+      getPreviousSubmission: function(submissionNumber) {
         var questionId = CurrentQuestionService.getCurrentQuestionId();
         localStorageKey = (
           LocalStorageKeyManagerService.getSessionHistoryKey(
-            questionId, submissionNumber));
-        return LocalStorageService.get(localStorageKey);
+            questionId, submissionNumber
+          )
+        );
+        return LocalStorageService.get(
+          localStorageKey)[1].feedbackParagraphDicts[0].content;
       },
       /**
        * Adds a new code balloon to the beginning of the list.

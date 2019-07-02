@@ -36,13 +36,46 @@ describe('SessionHistoryService', function() {
   }));
 
   describe('core behaviour', function() {
+    it('should retrieve the correct previous submission code', function() {
+      SessionHistoryService.addCodeBalloon('first submission');
+      var submission1 = SessionHistoryService.getSubmissionNumber();
+      SessionHistoryService.addFeedbackBalloon([
+        FeedbackParagraphObjectFactory.fromDict({
+          type: 'text',
+          content: 'first feedback'
+        })
+      ]);
+      $timeout.flush(DURATION_MSEC_WAIT_FOR_FEEDBACK);
+
+      SessionHistoryService.addCodeBalloon('second submission');
+      var submission2 = SessionHistoryService.getSubmissionNumber();
+      SessionHistoryService.addFeedbackBalloon([
+        FeedbackParagraphObjectFactory.fromDict({
+          type: 'text',
+          content: 'second feedback'
+        })
+      ]);
+      $timeout.flush(DURATION_MSEC_WAIT_FOR_FEEDBACK);
+
+      expect(SessionHistoryService.getPreviousSubmission(submission1)).toEqual(
+        'first submission'
+      );
+      expect(SessionHistoryService.getPreviousSubmission(submission2)).toEqual(
+        'second submission'
+      );
+    });
+
     it('should add a new code balloon correctly', function() {
       var transcript = SessionHistoryService.getBindableSessionTranscript();
       expect(transcript.length).toBe(0);
 
+      var submissionNumber = SessionHistoryService.getSubmissionNumber();
+
       SessionHistoryService.addCodeBalloon('some code');
 
       expect(transcript.length).toBe(1);
+      expect(submissionNumber).toBe(
+        SessionHistoryService.getSubmissionNumber() - 1);
       var firstBalloon = transcript[0];
       expect(firstBalloon.isCodeSubmission()).toBe(true);
       var firstBalloonParagraphs = firstBalloon.getFeedbackParagraphs();
