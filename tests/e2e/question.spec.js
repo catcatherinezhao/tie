@@ -56,12 +56,12 @@ describe('Question Page', function() {
     await questionPage.setCode('first submission');
     await questionPage.runCode();
     submissionNumber++;
-    var firstSubmissionIndex = submissionNumber - 1;
+    var firstSubmissionIndex = submissionNumber;
 
     await questionPage.setCode('second submission');
     await questionPage.runCode();
     submissionNumber++;
-    var secondSubmissionIndex = submissionNumber - 1;
+    var secondSubmissionIndex = submissionNumber;
 
     await questionPage.choosePreviousSubmission(firstSubmissionIndex);
     expect(await questionPage.getCode()).toEqual('first submission');

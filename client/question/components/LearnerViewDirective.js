@@ -95,6 +95,7 @@ tie.directive('learnerView', [function() {
                       ng-options="i.number as i.title for i in totalSubmissions"
                       ng-disabled="totalSubmissions.length === 0"
                       title="Click to see your previous submissions">
+                      <option value="" disabled>PREVIOUS</option>
                   </select>
                 </div>
               </div>
