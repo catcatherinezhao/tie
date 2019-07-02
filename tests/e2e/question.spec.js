@@ -21,6 +21,8 @@ var QuestionPage = browser.params.questionPage;
 
 var testUtils = browser.params.utils;
 
+var submissionNumber = 0;
+
 
 describe('Question Page', function() {
   var questionPage = new QuestionPage();
@@ -38,14 +40,33 @@ describe('Question Page', function() {
 
   it('should successfully submit code', async function() {
     await questionPage.runCode();
+    submissionNumber++;
   });
 
   it('should display a feedback text paragraph after a run', async function() {
     await questionPage.runCode();
+    submissionNumber++;
 
     // After running code, there should be one or more paragraphs of feedback,
     // since there's no way to reset.
     expect(await questionPage.countFeedbackParagraphs()).toBeGreaterThanOrEqual(1);
+  });
+
+  it('should allow switching to previous submissions with the submission selector', async function() {
+    await questionPage.setCode('first submission');
+    await questionPage.runCode();
+    submissionNumber++;
+    var firstSubmissionIndex = submissionNumber - 1;
+
+    await questionPage.setCode('second submission');
+    await questionPage.runCode();
+    submissionNumber++;
+    var secondSubmissionIndex = submissionNumber - 1;
+
+    await questionPage.choosePreviousSubmission(firstSubmissionIndex);
+    expect(await questionPage.getCode()).toEqual('first submission');
+    await questionPage.choosePreviousSubmission(secondSubmissionIndex);
+    expect(await questionPage.getCode()).toEqual('second submission');
   });
 
   it('should display all expected links', async function() {

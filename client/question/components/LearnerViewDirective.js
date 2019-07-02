@@ -89,11 +89,11 @@ tie.directive('learnerView', [function() {
                   RUN
                 </button>
                 <div>
-                  <select class="tie-select-menu"
+                  <select class="tie-select-menu protractor-test-submission-select"
                       ng-change="changeSubmission(currentSubmissionNumber)"
                       ng-model="currentSubmissionNumber"
                       ng-options="i.number as i.title for i in totalSubmissions"
-                      ng-disabled="MonospaceDisplayModalService.isDisplayed()"
+                      ng-disabled="totalSubmissions.length === 0"
                       title="Click to see your previous submissions">
                   </select>
                 </div>
@@ -551,7 +551,7 @@ tie.directive('learnerView', [function() {
          * Sets a local variable currentSubmission to the current
          * submission object for display in the editor.
          *
-         * @type {integer}
+         * @type {number}
          */
         $scope.currentSubmissionNumber = 0;
 
@@ -939,7 +939,7 @@ tie.directive('learnerView', [function() {
          * Sets the code in the code editor to the previous submission
          * passed in as a parameter.
          *
-         * @param {integer} displaySubmissionNumber The submission number
+         * @param {number} displaySubmissionNumber The submission number
          * selected in the previous submissions dropdown.
          */
         $scope.changeSubmission = function(displaySubmissionNumber) {

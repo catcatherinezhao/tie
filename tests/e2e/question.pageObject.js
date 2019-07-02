@@ -17,8 +17,6 @@
  * @fileoverview Question page object for Protractor E2E tests.
  */
 
-const DARK_THEME_WRAPPER_CLASS = 'night-mode';
-
 /**
  * An object that represents the Question page.
  * Provides convenience methods to interact with the page.
@@ -51,13 +49,6 @@ var QuestionPage = function() {
   var codingUiElement = element(by.css('.protractor-test-coding-ui'));
 
   /**
-   * Reset Code button.
-   *
-   * @type {webdriver.WebElement}
-   */
-  var resetCodeButton = element(by.css('.protractor-test-reset-code-button'));
-
-  /**
    * Run Code button.
    *
    * @type {webdriver.WebElement}
@@ -71,6 +62,13 @@ var QuestionPage = function() {
    */
   var feedbackParagraphs =
       element.all(by.css('.protractor-test-feedback-paragraph'));
+
+  /**
+   * Previous submission selector.
+   *
+   * @type {webdriver.WebElement}
+   */
+  var submissionSelector = element(by.css('.protractor-test-submission-select'));
 
   /**
    * TIE About link.
@@ -99,13 +97,6 @@ var QuestionPage = function() {
   };
 
   /**
-   * Simulates clicking on the reset code button.
-   */
-  this.resetCode = async function() {
-    await resetCodeButton.click();
-  };
-
-  /**
    * Simulates writing the given code string in the code editor.
    *
    * @param {string} codeString
@@ -116,6 +107,18 @@ var QuestionPage = function() {
       'document.getElementsByClassName(\'CodeMirror\')[0].CodeMirror;',
       'editor.setValue(`' + codeString + '`);'
     ].join(''));
+  };
+
+  /**
+   * Gets the code string in the code editor.
+   */
+  this.getCode = async function() {
+    var code = await browser.executeScript([
+      'var editor = ',
+      'document.getElementsByClassName(\'CodeMirror\')[0].CodeMirror;',
+      'return editor.getValue();'
+    ].join(''));
+    return code;
   };
 
   /**
@@ -148,22 +151,12 @@ var QuestionPage = function() {
   };
 
   /**
-   * Simulates selecting the theme which list index is the passed index.
+   * Simulates selecting a previous submission which list index is the passed index.
    *
-   * @param {number} themeIndex index of the theme to be applied.
+   * @param {number} submissionIndex index of the submission chosen
    */
-  this.applyTheme = async function(themeIndex) {
-    await themeSelector.all(by.tagName('option')).get(themeIndex).click();
-  };
-
-  /**
-   * Returns true if the dark theme is applied to TIE's wrapper element.
-   *
-   * @returns {boolean}
-   */
-  this.hasDarkTheme = async function() {
-    let wrapperClasses = await tieWrapperElement.getAttribute('class');
-    return await wrapperClasses.match(DARK_THEME_WRAPPER_CLASS) !== null;
+  this.choosePreviousSubmission = async function(submissionIndex) {
+    await submissionSelector.all(by.tagName('option')).get(submissionIndex).click();
   };
 
   /**
