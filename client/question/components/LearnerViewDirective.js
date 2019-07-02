@@ -97,9 +97,6 @@ tie.directive('learnerView', [function() {
                       title="Click to see your previous submissions">
                   </select>
                 </div>
-                <button class="tie-step-button tie-button tie-button-gray" title="Click to step through your code">
-                    STEP THROUGH
-                </button>
               </div>
             </div>
             <div class="tie-output-ui protractor-test-coding-ui">
