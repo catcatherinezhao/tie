@@ -33,7 +33,7 @@ tie.factory('SessionHistoryService', [
       sessionTranscript: [],
       // The number of pending speech balloons to add to the transcript.
       numBalloonsPending: 0,
-      submissionNumber: 0
+      snapshotIndex: 0
     };
 
     var localStorageKey = null;
@@ -52,12 +52,12 @@ tie.factory('SessionHistoryService', [
 
         data.sessionTranscript.length = 0;
         data.numBalloonsPending = 0;
-        data.submissionNumber = 0;
+        data.snapshotIndex = 0;
 
         var questionId = CurrentQuestionService.getCurrentQuestionId();
         localStorageKey = (
           LocalStorageKeyManagerService.getSessionHistoryKey(
-            questionId, data.submissionNumber));
+            questionId, data.snapshotIndex));
 
         var potentialSessionTranscript = LocalStorageService.get(
           localStorageKey);
@@ -77,19 +77,19 @@ tie.factory('SessionHistoryService', [
         return data.sessionTranscript;
       },
       /**
-       * Returns the current submission number.
+       * Returns the current snapshot number.
        */
-      getSubmissionNumber: function() {
-        return data.submissionNumber;
+      getSnapshotIndex: function() {
+        return data.snapshotIndex;
       },
       /**
-       * Returns the code from a previous submission.
+       * Returns the code from a previous snapshot.
        */
-      getPreviousSubmission: function(submissionNumber) {
+      getPreviousSnapshot: function(snapshotIndex) {
         var questionId = CurrentQuestionService.getCurrentQuestionId();
         localStorageKey = (
           LocalStorageKeyManagerService.getSessionHistoryKey(
-            questionId, submissionNumber
+            questionId, snapshotIndex
           )
         );
         return LocalStorageService.get(
@@ -102,12 +102,12 @@ tie.factory('SessionHistoryService', [
         data.sessionTranscript.unshift(
           SpeechBalloonObjectFactory.createCodeBalloon(submittedCode));
         var questionId = CurrentQuestionService.getCurrentQuestionId();
-        // Increment the submission number to create a new submission key.
-        // Store as a new submission.
-        data.submissionNumber++;
+        // Increment the snapshot number to create a new submission key.
+        // Store as a new snapshot.
+        data.snapshotIndex++;
         localStorageKey = (
           LocalStorageKeyManagerService.getSessionHistoryKey(
-            questionId, data.submissionNumber));
+            questionId, data.snapshotIndex));
         LocalStorageService.put(
           localStorageKey,
           data.sessionTranscript.map(function(speechBalloon) {

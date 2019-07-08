@@ -21,7 +21,7 @@ var QuestionPage = browser.params.questionPage;
 
 var testUtils = browser.params.utils;
 
-var submissionNumber = 0;
+var snapshotIndex = 0;
 
 
 describe('Question Page', function() {
@@ -40,32 +40,32 @@ describe('Question Page', function() {
 
   it('should successfully submit code', async function() {
     await questionPage.runCode();
-    submissionNumber++;
+    snapshotIndex++;
   });
 
   it('should display a feedback text paragraph after a run', async function() {
     await questionPage.runCode();
-    submissionNumber++;
+    snapshotIndex++;
 
     // After running code, there should be one or more paragraphs of feedback,
     // since there's no way to reset.
     expect(await questionPage.countFeedbackParagraphs()).toBeGreaterThanOrEqual(1);
   });
 
-  it('should allow switching to previous submissions with the submission selector', async function() {
+  it('should allow switching to previous snapshots with the snapshot selector', async function() {
     await questionPage.setCode('first submission');
     await questionPage.runCode();
-    submissionNumber++;
-    var firstSubmissionIndex = submissionNumber;
+    snapshotIndex++;
+    var firstSnapshotIndex = snapshotIndex;
 
     await questionPage.setCode('second submission');
     await questionPage.runCode();
-    submissionNumber++;
-    var secondSubmissionIndex = submissionNumber;
+    snapshotIndex++;
+    var secondSnapshotIndex = snapshotIndex;
 
-    await questionPage.choosePreviousSubmission(firstSubmissionIndex);
+    await questionPage.choosePreviousSnapshot(firstSnapshotIndex);
     expect(await questionPage.getCode()).toEqual('first submission');
-    await questionPage.choosePreviousSubmission(secondSubmissionIndex);
+    await questionPage.choosePreviousSnapshot(secondSnapshotIndex);
     expect(await questionPage.getCode()).toEqual('second submission');
   });
 

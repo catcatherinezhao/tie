@@ -64,11 +64,11 @@ var QuestionPage = function() {
       element.all(by.css('.protractor-test-feedback-paragraph'));
 
   /**
-   * Previous submission selector.
+   * Previous snapshot selector.
    *
    * @type {webdriver.WebElement}
    */
-  var submissionSelector = element(by.css('.protractor-test-submission-select'));
+  var snapshotSelector = element(by.css('.protractor-test-snapshot-select'));
 
   /**
    * TIE About link.
@@ -151,12 +151,12 @@ var QuestionPage = function() {
   };
 
   /**
-   * Simulates selecting a previous submission which list index is the passed index.
+   * Simulates selecting a previous snapshot which list index is the passed index.
    *
-   * @param {number} submissionIndex index of the submission chosen
+   * @param {number} snapshotIndex index of the snapshot chosen
    */
-  this.choosePreviousSubmission = async function(submissionIndex) {
-    await submissionSelector.all(by.tagName('option')).get(submissionIndex).click();
+  this.choosePreviousSnapshot = async function(snapshotIndex) {
+    await snapshotSelector.all(by.tagName('option')).get(snapshotIndex).click();
   };
 
   /**

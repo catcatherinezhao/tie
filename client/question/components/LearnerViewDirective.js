@@ -89,11 +89,11 @@ tie.directive('learnerView', [function() {
                   RUN
                 </button>
                 <div>
-                  <select class="tie-select-menu protractor-test-submission-select"
-                      ng-change="changeSubmission(currentSubmissionNumber)"
-                      ng-model="currentSubmissionNumber"
-                      ng-options="i.number as i.title for i in totalSubmissions"
-                      ng-disabled="totalSubmissions.length === 0"
+                  <select class="tie-select-menu protractor-test-snapshot-select"
+                      ng-change="revertToPreviousSnapshot(currentSnapshotIndex)"
+                      ng-model="currentSnapshotIndex"
+                      ng-options="i.number as i.title for i in totalSnapshots"
+                      ng-disabled="totalSnapshots.length === 0"
                       title="Click to see your previous submissions">
                       <option value="" disabled>PREVIOUS</option>
                   </select>
@@ -549,19 +549,19 @@ tie.directive('learnerView', [function() {
           SUPPORTED_LANGUAGE_LABELS).length;
 
         /**
-         * Sets a local variable currentSubmission to the current
-         * submission object for display in the editor.
+         * Sets a local variable currentSnapshotIndex to the current
+         * submission number for display in the editor.
          *
          * @type {number}
          */
-        $scope.currentSubmissionNumber = 0;
+        $scope.currentSnapshotIndex = 0;
 
         /**
-         * Defines the total number of submissions in the editor.
+         * Defines the total number of snapshots in the editor.
          *
          * @type {Array}
          */
-        $scope.totalSubmissions = [];
+        $scope.totalSnapshots = [];
 
         /**
          * Defines whether printing is supported, and thus whether the print
@@ -937,17 +937,17 @@ tie.directive('learnerView', [function() {
         };
 
         /**
-         * Sets the code in the code editor to the previous submission
+         * Sets the code in the code editor to the previous snapshot
          * passed in as a parameter.
          *
-         * @param {number} displaySubmissionNumber The submission number
-         * selected in the previous submissions dropdown.
+         * @param {number} selectedSnapshotIndex The snapshot index
+         * selected in the previous snapshots dropdown.
          */
-        $scope.changeSubmission = function(displaySubmissionNumber) {
-          var previousSubmission = SessionHistoryService.getPreviousSubmission(
-            displaySubmissionNumber
+        $scope.revertToPreviousSnapshot = function(selectedSnapshotIndex) {
+          var previousSnapshot = SessionHistoryService.getPreviousSnapshot(
+            selectedSnapshotIndex
           );
-          $scope.editorContents.code = previousSubmission;
+          $scope.editorContents.code = previousSnapshot;
         };
 
         /**
@@ -1056,11 +1056,11 @@ tie.directive('learnerView', [function() {
           MonospaceDisplayModalService.hideModal();
           SessionHistoryService.addCodeBalloon(code);
 
-          // Creates a new submission in the previous submissions drop down.
-          var submissionNumber = SessionHistoryService.getSubmissionNumber();
-          $scope.totalSubmissions.push({number: submissionNumber,
-            title: 'Snapshot ' + String(submissionNumber)});
-          $scope.currentSubmissionNumber = submissionNumber;
+          // Creates a new snapshot in the previous snapshots drop down.
+          var snapshotIndex = SessionHistoryService.getSnapshotIndex();
+          $scope.totalSnapshots.push({number: snapshotIndex,
+            title: 'Snapshot ' + String(snapshotIndex)});
+          $scope.currentSnapshotIndex = snapshotIndex;
 
           // Gather all tasks from the first one up to the current one.
           var question = CurrentQuestionService.getCurrentQuestion();

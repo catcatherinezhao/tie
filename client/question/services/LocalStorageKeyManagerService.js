@@ -47,12 +47,12 @@ tie.factory('LocalStorageKeyManagerService', [
        * Returns the local storage key for the session history.
        *
        * @param {string} questionId
-       * @param {integer} submissionNumber
+       * @param {number} snapshotIndex
        * @returns {string}
        */
-      getSessionHistoryKey: function(questionId, submissionNumber) {
+      getSessionHistoryKey: function(questionId, snapshotIndex) {
         return 'tie:1:sessionHistory:' + questionId + ':' +
-          String(submissionNumber);
+          String(snapshotIndex);
       }
     };
   }
