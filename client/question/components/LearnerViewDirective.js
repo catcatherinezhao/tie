@@ -409,6 +409,10 @@ tie.directive('learnerView', [function() {
         .tie-select-menu:hover {
           border-color: #e4e4e4;
         }
+        option:last-child
+        {
+          font-weight: bold;  
+        }
         .tie-stdout {
           font-family: monospace;
           font-size: 13px;
@@ -550,7 +554,7 @@ tie.directive('learnerView', [function() {
 
         /**
          * Sets a local variable currentSnapshotIndex to the current
-         * submission number for display in the editor.
+         * snapshot index for display in the editor.
          *
          * @type {number}
          */
@@ -822,6 +826,32 @@ tie.directive('learnerView', [function() {
           $scope.editorContents.code = (
             cachedCode || question.getStarterCode(language));
 
+          var snapshotIndex = SessionHistoryService.getSnapshotIndex();
+          if (snapshotIndex === 0) {
+            // Save starter code if this is the first time seeing the question.
+            SessionHistoryService.saveSnapshot(
+              cachedCode || question.getStarterCode(language));
+            $scope.totalSnapshots.push({number: snapshotIndex,
+              title: 'Starter Code'});
+          } else {
+            // Add snapshots to dropdown if previous snapshots exist.
+            $scope.revertToPreviousSnapshot(snapshotIndex);
+            var snapshotIndexCounter = 0;
+            while (snapshotIndexCounter < snapshotIndex) {
+              if (snapshotIndexCounter === 0) {
+                $scope.totalSnapshots.push({number: snapshotIndexCounter,
+                  title: 'Starter Code'});
+              } else {
+                $scope.totalSnapshots.push({number: snapshotIndexCounter,
+                  title: 'Snapshot ' + String(snapshotIndexCounter)});
+              }
+              snapshotIndexCounter++;
+            }
+            $scope.totalSnapshots.push({number: snapshotIndex,
+              title: 'Latest'});
+            $scope.currentSnapshotIndex = snapshotIndex;
+          }
+
           EventHandlerService.init(
             SessionIdService.getSessionId(), questionId,
             CurrentQuestionService.getCurrentQuestionVersion());
@@ -944,10 +974,19 @@ tie.directive('learnerView', [function() {
          * selected in the previous snapshots dropdown.
          */
         $scope.revertToPreviousSnapshot = function(selectedSnapshotIndex) {
-          var previousSnapshot = SessionHistoryService.getPreviousSnapshot(
-            selectedSnapshotIndex
-          );
-          $scope.editorContents.code = previousSnapshot;
+          var previousSnapshot = null;
+          if (selectedSnapshotIndex === 0) {
+            previousSnapshot = SessionHistoryService.getStarterCodeSnapshot();
+          } else {
+            previousSnapshot = SessionHistoryService.getPreviousSnapshot(
+              selectedSnapshotIndex);
+          }
+          if (previousSnapshot === null) {
+            throw Error('Could not retrieve code for snapshot at index ' +
+              selectedSnapshotIndex);
+          } else {
+            $scope.editorContents.code = previousSnapshot;
+          }
         };
 
         /**
@@ -1056,10 +1095,20 @@ tie.directive('learnerView', [function() {
           MonospaceDisplayModalService.hideModal();
           SessionHistoryService.addCodeBalloon(code);
 
-          // Creates a new snapshot in the previous snapshots drop down.
+          var latestSnapshotIndex = $scope.totalSnapshots.findIndex(
+            snapshot => snapshot.title === 'Latest'
+          );
+          // Updates latest snapshot in menu, if found.
+          if (latestSnapshotIndex >= 0) {
+            var latestSnapshot = $scope.totalSnapshots[latestSnapshotIndex];
+            $scope.totalSnapshots.push({number: latestSnapshot.number,
+              title: 'Snapshot ' + String(latestSnapshot.number)});
+            $scope.totalSnapshots.splice(latestSnapshotIndex, 1);
+          }
+          // Adds new snapshot as latest in menu.
           var snapshotIndex = SessionHistoryService.getSnapshotIndex();
           $scope.totalSnapshots.push({number: snapshotIndex,
-            title: 'Snapshot ' + String(snapshotIndex)});
+            title: 'Latest'});
           $scope.currentSnapshotIndex = snapshotIndex;
 
           // Gather all tasks from the first one up to the current one.

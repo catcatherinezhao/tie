@@ -61,13 +61,18 @@ tie.factory('SessionHistoryService', [
 
         var potentialSessionTranscript = LocalStorageService.get(
           localStorageKey);
+
         if (potentialSessionTranscript !== null) {
-          // Add items manually, in order to preserve the binding on
-          // data.sessionTranscript.
-          potentialSessionTranscript.forEach(function(speechBalloonDict) {
-            data.sessionTranscript.push(
-              SpeechBalloonObjectFactory.fromDict(speechBalloonDict));
-          });
+          while (potentialSessionTranscript !== null) {
+            data.snapshotIndex++;
+            localStorageKey = (
+              LocalStorageKeyManagerService.getSessionHistoryKey(
+                questionId, data.snapshotIndex));
+            potentialSessionTranscript = LocalStorageService.get(
+              localStorageKey);
+            // LocalStorageService.delete(localStorageKey);
+          }
+          data.snapshotIndex--;
         }
       },
       /**
@@ -83,17 +88,68 @@ tie.factory('SessionHistoryService', [
         return data.snapshotIndex;
       },
       /**
-       * Returns the code from a previous snapshot.
+       * Returns the starter code, which has a snapshot index of 0.
        */
-      getPreviousSnapshot: function(snapshotIndex) {
+      getStarterCodeSnapshot: function() {
         var questionId = CurrentQuestionService.getCurrentQuestionId();
         localStorageKey = (
           LocalStorageKeyManagerService.getSessionHistoryKey(
-            questionId, snapshotIndex
+            questionId, 0
           )
         );
-        return LocalStorageService.get(
-          localStorageKey)[1].feedbackParagraphDicts[0].content;
+        if (LocalStorageService.get(localStorageKey) === null) {
+          throw Error('Cannot retrieve starter code from local storage.');
+        } else {
+          return LocalStorageService.get(
+            localStorageKey)[0].feedbackParagraphDicts[0].content;
+        }
+      },
+      /**
+       * Returns the code from a previous snapshot.
+       */
+      getPreviousSnapshot: function(snapshotIndex) {
+        if (snapshotIndex <= data.snapshotIndex) {
+          var questionId = CurrentQuestionService.getCurrentQuestionId();
+          localStorageKey = (
+            LocalStorageKeyManagerService.getSessionHistoryKey(
+              questionId, snapshotIndex
+            )
+          );
+          if (LocalStorageService.get(localStorageKey) === null) {
+            throw Error('Cannot retrieve snapshot index ' + snapshotIndex +
+              ' from local storage.');
+          } else {
+            return LocalStorageService.get(
+              localStorageKey)[1].feedbackParagraphDicts[0].content;
+          }
+        } else {
+          throw Error('Requested snapshot index ' + snapshotIndex +
+            ' is out of range.');
+        }
+      },
+      /**
+       * Saves code as a snapshot when it is not submitted as a
+       * new code balloon.
+       */
+      saveSnapshot: function(codeEditorContent) {
+        data.sessionTranscript.unshift(
+          SpeechBalloonObjectFactory.createCodeBalloon(
+            codeEditorContent
+          ));
+        var questionId = CurrentQuestionService.getCurrentQuestionId();
+        // Store as a new snapshot.
+        localStorageKey = (
+          LocalStorageKeyManagerService.getSessionHistoryKey(
+            questionId, 0));
+        LocalStorageService.put(
+          localStorageKey,
+          data.sessionTranscript.map(function(speechBalloon) {
+            return speechBalloon.toDict();
+          })
+        );
+        // Reset in order to not add a new code balloon.
+        data.sessionTranscript.length = 0;
+        data.numBalloonsPending = 0;
       },
       /**
        * Adds a new code balloon to the beginning of the list.

@@ -21,8 +21,6 @@ var QuestionPage = browser.params.questionPage;
 
 var testUtils = browser.params.utils;
 
-var snapshotIndex = 0;
-
 
 describe('Question Page', function() {
   var questionPage = new QuestionPage();
@@ -30,7 +28,7 @@ describe('Question Page', function() {
 
   beforeAll(async function() {
     await testUtils.expectNoConsoleLogs();
-    await questionPage.get(questionId);
+    await questionPage.get(questionId); 
   });
 
   afterEach(async function() {
@@ -38,35 +36,32 @@ describe('Question Page', function() {
     await testUtils.expectNoConsoleLogs();
   });
 
+  it('should allow switching to previous snapshots with the snapshot selector', async function() {
+    await questionPage.setCode('first submission');
+    await questionPage.runCode();
+    
+    await questionPage.setCode('second submission');
+    await questionPage.runCode();
+
+    // In the snapshot selector, the first option at index 0 is a disabled option "PREVIOUS",
+    // so the index of all snapshots is one greater than the value of the snapshot index
+    // in the local storage in the snapshot selector.
+    await questionPage.choosePreviousSnapshot(2);
+    expect(await questionPage.getCode()).toEqual('first submission');
+    await questionPage.choosePreviousSnapshot(3);
+    expect(await questionPage.getCode()).toEqual('second submission');    
+  });
+
   it('should successfully submit code', async function() {
     await questionPage.runCode();
-    snapshotIndex++;
   });
 
   it('should display a feedback text paragraph after a run', async function() {
     await questionPage.runCode();
-    snapshotIndex++;
 
     // After running code, there should be one or more paragraphs of feedback,
     // since there's no way to reset.
     expect(await questionPage.countFeedbackParagraphs()).toBeGreaterThanOrEqual(1);
-  });
-
-  it('should allow switching to previous snapshots with the snapshot selector', async function() {
-    await questionPage.setCode('first submission');
-    await questionPage.runCode();
-    snapshotIndex++;
-    var firstSnapshotIndex = snapshotIndex;
-
-    await questionPage.setCode('second submission');
-    await questionPage.runCode();
-    snapshotIndex++;
-    var secondSnapshotIndex = snapshotIndex;
-
-    await questionPage.choosePreviousSnapshot(firstSnapshotIndex);
-    expect(await questionPage.getCode()).toEqual('first submission');
-    await questionPage.choosePreviousSnapshot(secondSnapshotIndex);
-    expect(await questionPage.getCode()).toEqual('second submission');
   });
 
   it('should display all expected links', async function() {

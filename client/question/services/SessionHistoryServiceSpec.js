@@ -36,7 +36,7 @@ describe('SessionHistoryService', function() {
   }));
 
   describe('core behaviour', function() {
-    it('should retrieve the correct previous snapshot code', function() {
+    it('should retrieve the correct previous snapshot', function() {
       SessionHistoryService.addCodeBalloon('first submission');
       var firstSnapshotIndex = SessionHistoryService.getSnapshotIndex();
       SessionHistoryService.addFeedbackBalloon([
@@ -61,6 +61,29 @@ describe('SessionHistoryService', function() {
         firstSnapshotIndex)).toEqual('first submission');
       expect(SessionHistoryService.getPreviousSnapshot(
         secondSnapshotIndex)).toEqual('second submission');
+    });
+
+    it('should retrieve the correct starter code snapshot', function() {
+      var transcript = SessionHistoryService.getBindableSessionTranscript();
+      SessionHistoryService.reset();
+      expect(transcript.length).toBe(0);
+
+      SessionHistoryService.saveSnapshot('starter code');
+
+      SessionHistoryService.addCodeBalloon('first submission');
+      var firstSnapshotIndex = SessionHistoryService.getSnapshotIndex();
+      SessionHistoryService.addFeedbackBalloon([
+        FeedbackParagraphObjectFactory.fromDict({
+          type: 'text',
+          content: 'first feedback'
+        })
+      ]);
+      $timeout.flush(DURATION_MSEC_WAIT_FOR_FEEDBACK);
+
+      expect(SessionHistoryService.getStarterCodeSnapshot(
+        )).toEqual('starter code');
+      expect(SessionHistoryService.getPreviousSnapshot(
+        firstSnapshotIndex)).toEqual('first submission');
     });
 
     it('should add a new code balloon correctly', function() {

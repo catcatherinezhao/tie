@@ -156,7 +156,14 @@ var QuestionPage = function() {
    * @param {number} snapshotIndex index of the snapshot chosen
    */
   this.choosePreviousSnapshot = async function(snapshotIndex) {
-    await snapshotSelector.all(by.tagName('option')).get(snapshotIndex).click();
+    var numberOptions = await snapshotSelector.all(by.tagName('option')).count();
+    if (snapshotIndex < numberOptions) {
+      await browser.wait(ExpectedConditions.elementToBeClickable(snapshotSelector));
+      await snapshotSelector.all(by.tagName('option')).get(snapshotIndex).click();
+      await browser.wait(ExpectedConditions.elementToBeClickable(snapshotSelector));
+    } else {
+      throw Error('Snapshot index ' + snapshotIndex + ' is out of bounds');
+    }
   };
 
   /**
