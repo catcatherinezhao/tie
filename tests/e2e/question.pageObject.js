@@ -64,11 +64,25 @@ var QuestionPage = function() {
       element.all(by.css('.protractor-test-feedback-paragraph'));
 
   /**
-   * Previous snapshot selector.
+   * Previous button.
    *
    * @type {webdriver.WebElement}
    */
-  var snapshotSelector = element(by.css('.protractor-test-snapshot-select'));
+  var previousButton = element(by.css('.protractor-test-previous-button'));
+
+  /**
+   * Snapshot button.
+   *
+   * @type {webdriver.WebElement}
+   */
+  var snapshotButton = element(by.css('.protractor-test-snapshot-button'));
+
+  /**
+   * Snapshot menu.
+   *
+   * @type {webdriver.WebElement}
+   */
+  var snapshotMenu = element(by.css('.protractor-test-snapshot-menu'));
 
   /**
    * TIE About link.
@@ -151,20 +165,49 @@ var QuestionPage = function() {
   };
 
   /**
+   * Simulates clicking on the Previous button.
+   */
+  this.clickPreviousButton = async function(index) {
+    await browser.wait(ExpectedConditions.elementToBeClickable(previousButton));
+    await previousButton.click();
+  }
+
+  /**
+   * Simulates clicking on the Snapshot button.
+   */
+  this.clickSnapshotButton = async function(index) {
+    await browser.wait(ExpectedConditions.elementToBeClickable(snapshotButton));
+    await snapshotButton.click();
+    await browser.wait(ExpectedConditions.elementToBeClickable(snapshotButton));
+  }
+
+  /**
    * Simulates selecting a previous snapshot which list index is the passed index.
    *
    * @param {number} snapshotIndex index of the snapshot chosen
    */
   this.choosePreviousSnapshot = async function(snapshotIndex) {
-    var numberOptions = await snapshotSelector.all(by.tagName('option')).count();
-    if (snapshotIndex < numberOptions) {
-      await browser.wait(ExpectedConditions.elementToBeClickable(snapshotSelector));
-      await snapshotSelector.all(by.tagName('option')).get(snapshotIndex).click();
-      await browser.wait(ExpectedConditions.elementToBeClickable(snapshotSelector));
-    } else {
-      throw Error('Snapshot index ' + snapshotIndex + ' is out of bounds');
-    }
+    await browser.wait(ExpectedConditions.elementToBeClickable(snapshotMenu.all(by.css('ul li')).get(snapshotIndex)));
+    await snapshotMenu.all(by.css('ul li')).get(snapshotIndex).click();
   };
+
+  /**
+   * Returns true if the previous button is enabled.
+   *
+   * @returns {boolean}
+   */
+  this.isPreviousButtonEnabled = async function() {
+    return await previousButton.isEnabled();
+  }
+
+  /**
+   * Returns true if the snapshot menu is displayed on the page.
+   *
+   * @returns {boolean}
+   */
+  this.isSnapshotMenuDisplayed = async function() {
+    return await snapshotMenu.isDisplayed();
+  }
 
   /**
    * Returns true if the Python primer link is displayed on the page.

@@ -88,15 +88,29 @@ tie.directive('learnerView', [function() {
                 <button class="tie-run-button tie-button protractor-test-run-code-button" ng-class="{'tie-button-green': !pageIsIframed}" ng-click="submitCode(editorContents.code)" ng-disabled="SessionHistoryService.isNewBalloonPending()" title="Click anytime you want feedback on your code">
                   RUN
                 </button>
-                <div>
-                  <select class="tie-select-menu protractor-test-snapshot-select"
-                      ng-change="revertToPreviousSnapshot(currentSnapshotIndex)"
-                      ng-model="currentSnapshotIndex"
-                      ng-options="i.number as i.title for i in totalSnapshots"
-                      ng-disabled="totalSnapshots.length === 0"
-                      title="Click to see your previous submissions">
-                      <option value="" disabled>PREVIOUS</option>
-                  </select>
+                <div class="tie-snapshot-container">
+                  <div class="tie-previous-snapshot-button-container">
+                    <button class="tie-previous-button tie-button protractor-test-previous-button"
+                      ng-click="revertToPreviousSnapshot()"
+                      ng-disabled="previousButtonIsDisabled"
+                      title="Click to go back to the previous snapshot.">
+                      PREVIOUS
+                    </button>
+                    <button class="tie-snapshot-button tie-button protractor-test-snapshot-button"
+                      ng-click="showSnapshotMenu()"
+                      title="Click to view all previous snapshots.">
+                      &#9660;
+                    </button>
+                  </div>
+                  <div class="tie-snapshot-menu"
+                    ng-show="snapshotMenuIsOpen">
+                    <ul class="tie-snapshot-menu-content protractor-test-snapshot-menu">
+                      <li ng-repeat="i in totalSnapshots" 
+                        ng-click="revertToSelectedSnapshot(i.number)">
+                        {{i.title}}
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
@@ -196,7 +210,7 @@ tie.directive('learnerView', [function() {
           outline: none;
         }
         .tie-button-green:hover {
-          border-color: #669e68;
+          background-color: #669e68;
         }
         .tie-button-green:active {
           background-color: #669e68;
@@ -385,7 +399,7 @@ tie.directive('learnerView', [function() {
           border: 1px solid #d3d3d3;
           resize: none;
         }
-        .tie-run-button, .tie-step-button {
+        .tie-run-button, .tie-step-button, .tie-snapshot-button, .tie-previous-button {
           float: right;
           margin-right: 0;
           margin-top: 10px;
@@ -394,24 +408,65 @@ tie.directive('learnerView', [function() {
         .tie-step-button {
           margin-right: 5px;
         }
-        .tie-select-menu {
-          background-color: #ffffff;
-          border: 1px solid transparent;
-          border-radius: 4px;
-          cursor: pointer;
+        .tie-previous-snapshot-button-container {
+          display: flex;
+          flex-direction: row;
+        }
+        .tie-previous-button {
+          border-radius: 4px 0px 0px 4px;
+          border-right: 1px solid #a9a9a9;
+        }
+        .tie-previous-button:hover {
+          background-color: #ddd;
+          border-right: 1px solid #a9a9a9;
+        }
+        .tie-previous-button:hover + .tie-snapshot-button {
+          background-color: #ddd;
+        }
+        .tie-previous-button:disabled {
+          background-color: #ddd;
+          color: #a9a9a9;
+        }
+        .tie-snapshot-container {
+          position: relative;
           float: right;
-          height: 30px;
           margin-right: 5px;
-          margin-top: 10px;
-          min-width: 100px;
-          padding: 1px 6px;
         }
-        .tie-select-menu:hover {
-          border-color: #e4e4e4;
+        .tie-snapshot-button {
+          border-radius: 0px 4px 4px 0px;
+          width: 25px;
         }
-        option:last-child
-        {
-          font-weight: bold;  
+        .tie-snapshot-button:hover {
+          background-color: #ddd;
+        }
+        .tie-snapshot-menu {
+          background-color: #ffffff;
+          border-radius: 4px;
+          width: 110px;
+          position: absolute;
+          top: 40px;
+          right: 0px;
+          box-shadow: 5px 10px 18px #a9a9a9;
+        }
+        .tie-snapshot-menu-content {
+          list-style-type: none;
+          font-size: 13px;
+          padding: 0px;
+          margin: 0px;
+          border-bottom: 1px solid #ddd;
+          width: 100%;
+          text-align: left;
+          cursor: pointer;
+        }
+        .tie-snapshot-menu-content li:last-child {
+          font-weight: bold;
+          border-bottom: none;
+        }
+        .tie-snapshot-menu-content li {
+          padding: 10px;
+        }
+        .tie-snapshot-menu-content li:hover {
+          background-color: #ddd;
         }
         .tie-stdout {
           font-family: monospace;
@@ -554,7 +609,7 @@ tie.directive('learnerView', [function() {
 
         /**
          * Sets a local variable currentSnapshotIndex to the current
-         * snapshot index for display in the editor.
+         * snapshot index.
          *
          * @type {number}
          */
@@ -566,6 +621,16 @@ tie.directive('learnerView', [function() {
          * @type {Array}
          */
         $scope.totalSnapshots = [];
+
+        /**
+         * Defines whether the snapshot menu is displayed.
+         */
+        $scope.snapshotMenuIsOpen = false;
+
+        /**
+         * Defines whether the previous button is disabled.
+         */
+        $scope.previousButtonIsDisabled = false;
 
         /**
          * Defines whether printing is supported, and thus whether the print
@@ -833,9 +898,10 @@ tie.directive('learnerView', [function() {
               cachedCode || question.getStarterCode(language));
             $scope.totalSnapshots.push({number: snapshotIndex,
               title: 'Starter Code'});
+            $scope.previousButtonIsDisabled = true;
           } else {
             // Add snapshots to dropdown if previous snapshots exist.
-            $scope.revertToPreviousSnapshot(snapshotIndex);
+            $scope.revertToSelectedSnapshot(snapshotIndex);
             var snapshotIndexCounter = 0;
             while (snapshotIndexCounter < snapshotIndex) {
               if (snapshotIndexCounter === 0) {
@@ -967,25 +1033,65 @@ tie.directive('learnerView', [function() {
         };
 
         /**
-         * Sets the code in the code editor to the previous snapshot
+         * Sets the code in the code editor to the snapshot index
          * passed in as a parameter.
          *
          * @param {number} selectedSnapshotIndex The snapshot index
          * selected in the previous snapshots dropdown.
          */
-        $scope.revertToPreviousSnapshot = function(selectedSnapshotIndex) {
-          var previousSnapshot = null;
+        $scope.revertToSelectedSnapshot = function(selectedSnapshotIndex) {
+          $scope.currentSnapshotIndex = selectedSnapshotIndex;
+          var selectedSnapshot = null;
           if (selectedSnapshotIndex === 0) {
-            previousSnapshot = SessionHistoryService.getStarterCodeSnapshot();
+            selectedSnapshot = SessionHistoryService.getStarterCodeSnapshot();
+            $scope.previousButtonIsDisabled = true;
           } else {
-            previousSnapshot = SessionHistoryService.getPreviousSnapshot(
+            selectedSnapshot = SessionHistoryService.getPreviousSnapshot(
               selectedSnapshotIndex);
+            $scope.previousButtonIsDisabled = false;
           }
-          if (previousSnapshot === null) {
+          if (selectedSnapshot === null) {
             throw Error('Could not retrieve code for snapshot at index ' +
               selectedSnapshotIndex);
           } else {
+            $scope.editorContents.code = selectedSnapshot;
+          }
+          $scope.snapshotMenuIsOpen = false;
+        };
+
+        /**
+         * Sets the code in the code editor to the previous snapshot.
+         */
+        $scope.revertToPreviousSnapshot = function() {
+          var previousSnapshotIndex = $scope.currentSnapshotIndex - 1;
+          $scope.currentSnapshotIndex = previousSnapshotIndex;
+          var previousSnapshot = null;
+          if (previousSnapshotIndex >= 0) {
+            if (previousSnapshotIndex === 0) {
+              previousSnapshot = SessionHistoryService.getStarterCodeSnapshot();
+              $scope.previousButtonIsDisabled = true;
+            } else {
+              previousSnapshot = SessionHistoryService.getPreviousSnapshot(
+                previousSnapshotIndex);
+              $scope.previousButtonIsDisabled = false;
+            }
+          }
+          if (previousSnapshot === null) {
+            throw Error('Could not retrieve code for snapshot at index ' +
+              previousSnapshotIndex);
+          } else {
             $scope.editorContents.code = previousSnapshot;
+          }
+        };
+
+        /**
+         * Open and close the snapshot menu.
+         */
+        $scope.showSnapshotMenu = function() {
+          if ($scope.snapshotMenuIsOpen === true) {
+            $scope.snapshotMenuIsOpen = false;
+          } else {
+            $scope.snapshotMenuIsOpen = true;
           }
         };
 
@@ -1110,6 +1216,8 @@ tie.directive('learnerView', [function() {
           $scope.totalSnapshots.push({number: snapshotIndex,
             title: 'Latest'});
           $scope.currentSnapshotIndex = snapshotIndex;
+
+          $scope.previousButtonIsDisabled = false;
 
           // Gather all tasks from the first one up to the current one.
           var question = CurrentQuestionService.getCurrentQuestion();
