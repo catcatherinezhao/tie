@@ -1046,7 +1046,6 @@ tie.directive('learnerView', [function() {
          */
         $scope.revertToSelectedSnapshot = function(selectedSnapshotIndex) {
           $scope.currentSnapshotIndex = selectedSnapshotIndex;
-          EventHandlerService.createCodeRestoreEvent();
           var selectedSnapshot = null;
           if (selectedSnapshotIndex === 0) {
             selectedSnapshot = SessionHistoryService.getStarterCodeSnapshot();
@@ -1061,6 +1060,7 @@ tie.directive('learnerView', [function() {
               selectedSnapshotIndex);
           } else {
             $scope.editorContents.code = selectedSnapshot;
+            EventHandlerService.createCodeRestoreEvent();
           }
           $scope.snapshotMenuIsOpen = false;
         };
