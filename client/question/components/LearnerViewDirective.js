@@ -24,13 +24,9 @@ tie.directive('learnerView', [function() {
       <div class="tie-wrapper protractor-test-tie-wrapper">
         <div class="tie-question-ui-outer">
           <div class="tie-question-ui-inner">
-            <monospace-display-modal
-                ng-show="MonospaceDisplayModalService.isDisplayed()"
-                content="content">
-            </monospace-display-modal>
             <div class="tie-question-ui protractor-test-question-ui">
               <div class="tie-question-window">
-                <div class="tie-question-container" ng-class="{'pulse-animation-enabled': pulseAnimationEnabled}" ng-attr-aria-hidden="{{MonospaceDisplayModalService.isDisplayed()}}">
+                <div class="tie-question-container" ng-class="{'pulse-animation-enabled': pulseAnimationEnabled}">
                   <h1 class="tie-question-title">{{title}}</h1>
                   <div class="tie-previous-instructions" ng-if="!pageIsIframed">
                     <div ng-repeat="previousInstruction in previousInstructions track by $index">
@@ -389,10 +385,6 @@ tie.directive('learnerView', [function() {
           overflow: auto;
           padding: 0;
         }
-        .tie-monospace-modal-container {
-          border: 1px solid #d3d3d3;
-          resize: none;
-        }
         .tie-run-button, .tie-step-button, .tie-snapshot-button, .tie-previous-button {
           float: right;
           margin-right: 0;
@@ -523,7 +515,7 @@ tie.directive('learnerView', [function() {
           .tie-coding-ui, .tie-question-ui, .tie-output-ui {
             width: 662px;
           }
-          .tie-question-ui-inner .tie-monospace-modal-container {
+          .tie-question-ui-inner {
             width: 662px;
           }
         }
@@ -535,9 +527,8 @@ tie.directive('learnerView', [function() {
       'FeedbackObjectFactory', 'LearnerViewSubmissionResultObjectFactory',
       'EventHandlerService', 'LocalStorageService',
       'ServerHandlerService', 'SessionIdService', 'ThemeNameService',
-      'UnpromptedFeedbackManagerService', 'MonospaceDisplayModalService',
-      'CurrentQuestionService', 'PrintTerminalService',
-      'ParentPageService', 'ALL_SUPPORTED_LANGUAGES',
+      'UnpromptedFeedbackManagerService', 'CurrentQuestionService',
+      'PrintTerminalService', 'ParentPageService', 'ALL_SUPPORTED_LANGUAGES',
       'SUPPORTED_LANGUAGE_LABELS', 'SessionHistoryService', 'AutosaveService',
       'SECONDS_TO_MILLISECONDS', 'CODE_CHANGE_DEBOUNCE_SECONDS',
       'DISPLAY_AUTOSAVE_TEXT_SECONDS', 'SERVER_URL', 'DEFAULT_QUESTION_ID',
@@ -550,9 +541,8 @@ tie.directive('learnerView', [function() {
           FeedbackObjectFactory, LearnerViewSubmissionResultObjectFactory,
           EventHandlerService, LocalStorageService,
           ServerHandlerService, SessionIdService, ThemeNameService,
-          UnpromptedFeedbackManagerService, MonospaceDisplayModalService,
-          CurrentQuestionService, PrintTerminalService,
-          ParentPageService, ALL_SUPPORTED_LANGUAGES,
+          UnpromptedFeedbackManagerService, CurrentQuestionService,
+          PrintTerminalService, ParentPageService, ALL_SUPPORTED_LANGUAGES,
           SUPPORTED_LANGUAGE_LABELS, SessionHistoryService, AutosaveService,
           SECONDS_TO_MILLISECONDS, CODE_CHANGE_DEBOUNCE_SECONDS,
           DISPLAY_AUTOSAVE_TEXT_SECONDS, SERVER_URL, DEFAULT_QUESTION_ID,
@@ -565,7 +555,6 @@ tie.directive('learnerView', [function() {
         $scope.TERMS_OF_USE_URL = TERMS_OF_USE_URL;
 
         $scope.SessionHistoryService = SessionHistoryService;
-        $scope.MonospaceDisplayModalService = MonospaceDisplayModalService;
 
         var KEY_CODE_ENTER = 13;
 
@@ -1184,7 +1173,6 @@ tie.directive('learnerView', [function() {
          * @param {string} code
          */
         $scope.submitCode = function(code) {
-          MonospaceDisplayModalService.hideModal();
           SessionHistoryService.addCodeBalloon(code);
 
           // Find the index of the snapshot with the title "Latest" in the menu.
