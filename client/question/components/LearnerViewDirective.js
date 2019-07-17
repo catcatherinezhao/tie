@@ -118,7 +118,6 @@ tie.directive('learnerView', [function() {
               <div class="tie-lang-terminal">
                 <div class="tie-user-terminal" ng-class="{'print-mode': printingIsSupported}">
                   <div class="tie-print-terminal" ng-if="printingIsSupported">
-                    <h1 class="tie-print-title"> Printed Output </h1>
                     <div class="tie-stdout">{{stdout}}</div>
                   </div>
                 </div>
@@ -338,11 +337,6 @@ tie.directive('learnerView', [function() {
         .tie-previous-instructions {
           opacity: 0.5;
         }
-        .tie-print-title {
-          font-size: 18px;
-          padding-top: 3px;
-          text-align: center;
-        }
         .tie-print-terminal {
           background-color: #ffffff;
           height: 228px;
@@ -472,9 +466,7 @@ tie.directive('learnerView', [function() {
           font-family: monospace;
           font-size: 13px;
           line-height: 1.2em;
-          padding-bottom: 12px;
-          padding-left: 5%;
-          padding-right: 5%;
+          padding: 5%;
           white-space: pre-wrap;
         }
         .tie-submit-button {
@@ -631,6 +623,11 @@ tie.directive('learnerView', [function() {
          * Defines whether the previous button is disabled.
          */
         $scope.previousButtonIsDisabled = false;
+
+        /**
+         * Defines the output to be displayed.
+         */
+        $scope.stdout = "Click 'Run' to see the output of your code.";
 
         /**
          * Defines whether printing is supported, and thus whether the print
