@@ -218,6 +218,22 @@ tie.factory('EventHandlerService', [
       },
 
       /**
+       * Submits data to TIE's backend to create a CodeRestoreEvent.
+       *
+       */
+      createCodeRestoreEvent: function() {
+        if (ServerHandlerService.doesServerExist()) {
+          _currentEventBatch.push({
+            type: 'CodeRestoreEvent',
+            data: {
+              createdMsec: (new Date()).getTime()
+            }
+          });
+          sendCurrentEventBatch();
+        }
+      },
+
+      /**
        * Submits data to TIE's backend to create a CodeSubmitEvent.
        * May also submit the EventBatch if too many CodeSubmitEvents are
        * lined up.

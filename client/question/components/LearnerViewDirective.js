@@ -1046,6 +1046,7 @@ tie.directive('learnerView', [function() {
          */
         $scope.revertToSelectedSnapshot = function(selectedSnapshotIndex) {
           $scope.currentSnapshotIndex = selectedSnapshotIndex;
+          EventHandlerService.createCodeRestoreEvent();
           var selectedSnapshot = null;
           if (selectedSnapshotIndex === 0) {
             selectedSnapshot = SessionHistoryService.getStarterCodeSnapshot();

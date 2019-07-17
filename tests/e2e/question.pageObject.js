@@ -111,6 +111,13 @@ var QuestionPage = function() {
   };
 
   /**
+   * Clears local storage.
+   */
+  this.clearLocalStorage = async function() {
+    await browser.executeScript('window.localStorage.clear();');
+  }
+
+  /**
    * Simulates writing the given code string in the code editor.
    *
    * @param {string} codeString

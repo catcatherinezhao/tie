@@ -153,6 +153,21 @@ describe('EventHandlerService', function() {
       });
   });
 
+  describe('createCodeRestoreEvent', function() {
+
+    it('creates a CodeRestoreEvent + sends the event batch to the backend',
+      function() {
+        $httpBackend.expectPOST(
+          '/ajax/event/send_event_batch').respond(
+          HTTP_STATUS_CODE_OK, {});
+        spyOn(ServerHandlerService, 'doesServerExist').and.returnValue(true);
+        expect(EventHandlerService._getCurrentEventBatchLength()).toEqual(0);
+        spyOn(EventHandlerService, 'sendCurrentEventBatch').and.callThrough();
+        EventHandlerService.createCodeRestoreEvent();
+        $httpBackend.flush();
+        expect(EventHandlerService._getCurrentEventBatchLength()).toEqual(0);
+      });
+  });
 
   describe('createCodeSubmitEvent', function() {
 
