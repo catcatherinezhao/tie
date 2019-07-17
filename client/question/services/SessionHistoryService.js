@@ -70,7 +70,6 @@ tie.factory('SessionHistoryService', [
                 questionId, data.snapshotIndex));
             potentialSessionTranscript = LocalStorageService.get(
               localStorageKey);
-            // LocalStorageService.delete(localStorageKey);
           }
           data.snapshotIndex--;
         }
