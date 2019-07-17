@@ -91,7 +91,7 @@ tie.directive('learnerView', [function() {
                 <div class="tie-snapshot-container">
                   <div class="tie-previous-snapshot-button-container">
                     <button class="tie-previous-button tie-button protractor-test-previous-button"
-                      ng-click="revertToSelectedSnapshot(currentSnapshotIndex - 1)"
+                      ng-click="revertToPreviousSnapshot()"
                       ng-disabled="previousButtonIsDisabled"
                       title="Click to go back to the previous snapshot.">
                       PREVIOUS
@@ -1042,21 +1042,18 @@ tie.directive('learnerView', [function() {
          * passed in as a parameter.
          *
          * @param {number} selectedSnapshotIndex The snapshot index
-         * selected in the previous snapshots dropdown or with the previous
-         * button.
+         * selected in the previous snapshots dropdown.
          */
         $scope.revertToSelectedSnapshot = function(selectedSnapshotIndex) {
           $scope.currentSnapshotIndex = selectedSnapshotIndex;
           var selectedSnapshot = null;
-          if (selectedSnapshotIndex >= 0) {
-            if (selectedSnapshotIndex === 0) {
-              selectedSnapshot = SessionHistoryService.getStarterCodeSnapshot();
-              $scope.previousButtonIsDisabled = true;
-            } else {
-              selectedSnapshot = SessionHistoryService.getPreviousSnapshot(
-                selectedSnapshotIndex);
-              $scope.previousButtonIsDisabled = false;
-            }
+          if (selectedSnapshotIndex === 0) {
+            selectedSnapshot = SessionHistoryService.getStarterCodeSnapshot();
+            $scope.previousButtonIsDisabled = true;
+          } else {
+            selectedSnapshot = SessionHistoryService.getPreviousSnapshot(
+              selectedSnapshotIndex);
+            $scope.previousButtonIsDisabled = false;
           }
           if (selectedSnapshot === null) {
             throw Error('Could not retrieve code for snapshot at index ' +
@@ -1065,6 +1062,14 @@ tie.directive('learnerView', [function() {
             $scope.editorContents.code = selectedSnapshot;
           }
           $scope.snapshotMenuIsOpen = false;
+        };
+
+        /**
+         * Sets the code in the code editor to the previous snapshot.
+         */
+        $scope.revertToPreviousSnapshot = function() {
+          var previousSnapshotIndex = $scope.currentSnapshotIndex - 1;
+          $scope.revertToSelectedSnapshot(previousSnapshotIndex);
         };
 
         /**
