@@ -32,7 +32,8 @@ tie.factory('SessionHistoryService', [
       // A list of SpeechBalloon objects, from newest to oldest.
       sessionTranscript: [],
       // The number of pending speech balloons to add to the transcript.
-      numBalloonsPending: 0
+      numBalloonsPending: 0,
+      snapshotIndex: 0
     };
 
     var localStorageKey = null;
@@ -51,20 +52,26 @@ tie.factory('SessionHistoryService', [
 
         data.sessionTranscript.length = 0;
         data.numBalloonsPending = 0;
+        data.snapshotIndex = 0;
 
         var questionId = CurrentQuestionService.getCurrentQuestionId();
         localStorageKey = (
-          LocalStorageKeyManagerService.getSessionHistoryKey(questionId));
+          LocalStorageKeyManagerService.getSessionHistoryKey(
+            questionId, data.snapshotIndex));
 
         var potentialSessionTranscript = LocalStorageService.get(
           localStorageKey);
+
         if (potentialSessionTranscript !== null) {
-          // Add items manually, in order to preserve the binding on
-          // data.sessionTranscript.
-          potentialSessionTranscript.forEach(function(speechBalloonDict) {
-            data.sessionTranscript.push(
-              SpeechBalloonObjectFactory.fromDict(speechBalloonDict));
-          });
+          while (potentialSessionTranscript !== null) {
+            data.snapshotIndex++;
+            localStorageKey = (
+              LocalStorageKeyManagerService.getSessionHistoryKey(
+                questionId, data.snapshotIndex));
+            potentialSessionTranscript = LocalStorageService.get(
+              localStorageKey);
+          }
+          data.snapshotIndex--;
         }
       },
       /**
@@ -74,11 +81,88 @@ tie.factory('SessionHistoryService', [
         return data.sessionTranscript;
       },
       /**
+       * Returns the current snapshot number.
+       */
+      getSnapshotIndex: function() {
+        return data.snapshotIndex;
+      },
+      /**
+       * Returns the starter code, which has a snapshot index of 0.
+       */
+      getStarterCodeSnapshot: function() {
+        var questionId = CurrentQuestionService.getCurrentQuestionId();
+        localStorageKey = (
+          LocalStorageKeyManagerService.getSessionHistoryKey(
+            questionId, 0
+          )
+        );
+        if (LocalStorageService.get(localStorageKey) === null) {
+          throw Error('Cannot retrieve starter code from local storage.');
+        } else {
+          return LocalStorageService.get(
+            localStorageKey)[0].feedbackParagraphDicts[0].content;
+        }
+      },
+      /**
+       * Returns the code from a previous snapshot.
+       */
+      getPreviousSnapshot: function(snapshotIndex) {
+        if (snapshotIndex > 0 && snapshotIndex <= data.snapshotIndex) {
+          var questionId = CurrentQuestionService.getCurrentQuestionId();
+          localStorageKey = (
+            LocalStorageKeyManagerService.getSessionHistoryKey(
+              questionId, snapshotIndex
+            )
+          );
+          if (LocalStorageService.get(localStorageKey) === null) {
+            throw Error('Cannot retrieve snapshot index ' + snapshotIndex +
+              ' from local storage.');
+          } else {
+            return LocalStorageService.get(
+              localStorageKey)[1].feedbackParagraphDicts[0].content;
+          }
+        } else {
+          throw Error('Requested snapshot index ' + snapshotIndex +
+            ' is out of range.');
+        }
+      },
+      /**
+       * Saves code as a snapshot when it is not submitted as a
+       * new code balloon.
+       */
+      saveSnapshot: function(codeEditorContent) {
+        data.sessionTranscript.unshift(
+          SpeechBalloonObjectFactory.createCodeBalloon(
+            codeEditorContent
+          ));
+        var questionId = CurrentQuestionService.getCurrentQuestionId();
+        // Store as a new snapshot.
+        localStorageKey = (
+          LocalStorageKeyManagerService.getSessionHistoryKey(
+            questionId, 0));
+        LocalStorageService.put(
+          localStorageKey,
+          data.sessionTranscript.map(function(speechBalloon) {
+            return speechBalloon.toDict();
+          })
+        );
+        // Reset in order to not add a new code balloon.
+        data.sessionTranscript.length = 0;
+        data.numBalloonsPending = 0;
+      },
+      /**
        * Adds a new code balloon to the beginning of the list.
        */
       addCodeBalloon: function(submittedCode) {
         data.sessionTranscript.unshift(
           SpeechBalloonObjectFactory.createCodeBalloon(submittedCode));
+        var questionId = CurrentQuestionService.getCurrentQuestionId();
+        // Increment the snapshot number to create a new submission key.
+        // Store as a new snapshot.
+        data.snapshotIndex++;
+        localStorageKey = (
+          LocalStorageKeyManagerService.getSessionHistoryKey(
+            questionId, data.snapshotIndex));
         LocalStorageService.put(
           localStorageKey,
           data.sessionTranscript.map(function(speechBalloon) {

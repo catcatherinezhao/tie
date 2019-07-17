@@ -24,8 +24,8 @@ tie.factory('LocalStorageKeyManagerService', [
     //
     // - tie:1:lastSavedCode:{{questionId}}:{{language}} -- the last saved
     //     code (a string)
-    // - tie:1:sessionHistory:{{questionId}} -- the session history
-    //     (a list of speech balloon dicts)
+    // - tie:1:sessionHistory:{{questionId}}:{{submissionNumber}} -- the
+    //     session history (a list of speech balloon dicts)
     //
     // The second number in each key is for version control. If this schema
     // changes, that number should be updated to prevent collision.
@@ -47,10 +47,12 @@ tie.factory('LocalStorageKeyManagerService', [
        * Returns the local storage key for the session history.
        *
        * @param {string} questionId
+       * @param {number} snapshotIndex
        * @returns {string}
        */
-      getSessionHistoryKey: function(questionId) {
-        return 'tie:1:sessionHistory:' + questionId;
+      getSessionHistoryKey: function(questionId, snapshotIndex) {
+        return 'tie:1:sessionHistory:' + questionId + ':' +
+          snapshotIndex.toString();
       }
     };
   }

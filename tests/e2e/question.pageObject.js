@@ -17,8 +17,6 @@
  * @fileoverview Question page object for Protractor E2E tests.
  */
 
-const DARK_THEME_WRAPPER_CLASS = 'night-mode';
-
 /**
  * An object that represents the Question page.
  * Provides convenience methods to interact with the page.
@@ -51,13 +49,6 @@ var QuestionPage = function() {
   var codingUiElement = element(by.css('.protractor-test-coding-ui'));
 
   /**
-   * Reset Code button.
-   *
-   * @type {webdriver.WebElement}
-   */
-  var resetCodeButton = element(by.css('.protractor-test-reset-code-button'));
-
-  /**
    * Run Code button.
    *
    * @type {webdriver.WebElement}
@@ -73,18 +64,25 @@ var QuestionPage = function() {
       element.all(by.css('.protractor-test-feedback-paragraph'));
 
   /**
-   * Theme selector.
+   * Previous button.
    *
    * @type {webdriver.WebElement}
    */
-  var themeSelector = element(by.css('.protractor-test-theme-select'));
+  var previousButton = element(by.css('.protractor-test-previous-button'));
 
   /**
-   * Python primer link.
+   * Snapshot button.
    *
    * @type {webdriver.WebElement}
    */
-  var pythonPrimerLink = element(by.css('.protractor-test-python-primer-link'));
+  var snapshotButton = element(by.css('.protractor-test-snapshot-button'));
+
+  /**
+   * Snapshot menu.
+   *
+   * @type {webdriver.WebElement}
+   */
+  var snapshotMenu = element(by.css('.protractor-test-snapshot-menu'));
 
   /**
    * TIE About link.
@@ -113,13 +111,6 @@ var QuestionPage = function() {
   };
 
   /**
-   * Simulates clicking on the reset code button.
-   */
-  this.resetCode = async function() {
-    await resetCodeButton.click();
-  };
-
-  /**
    * Simulates writing the given code string in the code editor.
    *
    * @param {string} codeString
@@ -130,6 +121,18 @@ var QuestionPage = function() {
       'document.getElementsByClassName(\'CodeMirror\')[0].CodeMirror;',
       'editor.setValue(`' + codeString + '`);'
     ].join(''));
+  };
+
+  /**
+   * Gets the code string in the code editor.
+   */
+  this.getCode = async function() {
+    var code = await browser.executeScript([
+      'var editor = ',
+      'document.getElementsByClassName(\'CodeMirror\')[0].CodeMirror;',
+      'return editor.getValue();'
+    ].join(''));
+    return code;
   };
 
   /**
@@ -162,23 +165,49 @@ var QuestionPage = function() {
   };
 
   /**
-   * Simulates selecting the theme which list index is the passed index.
-   *
-   * @param {number} themeIndex index of the theme to be applied.
+   * Simulates clicking on the Previous button.
    */
-  this.applyTheme = async function(themeIndex) {
-    await themeSelector.all(by.tagName('option')).get(themeIndex).click();
+  this.clickPreviousButton = async function(index) {
+    await browser.wait(ExpectedConditions.elementToBeClickable(previousButton));
+    await previousButton.click();
+  }
+
+  /**
+   * Simulates clicking on the Snapshot button.
+   */
+  this.clickSnapshotButton = async function(index) {
+    await browser.wait(ExpectedConditions.elementToBeClickable(snapshotButton));
+    await snapshotButton.click();
+    await browser.wait(ExpectedConditions.elementToBeClickable(snapshotButton));
+  }
+
+  /**
+   * Simulates selecting a previous snapshot which list index is the passed index.
+   *
+   * @param {number} snapshotIndex index of the snapshot chosen
+   */
+  this.choosePreviousSnapshot = async function(snapshotIndex) {
+    await browser.wait(ExpectedConditions.elementToBeClickable(snapshotMenu.all(by.css('ul li')).get(snapshotIndex)));
+    await snapshotMenu.all(by.css('ul li')).get(snapshotIndex).click();
   };
 
   /**
-   * Returns true if the dark theme is applied to TIE's wrapper element.
+   * Returns true if the previous button is enabled.
    *
    * @returns {boolean}
    */
-  this.hasDarkTheme = async function() {
-    let wrapperClasses = await tieWrapperElement.getAttribute('class');
-    return await wrapperClasses.match(DARK_THEME_WRAPPER_CLASS) !== null;
-  };
+  this.isPreviousButtonEnabled = async function() {
+    return await previousButton.isEnabled();
+  }
+
+  /**
+   * Returns true if the snapshot menu is displayed on the page.
+   *
+   * @returns {boolean}
+   */
+  this.isSnapshotMenuDisplayed = async function() {
+    return await snapshotMenu.isDisplayed();
+  }
 
   /**
    * Returns true if the Python primer link is displayed on the page.

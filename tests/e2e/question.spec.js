@@ -28,8 +28,7 @@ describe('Question Page', function() {
 
   beforeAll(async function() {
     await testUtils.expectNoConsoleLogs();
-    await questionPage.get(questionId);
-    await questionPage.resetCode();
+    await questionPage.get(questionId); 
   });
 
   afterEach(async function() {
@@ -37,21 +36,67 @@ describe('Question Page', function() {
     await testUtils.expectNoConsoleLogs();
   });
 
+  it('should allow switching to previous snapshot with previous button', async function() {
+    expect(await questionPage.isPreviousButtonEnabled()).toBe(false);
+    await questionPage.setCode('first submission');
+    await questionPage.runCode();
+    expect(await questionPage.isPreviousButtonEnabled()).toBe(true);
+    
+    await questionPage.setCode('second submission');
+    await questionPage.runCode();
+    expect(await questionPage.isPreviousButtonEnabled()).toBe(true);
+
+    await questionPage.clickPreviousButton();
+    expect(await questionPage.getCode()).toEqual('first submission');
+    expect(await questionPage.isPreviousButtonEnabled()).toBe(true);
+
+    // Retrieve the starter code by clicking the previous button.
+    // Should not be able to click on the previous button after since there are no previous
+    // snapshots before the starter code.
+    await questionPage.clickPreviousButton();
+    expect(await questionPage.isPreviousButtonEnabled()).toBe(false);
+  });
+
+  it('should allow switching to specific snapshot with snapshot button and menu', async function() {
+    await questionPage.setCode('first submission');
+    await questionPage.runCode();
+    await questionPage.setCode('second submission');
+    await questionPage.runCode();
+
+    await questionPage.clickSnapshotButton();
+    expect(await questionPage.isSnapshotMenuDisplayed()).toBe(true);
+    await questionPage.choosePreviousSnapshot(1);
+    expect(await questionPage.getCode()).toEqual('first submission');
+
+    await questionPage.clickSnapshotButton();
+    expect(await questionPage.isSnapshotMenuDisplayed()).toBe(true);
+    await questionPage.choosePreviousSnapshot(2);
+    expect(await questionPage.getCode()).toEqual('second submission'); 
+  });
+
   it('should successfully submit code', async function() {
-    await questionPage.resetCode();
     await questionPage.runCode();
   });
 
   it('should display a feedback text paragraph after a run', async function() {
-    await questionPage.resetCode();
     await questionPage.runCode();
 
-    expect(await questionPage.countFeedbackParagraphs()).toBe(1);
+    // After running code, there should be one or more paragraphs of feedback,
+    // since there's no way to reset.
+    expect(await questionPage.countFeedbackParagraphs()).toBeGreaterThanOrEqual(1);
+  });
+
+  it('should display snapshot menu after clicking on snapshot button', async function() {
+    expect(await questionPage.isSnapshotMenuDisplayed()).toBe(false);
+    // Open snapshot menu.
+    await questionPage.clickSnapshotButton();
+    expect(await questionPage.isSnapshotMenuDisplayed()).toBe(true);
+    // Close snapshot menu.
+    await questionPage.clickSnapshotButton();
+    expect(await questionPage.isSnapshotMenuDisplayed()).toBe(false);
   });
 
   it('should display all expected links', async function() {
-    // Python Primer link.
-    expect(await questionPage.isPythonPrimerLinkDisplayed()).toBe(true);
     // Privacy link.
     expect(await questionPage.isPrivacyLinkDisplayed()).toBe(true);
     // About link.

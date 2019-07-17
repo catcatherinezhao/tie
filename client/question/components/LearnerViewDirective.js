@@ -78,18 +78,6 @@ tie.directive('learnerView', [function() {
                     </div>
                   </div>
                 </div>
-                <button class="tie-code-reset tie-button protractor-test-reset-code-button" name="code-reset" ng-click="resetCode()" title="Click to clear your code and start over">
-                  Start Over
-                </button>
-                <p class="tie-language-label">Language: <span ng-if="supportedLanguageCount === 1">{{languageLabel}}</span></p>
-                <select
-                    ng-if="supportedLanguageCount > 1"
-                    ng-model="codeMirrorOptions.mode"
-                    ng-options="key as value for ( key, value ) in supportedLanguageLabels"
-                    class="tie-select-menu"
-                    name="lang-select-menu">
-                </select>
-                <a ng-if="!SERVER_URL" class="tie-primer-link tie-python-primer protractor-test-python-primer-link" target="_blank" ng-href="{{getPythonPrimerUrl()}}" title="Click to view a short introduction to Python">New to Python?</a>
                 <div class="tie-code-auto-save"
                     ng-show="autosaveTextIsDisplayed">
                   Saving code...
@@ -98,8 +86,32 @@ tie.directive('learnerView', [function() {
                   Submit for Grading
                 </button>
                 <button class="tie-run-button tie-button protractor-test-run-code-button" ng-class="{'tie-button-green': !pageIsIframed}" ng-click="submitCode(editorContents.code)" ng-disabled="SessionHistoryService.isNewBalloonPending()" title="Click anytime you want feedback on your code">
-                  Get Feedback
+                  RUN
                 </button>
+                <div class="tie-snapshot-container">
+                  <div class="tie-previous-snapshot-button-container">
+                    <button class="tie-previous-button tie-button protractor-test-previous-button"
+                      ng-click="revertToPreviousSnapshot()"
+                      ng-disabled="previousButtonIsDisabled"
+                      title="Click to go back to the previous snapshot.">
+                      PREVIOUS
+                    </button>
+                    <button class="tie-snapshot-button tie-button protractor-test-snapshot-button"
+                      ng-click="showSnapshotMenu()"
+                      title="Click to view all previous snapshots.">
+                      &#9660;
+                    </button>
+                  </div>
+                  <div class="tie-snapshot-menu"
+                    ng-show="snapshotMenuIsOpen">
+                    <ul class="tie-snapshot-menu-content protractor-test-snapshot-menu">
+                      <li ng-repeat="i in totalSnapshots" 
+                        ng-click="revertToSelectedSnapshot(i.number)">
+                        {{i.title}}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="tie-output-ui protractor-test-coding-ui">
@@ -121,7 +133,6 @@ tie.directive('learnerView', [function() {
               <li class="tie-footer-left-aligned-link" ng-click="onPrivacyClick()">
                 <a href="#" class="protractor-test-privacy-link">Privacy</a>
               </li>
-
               <li class="tie-footer-right-aligned-link">
                 <a target="_blank" class="protractor-test-about-link" ng-href="{{ABOUT_TIE_URL}}">{{ABOUT_TIE_LABEL}}</a>
               </li>
@@ -157,7 +168,7 @@ tie.directive('learnerView', [function() {
           display: block;
           font-family: Roboto, 'Helvetica Neue', 'Lucida Grande', sans-serif;
           font-size: 12px;
-          height: 24px;
+          height: 30px;
           margin-right: 10px;
           outline: none;
           padding: 1px 6px;
@@ -194,21 +205,37 @@ tie.directive('learnerView', [function() {
           background-color: #b0b0b0;
         }
         .tie-button-green {
-          background-color: #3C5C14;
+          background-color: #a2d6a4;
           border: none;
-          color: #ffffff;
           outline: none;
         }
         .tie-button-green:hover {
-          border-color: #82bf36;
+          background-color: #669e68;
         }
         .tie-button-green:active {
-          background-color: #265221;
+          background-color: #669e68;
         }
         .tie-button-green[disabled] {
           opacity: 0.4;
         }
         .tie-button-green[disabled]:hover {
+          border: none;
+        }
+        .tie-button-gray {
+          background-color: #a7a7a7;
+          border: none;
+          outline: none;
+        }
+        .tie-button-gray:hover {
+          border-color: #777777;
+        }
+        .tie-button-gray:active {
+          background-color: #777777;
+        }
+        .tie-button-gray[disabled] {
+          opacity: 0.4;
+        }
+        .tie-button-gray[disabled]:hover {
           border: none;
         }
         .tie-code-auto-save {
@@ -217,11 +244,6 @@ tie.directive('learnerView', [function() {
           float: left;
           margin-top: 14px;
           margin-left: 0;
-        }
-        .tie-code-reset, .tie-python-primer, .tie-language-label {
-          float: left;
-          margin-top: 10px;
-          margin-bottom: 0;
         }
         .tie-coding-terminal .CodeMirror {
           /* Overwriting codemirror defaults */
@@ -290,11 +312,6 @@ tie.directive('learnerView', [function() {
         .tie-lang-terminal {
           display: inline;
         }
-        .tie-language-label {
-          font-size: 12px;
-          padding: 4px 2px 0 0;
-          display: inline-block;
-        }
         .tie-options-row {
           padding-left: 32px;
           padding-right: 32px;
@@ -320,11 +337,6 @@ tie.directive('learnerView', [function() {
         }
         .tie-previous-instructions {
           opacity: 0.5;
-        }
-        .tie-primer-link {
-          color: blue;
-          font-size: 12px;
-          padding: 4px 10px 0px 4px;
         }
         .tie-print-title {
           font-size: 18px;
@@ -387,26 +399,74 @@ tie.directive('learnerView', [function() {
           border: 1px solid #d3d3d3;
           resize: none;
         }
-        .tie-run-button {
+        .tie-run-button, .tie-step-button, .tie-snapshot-button, .tie-previous-button {
           float: right;
           margin-right: 0;
           margin-top: 10px;
           position: relative;
         }
-        .tie-select-menu {
-          background-color: #ffffff;
-          border: 1px solid transparent;
-          border-radius: 4px;
-          cursor: pointer;
-          float: left;
-          height: 24px;
+        .tie-step-button {
           margin-right: 5px;
-          margin-top: 10px;
-          min-width: 100px;
-          padding: 1px 6px;
         }
-        .tie-select-menu:hover {
-          border-color: #e4e4e4;
+        .tie-previous-snapshot-button-container {
+          display: flex;
+          flex-direction: row;
+        }
+        .tie-previous-button {
+          border-radius: 4px 0px 0px 4px;
+          border-right: 1px solid #a9a9a9;
+        }
+        .tie-previous-button:hover {
+          background-color: #ddd;
+          border-right: 1px solid #a9a9a9;
+        }
+        .tie-previous-button:hover + .tie-snapshot-button {
+          background-color: #ddd;
+        }
+        .tie-previous-button:disabled {
+          background-color: #ddd;
+          color: #a9a9a9;
+        }
+        .tie-snapshot-container {
+          position: relative;
+          float: right;
+          margin-right: 5px;
+        }
+        .tie-snapshot-button {
+          border-radius: 0px 4px 4px 0px;
+          width: 25px;
+        }
+        .tie-snapshot-button:hover {
+          background-color: #ddd;
+        }
+        .tie-snapshot-menu {
+          background-color: #ffffff;
+          border-radius: 4px;
+          width: 110px;
+          position: absolute;
+          top: 40px;
+          right: 0px;
+          box-shadow: 5px 10px 18px #a9a9a9;
+        }
+        .tie-snapshot-menu-content {
+          list-style-type: none;
+          font-size: 13px;
+          padding: 0px;
+          margin: 0px;
+          border-bottom: 1px solid #ddd;
+          width: 100%;
+          text-align: left;
+          cursor: pointer;
+        }
+        .tie-snapshot-menu-content li:last-child {
+          font-weight: bold;
+          border-bottom: none;
+        }
+        .tie-snapshot-menu-content li {
+          padding: 10px;
+        }
+        .tie-snapshot-menu-content li:hover {
+          background-color: #ddd;
         }
         .tie-stdout {
           font-family: monospace;
@@ -541,16 +601,36 @@ tie.directive('learnerView', [function() {
         var language = LANGUAGE_PYTHON;
 
         /**
-         * Provides the URL to the python primer file.
-         */
-        $scope.getPythonPrimerUrl = ThemeNameService.getPythonPrimerUrl;
-
-        /**
          * A dictionary of labels, keyed by their supported language
          */
         $scope.supportedLanguageLabels = SUPPORTED_LANGUAGE_LABELS;
         $scope.supportedLanguageCount = Object.keys(
           SUPPORTED_LANGUAGE_LABELS).length;
+
+        /**
+         * Sets a local variable currentSnapshotIndex to the current
+         * snapshot index.
+         *
+         * @type {number}
+         */
+        $scope.currentSnapshotIndex = 0;
+
+        /**
+         * Defines the total number of snapshots in the editor.
+         *
+         * @type {Array}
+         */
+        $scope.totalSnapshots = [];
+
+        /**
+         * Defines whether the snapshot menu is displayed.
+         */
+        $scope.snapshotMenuIsOpen = false;
+
+        /**
+         * Defines whether the previous button is disabled.
+         */
+        $scope.previousButtonIsDisabled = false;
 
         /**
          * Defines whether printing is supported, and thus whether the print
@@ -811,6 +891,38 @@ tie.directive('learnerView', [function() {
           $scope.editorContents.code = (
             cachedCode || question.getStarterCode(language));
 
+          var snapshotIndex = SessionHistoryService.getSnapshotIndex();
+          if (snapshotIndex === 0) {
+            // Save starter code if this is the first time seeing the question.
+            SessionHistoryService.saveSnapshot(
+              question.getStarterCode(language));
+            $scope.totalSnapshots.push({number: snapshotIndex,
+              title: 'Starter Code'});
+            $scope.previousButtonIsDisabled = true;
+          } else {
+            // If the user has previous submissions before refreshing the page,
+            // on refresh, the previous submissions are still in local storage
+            // but must be added to the previous snapshot menu.
+
+            // The code in the editor window should be the last submission made.
+            $scope.revertToSelectedSnapshot(snapshotIndex);
+            // Add snapshots to dropdown if previous snapshots exist.
+            var snapshotIndexCounter = 0;
+            while (snapshotIndexCounter < snapshotIndex) {
+              if (snapshotIndexCounter === 0) {
+                $scope.totalSnapshots.push({number: snapshotIndexCounter,
+                  title: 'Starter Code'});
+              } else {
+                $scope.totalSnapshots.push({number: snapshotIndexCounter,
+                  title: 'Snapshot ' + snapshotIndexCounter.toString()});
+              }
+              snapshotIndexCounter++;
+            }
+            $scope.totalSnapshots.push({number: snapshotIndex,
+              title: 'Latest'});
+            $scope.currentSnapshotIndex = snapshotIndex;
+          }
+
           EventHandlerService.init(
             SessionIdService.getSessionId(), questionId,
             CurrentQuestionService.getCurrentQuestionVersion());
@@ -926,6 +1038,52 @@ tie.directive('learnerView', [function() {
         };
 
         /**
+         * Sets the code in the code editor to the snapshot index
+         * passed in as a parameter.
+         *
+         * @param {number} selectedSnapshotIndex The snapshot index
+         * selected in the previous snapshots dropdown.
+         */
+        $scope.revertToSelectedSnapshot = function(selectedSnapshotIndex) {
+          $scope.currentSnapshotIndex = selectedSnapshotIndex;
+          var selectedSnapshot = null;
+          if (selectedSnapshotIndex === 0) {
+            selectedSnapshot = SessionHistoryService.getStarterCodeSnapshot();
+            $scope.previousButtonIsDisabled = true;
+          } else {
+            selectedSnapshot = SessionHistoryService.getPreviousSnapshot(
+              selectedSnapshotIndex);
+            $scope.previousButtonIsDisabled = false;
+          }
+          if (selectedSnapshot === null) {
+            throw Error('Could not retrieve code for snapshot at index ' +
+              selectedSnapshotIndex);
+          } else {
+            $scope.editorContents.code = selectedSnapshot;
+          }
+          $scope.snapshotMenuIsOpen = false;
+        };
+
+        /**
+         * Sets the code in the code editor to the previous snapshot.
+         */
+        $scope.revertToPreviousSnapshot = function() {
+          var previousSnapshotIndex = $scope.currentSnapshotIndex - 1;
+          $scope.revertToSelectedSnapshot(previousSnapshotIndex);
+        };
+
+        /**
+         * Open and close the snapshot menu.
+         */
+        $scope.showSnapshotMenu = function() {
+          if ($scope.snapshotMenuIsOpen) {
+            $scope.snapshotMenuIsOpen = false;
+          } else {
+            $scope.snapshotMenuIsOpen = true;
+          }
+        };
+
+        /**
          * Stores the CodeMirror editor instance.
          */
         var codemirrorEditorInstance = null;
@@ -1030,6 +1188,29 @@ tie.directive('learnerView', [function() {
         $scope.submitCode = function(code) {
           MonospaceDisplayModalService.hideModal();
           SessionHistoryService.addCodeBalloon(code);
+
+          // Find the index of the snapshot with the title "Latest" in the menu.
+          var latestSnapshotIndex = -1;
+          for (var index = 0; index < $scope.totalSnapshots.length; index++) {
+            if ($scope.totalSnapshots[index].title === 'Latest') {
+              latestSnapshotIndex = index;
+            }
+          }
+
+          // Updates latest snapshot in menu, if found.
+          if (latestSnapshotIndex >= 0) {
+            var latestSnapshot = $scope.totalSnapshots[latestSnapshotIndex];
+            $scope.totalSnapshots.push({number: latestSnapshot.number,
+              title: 'Snapshot ' + latestSnapshot.number.toString()});
+            $scope.totalSnapshots.splice(latestSnapshotIndex, 1);
+          }
+          // Adds new snapshot as latest in menu.
+          var snapshotIndex = SessionHistoryService.getSnapshotIndex();
+          $scope.totalSnapshots.push({number: snapshotIndex,
+            title: 'Latest'});
+          $scope.currentSnapshotIndex = snapshotIndex;
+
+          $scope.previousButtonIsDisabled = false;
 
           // Gather all tasks from the first one up to the current one.
           var question = CurrentQuestionService.getCurrentQuestion();

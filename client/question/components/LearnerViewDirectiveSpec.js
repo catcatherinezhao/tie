@@ -202,13 +202,13 @@ describe('LearnerViewDirective', function() {
     it('should add unprompted feedback to the feedback log', function() {
       var sessionTranscript = (
         SessionHistoryService.getBindableSessionTranscript());
-      expect(sessionTranscript.length).toBe(0);
+      var sessionTranscriptLength = sessionTranscript.length;
       expect($scope.codeChangeLoopPromise).toBe(null);
 
       $scope.onCodeChange();
       $scope.editorContents.code = 'new code';
       flushIntervalAndTimeout(CODE_CHANGE_DEBOUNCE_MILLISECONDS);
-      expect(sessionTranscript.length).toBe(1);
+      expect(sessionTranscript.length).toBe(sessionTranscriptLength + 1);
       expect(sessionTranscript[0].getFeedbackParagraphs()[0].getContent()).toBe(
         '[some unprompted feedback]');
     });

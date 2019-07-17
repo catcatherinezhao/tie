@@ -36,13 +36,72 @@ describe('SessionHistoryService', function() {
   }));
 
   describe('core behaviour', function() {
+    it('should retrieve the correct previous snapshot', function() {
+      SessionHistoryService.addCodeBalloon('first submission');
+      var firstSnapshotIndex = SessionHistoryService.getSnapshotIndex();
+      SessionHistoryService.addFeedbackBalloon([
+        FeedbackParagraphObjectFactory.fromDict({
+          type: 'text',
+          content: 'first feedback'
+        })
+      ]);
+      $timeout.flush(DURATION_MSEC_WAIT_FOR_FEEDBACK);
+
+      SessionHistoryService.addCodeBalloon('second submission');
+      var secondSnapshotIndex = SessionHistoryService.getSnapshotIndex();
+      SessionHistoryService.addFeedbackBalloon([
+        FeedbackParagraphObjectFactory.fromDict({
+          type: 'text',
+          content: 'second feedback'
+        })
+      ]);
+      $timeout.flush(DURATION_MSEC_WAIT_FOR_FEEDBACK);
+
+      expect(SessionHistoryService.getPreviousSnapshot(
+        firstSnapshotIndex)).toEqual('first submission');
+      expect(SessionHistoryService.getPreviousSnapshot(
+        secondSnapshotIndex)).toEqual('second submission');
+    });
+
+    it('should retrieve the correct starter code snapshot', function() {
+      var transcript = SessionHistoryService.getBindableSessionTranscript();
+      SessionHistoryService.reset();
+      expect(transcript.length).toBe(0);
+
+      SessionHistoryService.saveSnapshot('starter code');
+
+      SessionHistoryService.addCodeBalloon('first submission');
+      var firstSnapshotIndex = SessionHistoryService.getSnapshotIndex();
+      SessionHistoryService.addFeedbackBalloon([
+        FeedbackParagraphObjectFactory.fromDict({
+          type: 'text',
+          content: 'first feedback'
+        })
+      ]);
+      $timeout.flush(DURATION_MSEC_WAIT_FOR_FEEDBACK);
+
+      expect(SessionHistoryService.getStarterCodeSnapshot(
+        )).toEqual('starter code');
+      expect(SessionHistoryService.getPreviousSnapshot(
+        firstSnapshotIndex)).toEqual('first submission');
+
+      // Testing retrieving snapshot with invalid index.
+      expect(function() {
+        SessionHistoryService.getPreviousSnapshot(-1);
+      }).toThrow(new Error('Requested snapshot index -1 is out of range.'));
+    });
+
     it('should add a new code balloon correctly', function() {
       var transcript = SessionHistoryService.getBindableSessionTranscript();
       expect(transcript.length).toBe(0);
 
+      var snapshotIndex = SessionHistoryService.getSnapshotIndex();
+
       SessionHistoryService.addCodeBalloon('some code');
 
       expect(transcript.length).toBe(1);
+      expect(snapshotIndex).toBe(
+        SessionHistoryService.getSnapshotIndex() - 1);
       var firstBalloon = transcript[0];
       expect(firstBalloon.isCodeSubmission()).toBe(true);
       var firstBalloonParagraphs = firstBalloon.getFeedbackParagraphs();
