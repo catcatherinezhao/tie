@@ -31,9 +31,27 @@ describe('Question Page', function() {
     await questionPage.get(questionId); 
   });
 
+  beforeEach(async function() {
+    await questionPage.clearLocalStorage();
+    await questionPage.get(questionId);
+  });
+
   afterEach(async function() {
+    await questionPage.clearLocalStorage();    
     // There should be no console output after each test.
     await testUtils.expectNoConsoleLogs();
+  });
+
+  it('should successfully submit code', async function() {
+    await questionPage.runCode();
+  });
+
+  it('should display a feedback text paragraph after a run', async function() {
+    await questionPage.runCode();
+
+    // After running code, there should be one or more paragraphs of feedback,
+    // since there's no way to reset.
+    expect(await questionPage.countFeedbackParagraphs()).toBeGreaterThanOrEqual(1);
   });
 
   it('should allow switching to previous snapshot with previous button', async function() {
@@ -72,18 +90,6 @@ describe('Question Page', function() {
     expect(await questionPage.isSnapshotMenuDisplayed()).toBe(true);
     await questionPage.choosePreviousSnapshot(2);
     expect(await questionPage.getCode()).toEqual('second submission'); 
-  });
-
-  it('should successfully submit code', async function() {
-    await questionPage.runCode();
-  });
-
-  it('should display a feedback text paragraph after a run', async function() {
-    await questionPage.runCode();
-
-    // After running code, there should be one or more paragraphs of feedback,
-    // since there's no way to reset.
-    expect(await questionPage.countFeedbackParagraphs()).toBeGreaterThanOrEqual(1);
   });
 
   it('should display snapshot menu after clicking on snapshot button', async function() {

@@ -153,6 +153,16 @@ describe('EventHandlerService', function() {
       });
   });
 
+  describe('createCodeRestoreEvent', function() {
+
+    it('creates a CodeRestoreEvent and adds it to the current EventBatch',
+      function() {
+        spyOn(ServerHandlerService, 'doesServerExist').and.returnValue(true);
+        expect(EventHandlerService._getCurrentEventBatchLength()).toEqual(0);
+        EventHandlerService.createCodeRestoreEvent();
+        expect(EventHandlerService._getCurrentEventBatchLength()).toEqual(1);
+      });
+  });
 
   describe('createCodeSubmitEvent', function() {
 

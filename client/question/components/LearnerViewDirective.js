@@ -1060,6 +1060,7 @@ tie.directive('learnerView', [function() {
               selectedSnapshotIndex);
           } else {
             $scope.editorContents.code = selectedSnapshot;
+            EventHandlerService.createCodeRestoreEvent();
           }
           $scope.snapshotMenuIsOpen = false;
         };

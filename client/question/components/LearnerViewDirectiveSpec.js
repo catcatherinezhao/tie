@@ -230,6 +230,50 @@ describe('LearnerViewDirective', function() {
     });
   });
 
+  describe('restoreCode', function() {
+    var $interval;
+    var $timeout;
+    var UnpromptedFeedbackManagerService;
+    var FeedbackParagraphObjectFactory;
+    beforeEach(inject(function(
+        _$interval_, _$timeout_, _UnpromptedFeedbackManagerService_,
+        _FeedbackParagraphObjectFactory_) {
+      $interval = _$interval_;
+      $timeout = _$timeout_;
+      UnpromptedFeedbackManagerService = _UnpromptedFeedbackManagerService_;
+      FeedbackParagraphObjectFactory = _FeedbackParagraphObjectFactory_;
+      spyOn(UnpromptedFeedbackManagerService, 'runTipsCheck').and.returnValue([
+        FeedbackParagraphObjectFactory.fromDict({
+          type: 'text',
+          content: '[some unprompted feedback]'
+        })
+      ]);
+    }));
+
+    var flushIntervalAndTimeout = function(timeToFlush) {
+      $interval.flush(timeToFlush);
+      $timeout.flush(timeToFlush);
+    };
+
+    it('should call CodeRestoreEvent when snapshot is retrieved', function() {
+      spyOn(EventHandlerService, 'createCodeRestoreEvent');
+
+      $scope.onCodeChange();
+      $scope.editorContents.code = 'first submission';
+      flushIntervalAndTimeout(CODE_CHANGE_DEBOUNCE_MILLISECONDS);
+      $scope.submitCode($scope.editorContents.code);
+      $scope.revertToSelectedSnapshot(0);
+      expect(EventHandlerService.createCodeRestoreEvent).toHaveBeenCalled();
+
+      $scope.onCodeChange();
+      $scope.editorContents.code = 'second submission';
+      flushIntervalAndTimeout(CODE_CHANGE_DEBOUNCE_MILLISECONDS);
+      $scope.submitCode($scope.editorContents.code);
+      $scope.revertToPreviousSnapshot();
+      expect(EventHandlerService.createCodeRestoreEvent).toHaveBeenCalled();
+    });
+  });
+
   describe('completeQuestion', function() {
     it('should create a QuestionCompleteEvent after final task', function() {
       spyOn(EventHandlerService, 'createQuestionCompleteEvent');
