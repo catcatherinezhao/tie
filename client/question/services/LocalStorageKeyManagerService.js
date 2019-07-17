@@ -52,7 +52,7 @@ tie.factory('LocalStorageKeyManagerService', [
        */
       getSessionHistoryKey: function(questionId, snapshotIndex) {
         return 'tie:1:sessionHistory:' + questionId + ':' +
-          String(snapshotIndex);
+          snapshotIndex.toString();
       }
     };
   }

@@ -108,7 +108,7 @@ tie.factory('SessionHistoryService', [
        * Returns the code from a previous snapshot.
        */
       getPreviousSnapshot: function(snapshotIndex) {
-        if (snapshotIndex <= data.snapshotIndex) {
+        if (snapshotIndex > 0 && snapshotIndex <= data.snapshotIndex) {
           var questionId = CurrentQuestionService.getCurrentQuestionId();
           localStorageKey = (
             LocalStorageKeyManagerService.getSessionHistoryKey(

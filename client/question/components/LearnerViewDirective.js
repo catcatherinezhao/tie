@@ -895,13 +895,18 @@ tie.directive('learnerView', [function() {
           if (snapshotIndex === 0) {
             // Save starter code if this is the first time seeing the question.
             SessionHistoryService.saveSnapshot(
-              cachedCode || question.getStarterCode(language));
+              question.getStarterCode(language));
             $scope.totalSnapshots.push({number: snapshotIndex,
               title: 'Starter Code'});
             $scope.previousButtonIsDisabled = true;
           } else {
-            // Add snapshots to dropdown if previous snapshots exist.
+            // If the user has previous submissions before refreshing the page,
+            // on refresh, the previous submissions are still in local storage
+            // but must be added to the previous snapshot menu.
+
+            // The code in the editor window should be the last submission made.
             $scope.revertToSelectedSnapshot(snapshotIndex);
+            // Add snapshots to dropdown if previous snapshots exist.
             var snapshotIndexCounter = 0;
             while (snapshotIndexCounter < snapshotIndex) {
               if (snapshotIndexCounter === 0) {
@@ -909,7 +914,7 @@ tie.directive('learnerView', [function() {
                   title: 'Starter Code'});
               } else {
                 $scope.totalSnapshots.push({number: snapshotIndexCounter,
-                  title: 'Snapshot ' + String(snapshotIndexCounter)});
+                  title: 'Snapshot ' + snapshotIndexCounter.toString()});
               }
               snapshotIndexCounter++;
             }
@@ -1201,14 +1206,19 @@ tie.directive('learnerView', [function() {
           MonospaceDisplayModalService.hideModal();
           SessionHistoryService.addCodeBalloon(code);
 
-          var latestSnapshotIndex = $scope.totalSnapshots.findIndex(
-            snapshot => snapshot.title === 'Latest'
-          );
+          // Find the index of the snapshot with the title "Latest" in the menu.
+          var latestSnapshotIndex = -1;
+          for (var index = 0; index < $scope.totalSnapshots.length; index++) {
+            if ($scope.totalSnapshots[index].title === 'Latest') {
+              latestSnapshotIndex = index;
+            }
+          }
+
           // Updates latest snapshot in menu, if found.
           if (latestSnapshotIndex >= 0) {
             var latestSnapshot = $scope.totalSnapshots[latestSnapshotIndex];
             $scope.totalSnapshots.push({number: latestSnapshot.number,
-              title: 'Snapshot ' + String(latestSnapshot.number)});
+              title: 'Snapshot ' + latestSnapshot.number.toString()});
             $scope.totalSnapshots.splice(latestSnapshotIndex, 1);
           }
           // Adds new snapshot as latest in menu.

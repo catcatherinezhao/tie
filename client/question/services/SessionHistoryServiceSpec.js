@@ -84,6 +84,11 @@ describe('SessionHistoryService', function() {
         )).toEqual('starter code');
       expect(SessionHistoryService.getPreviousSnapshot(
         firstSnapshotIndex)).toEqual('first submission');
+
+      // Testing retrieving snapshot with invalid index.
+      expect(function() {
+        SessionHistoryService.getPreviousSnapshot(-1);
+      }).toThrow(new Error('Requested snapshot index -1 is out of range.'));
     });
 
     it('should add a new code balloon correctly', function() {
