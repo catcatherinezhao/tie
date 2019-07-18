@@ -114,7 +114,7 @@ tie.directive('learnerView', [function() {
               <div class="tie-lang-terminal">
                 <div class="tie-user-terminal" ng-class="{'print-mode': printingIsSupported}">
                   <div class="tie-print-terminal" ng-if="printingIsSupported">
-                    <div class="tie-stdout">{{stdout}}</div>
+                    <div class="tie-stdout">{{(stdout || syntaxError)}}</div>
                   </div>
                 </div>
               </div>
@@ -1209,6 +1209,7 @@ tie.directive('learnerView', [function() {
             var feedback = learnerViewSubmissionResult.getFeedback();
             $scope.setFeedback(feedback, code);
             $scope.stdout = learnerViewSubmissionResult.getStdout();
+            $scope.syntaxError = learnerViewSubmissionResult.getSyntaxError();
           });
 
           $scope.autosaveCode();
