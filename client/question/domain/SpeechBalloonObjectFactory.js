@@ -64,15 +64,6 @@ tie.factory('SpeechBalloonObjectFactory', [
     };
 
     /**
-     * Returns whether the speech balloon is displayed on the left.
-     *
-     * @returns {boolean}
-     */
-    SpeechBalloon.prototype.isDisplayedOnLeft = function() {
-      return this._type === SPEECH_BALLOON_TYPE_FEEDBACK;
-    };
-
-    /**
      * Returns whether the current balloon is a code submission.
      *
      * @returns {boolean}

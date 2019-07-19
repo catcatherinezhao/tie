@@ -52,21 +52,6 @@ describe('SpeechBalloonObjectFactory', function() {
     });
   });
 
-  describe('isDisplayedOnLeft', function() {
-    it('should correctly determine where to display the balloon', function() {
-      var feedbackBalloon = SpeechBalloonObjectFactory.createFeedbackBalloon([
-        FeedbackParagraphObjectFactory.fromDict({
-          type: 'text',
-          content: 'hello'
-        })
-      ]);
-      expect(feedbackBalloon.isDisplayedOnLeft()).toBe(true);
-
-      var codeBalloon = SpeechBalloonObjectFactory.createCodeBalloon('code');
-      expect(codeBalloon.isDisplayedOnLeft()).toBe(false);
-    });
-  });
-
   describe('isCodeSubmission', function() {
     it('should determine if current balloon is code submission', function() {
       var codeBalloon = SpeechBalloonObjectFactory.createCodeBalloon('code');

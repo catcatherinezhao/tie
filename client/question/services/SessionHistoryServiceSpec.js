@@ -121,7 +121,6 @@ describe('SessionHistoryService', function() {
       expect(transcript.length).toBe(1);
       expect(SessionHistoryService.isNewBalloonPending()).toBe(false);
       var firstBalloon = transcript[0];
-      expect(firstBalloon.isDisplayedOnLeft()).toBe(true);
       var firstBalloonParagraphs = firstBalloon.getFeedbackParagraphs();
       expect(firstBalloonParagraphs.length).toBe(1);
       expect(firstBalloonParagraphs[0].toDict()).toEqual({

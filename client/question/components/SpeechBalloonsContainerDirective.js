@@ -27,44 +27,28 @@ tie.directive('speechBalloonsContainer', [function() {
           <div class="tie-dot tie-dot-2"></div>
           <div class="tie-dot tie-dot-3"></div>
         </div>
-        <div ng-repeat="balloon in sessionTranscript" aria-live="assertive">
-          <tie-speech-balloon-container>
-            <div ng-if="balloon.isDisplayedOnLeft()">
-              <tie-speech-balloon-left>
-                <p ng-repeat="paragraph in balloon.getFeedbackParagraphs() track by $index" class="tie-feedback-paragraph protractor-test-feedback-paragraph" ng-class="{'tie-feedback-paragraph-code': paragraph.isCodeParagraph()}">
-                  <span ng-if="paragraph.isTextParagraph()">
-                    <html-with-markdown-links-snippet content="paragraph.getContent()">
-                    </html-with-markdown-links-snippet>
-                  </span>
-                  <span ng-if="paragraph.isCodeParagraph()">
-                    <code-snippet content="paragraph.getContent()">
-                    </code-snippet>
-                  </span>
-                  <span ng-if="paragraph.isErrorParagraph()">
-                    <error-snippet content="paragraph.getContent()">
-                    </error-snippet>
-                  </span>
-                  <span ng-if="paragraph.isOutputParagraph()">
-                    <output-snippet content="paragraph.getContent()">
-                    </output-snippet>
-                  </span>
-                  <span ng-if="paragraph.isImageParagraph()">
-                    <img class="tie-question-completion-image" ng-src="../assets/images/{{paragraph.getContent()}}">
-                  </span>
-                </p>
-              </tie-speech-balloon-left>
-              <tie-speech-balloon-tail-left></tie-speech-balloon-tail-left>
+        <div class="tie-feedback-container" ng-repeat="balloon in sessionTranscript" aria-live="assertive">
+          <tie-feedback-content-container>
+            <div>
+              <p ng-repeat="paragraph in balloon.getFeedbackParagraphs() track by $index" class="tie-feedback-paragraph protractor-test-feedback-paragraph" ng-class="{'tie-feedback-paragraph-code': paragraph.isCodeParagraph()}">
+                <span ng-if="paragraph.isTextParagraph()">
+                  <html-with-markdown-links-snippet content="paragraph.getContent()">
+                  </html-with-markdown-links-snippet>
+                </span>
+                <span ng-if="paragraph.isErrorParagraph()">
+                  <error-snippet content="paragraph.getContent()">
+                  </error-snippet>
+                </span>
+                <span ng-if="paragraph.isOutputParagraph()">
+                  <output-snippet content="paragraph.getContent()">
+                  </output-snippet>
+                </span>
+                <span ng-if="paragraph.isImageParagraph()">
+                  <img class="tie-question-completion-image" ng-src="../assets/images/{{paragraph.getContent()}}">
+                </span>
+              </p>
             </div>
-            <div ng-if="!balloon.isDisplayedOnLeft()">
-              <tie-speech-balloon-right>
-                <p ng-repeat="paragraph in balloon.getFeedbackParagraphs() track by $index"
-                    class="tie-feedback-paragraph tie-feedback-paragraph-code">
-                  <code-snippet content="paragraph.getContent()"></code-snippet>
-                </p>
-              </tie-speech-balloon-right>
-              <tie-speech-balloon-tail-right></tie-speech-balloon-tail-right>
-            </div>
-          </tie-speech-balloon-container>
+          </tie-feedback-content-container>
         </div>
       </div>
 
@@ -93,9 +77,7 @@ tie.directive('speechBalloonsContainer', [function() {
           opacity: 0;
           padding-left: 5px;
           transition-delay: 0.2s;
-        }
-        .night-mode .tie-dot {
-          background-color: #E0E0E0;
+          margin-bottom: 10px;
         }
         .tie-dot-2 {
           -webkit-animation-delay: 0.1s;
@@ -105,6 +87,9 @@ tie.directive('speechBalloonsContainer', [function() {
         }
         .tie-display-dots {
           opacity: 1;
+        }
+        .tie-feedback-container {
+          border-top: 1px solid #ddd;
         }
         .tie-feedback-paragraph {
           width: 100%;
@@ -117,119 +102,12 @@ tie.directive('speechBalloonsContainer', [function() {
         .tie-question-completion-image {
           height: 180px;
         }
-        .tie-speech-balloon-container {
+        .tie-feedback-content-container {
           clear: right;
           display: block;
-          margin-top: 12px;
           overflow: auto;
           transition: margin-top 0.2s cubic-bezier(0.4, 0.0, 0.2, 1),
                       opacity 0.15s cubic-bezier(0.4, 0.0, 0.2, 1) 0.2s;
-        }
-        .tie-speech-balloon {
-          background-color: yellow;
-          border: 1px solid #c3c0c0;
-          border-radius: 10px;
-          -moz-border-radius: 10px;
-          -webkit-border-radius: 10px;
-          max-width: calc(100% - 50px);
-          min-height: 1em;
-          min-width: 1em;
-          padding-left: 10px;
-          padding-right: 10px;
-          width: fit-content;
-        }
-        .pulse-animation-enabled .tie-speech-balloon {
-          transition: background-color 2s cubic-bezier(0.4, 0.0, 0.2, 1) 1.5s;
-        }
-        .night-mode .tie-speech-balloon {
-          background-color: #323c5a;
-          color: #E0E0E0;
-        }
-        .tie-speech-balloon a {
-          /* Style visited links the same as unvisited links. */
-          color: #0000ee;
-        }
-        .night-mode .tie-speech-balloon a {
-          /* Style visited links the same as unvisited links. */
-          color: #8b8bff;
-        }
-        .tie-speech-balloon-pulse {
-          background-color: white;
-        }
-        .night-mode .tie-speech-balloon-pulse {
-          background-color: #444444;
-        }
-        .tie-speech-balloon-tail-container {
-          margin-bottom: 2px;
-        }
-        .tie-speech-balloon-left {
-          float: left;
-        }
-        .tie-speech-balloon-tail-left {
-          clear: left;
-          float: left;
-        }
-        .tie-speech-balloon-tail-left-outer {
-          border-bottom: 8px solid transparent;
-          border-left: 13px solid #c3c0c0;
-          height: 0;
-          margin-left: 18px;
-          width:  0;
-        }
-        .tie-speech-balloon-tail-left-inner {
-          border-bottom: 8px solid transparent;
-          border-left: 13px solid yellow;
-          height: 0;
-          margin-left: 19px;
-          margin-top: -10px;
-          width:  0;
-        }
-        .pulse-animation-enabled .tie-speech-balloon-tail-left-inner {
-          transition: border-left-color 2.5s cubic-bezier(0.4, 0.0, 0.2, 1) 1s;
-        }
-        .night-mode .tie-speech-balloon-tail-left-inner {
-          border-left: 13px solid #323c5a;
-        }
-        .tie-speech-balloon-tail-left-pulse {
-          border-left-color: white;
-        }
-        .night-mode .tie-speech-balloon-tail-left-pulse {
-          border-left: 13px solid #444444;
-        }
-        .tie-speech-balloon-right {
-          float: right;
-        }
-        .tie-speech-balloon-tail-right {
-          clear: right;
-          float: right;
-        }
-        .tie-speech-balloon-tail-right-outer {
-          border-bottom: 9px solid transparent;
-          border-right: 13px solid #c3c0c0;
-          height: 0;
-          margin-right: 18px;
-          margin-top: -1px;
-          width:  0;
-        }
-        .tie-speech-balloon-tail-right-inner {
-          border-bottom: 8px solid transparent;
-          border-right: 12px solid yellow;
-          height: 0;
-          margin-right: 19;
-          margin-top: -10px;
-          width:  0;
-        }
-        .pulse-animation-enabled .tie-speech-balloon-tail-right-inner {
-          transition: border-right-color 2.5s cubic-bezier(0.4, 0.0, 0.2, 1) 1s;
-        }
-        .night-mode .tie-speech-balloon-tail-right-inner {
-          border-right: 13px solid #323c5a;
-        }
-        .tie-speech-balloon-tail-right-pulse {
-          border-right-color: white;
-        }
-        .night-mode .tie-speech-balloon-tail-right-pulse {
-          border-right: 12px solid #444444;
         }
       </style>
     `,
