@@ -293,9 +293,8 @@ describe('ConversationManagerService', function() {
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
           [['It looks like you deleted or modified the starter code!  Our ',
             'evaluation program requires the function names given in the ',
-            'starter code.  You can press the \'Reset Code\' button to ',
-            'start over.  Or, you can copy the starter code below:'].join(''),
-            starterCode],
+            'starter code.  You can click the \'Starter Code\' snapshot in ',
+            'the previous snapshots dropdown to start over.'].join('')],
           null)
       }]);
     });
@@ -310,7 +309,7 @@ describe('ConversationManagerService', function() {
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
           [["It looks like you're importing an external library. However, ",
             'the following libraries are not supported:\n'].join(''),
-            'pandas'],
+            '<code>pandas</code>'],
           null, false, function(submissionResult) {
             var errorMessages = [];
             var feedback = submissionResult.getFeedback();
@@ -319,7 +318,7 @@ describe('ConversationManagerService', function() {
               errorMessages.append('Bad content in 3rd paragraph');
             }
             if (feedback.getParagraphs()[3].getContent() !==
-                SUPPORTED_PYTHON_LIBS.join(', ')) {
+                '<code>' + SUPPORTED_PYTHON_LIBS.join(', ') + '</code>') {
               errorMessages.append('Bad content in 4th paragraph');
             }
 
@@ -446,7 +445,7 @@ describe('ConversationManagerService', function() {
       verifySubmissions([], done, [{
         code: codeThatFailsBuggyOutputForTaskTwo,
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
-          [null, "Input: \"task1suite1test1\""])
+          [null, "<code>Input: \"task1suite1test1\"</code>"])
       }]);
     });
 
@@ -668,7 +667,7 @@ describe('ConversationManagerService', function() {
       verifySubmissions([], done, [{
         code: codeThatFailsFirstTaskOnly,
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
-          [null, 'Input: "task1suite1test1"'])
+          [null, '<code>Input: "task1suite1test1"</code>'])
       }]);
     });
 
@@ -676,7 +675,7 @@ describe('ConversationManagerService', function() {
       verifySubmissions([], done, [{
         code: codeThatFailsSecondTaskOnly,
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
-          [null, 'Input: "first test in task2!!!"'])
+          [null, '<code>Input: "first test in task2!!!"</code>'])
       }]);
     });
 
@@ -684,7 +683,7 @@ describe('ConversationManagerService', function() {
       verifySubmissions([], done, [{
         code: codeThatFailsBothTasks,
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
-          [null, 'Input: "task1suite1test1"'])
+          [null, '<code>Input: "task1suite1test1"</code>'])
       }]);
     });
   });
@@ -702,7 +701,8 @@ describe('ConversationManagerService', function() {
       verifySubmissions([], done, [{
         code: codeThatPrintsAndFailsFinalTest,
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
-          [null, 'Input: "absolutely final test!"'], 'absolutely final test!\n')
+          [null, '<code>Input: "absolutely final test!"</code>'],
+          'absolutely final test!\n')
       }]);
     });
 
@@ -710,7 +710,8 @@ describe('ConversationManagerService', function() {
       verifySubmissions([], done, [{
         code: codeThatPrintsAndFailsSecondTaskOnly,
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
-          [null, 'Input: "first test in task2!!!"'], 'first test in task2!!!\n')
+          [null, '<code>Input: "first test in task2!!!"</code>'],
+          'first test in task2!!!\n')
       }]);
     });
 
@@ -718,7 +719,8 @@ describe('ConversationManagerService', function() {
       verifySubmissions([], done, [{
         code: codeThatPrintsAndFailsBothTasks,
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
-          [null, 'Input: "task1suite1test1"'], 'task1suite1test1\n')
+          [null, '<code>Input: "task1suite1test1"</code>'],
+          'task1suite1test1\n')
       }]);
     });
   });

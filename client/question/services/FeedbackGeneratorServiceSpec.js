@@ -164,8 +164,8 @@ describe('FeedbackGeneratorService', function() {
       expect(
         CORRECTNESS_FEEDBACK_TEXT[CORRECTNESS_STATE_INPUT_DISPLAYED]
       ).toContain(correctnessFeedbackParagraphs[0].getContent());
-      expect(correctnessFeedbackParagraphs[1].isCodeParagraph()).toEqual(true);
-      var expectedInputCodeParagraph = 'Input: "Hi, world"';
+      expect(correctnessFeedbackParagraphs[1].isTextParagraph()).toEqual(true);
+      var expectedInputCodeParagraph = '<code>Input: "Hi, world"</code>';
       expect(correctnessFeedbackParagraphs[1].getContent()).toEqual(
         expectedInputCodeParagraph);
     });
@@ -184,10 +184,10 @@ describe('FeedbackGeneratorService', function() {
       expect(
         CORRECTNESS_FEEDBACK_TEXT[CORRECTNESS_STATE_EXPECTED_OUTPUT_DISPLAYED]
       ).toContain(correctnessFeedbackParagraphs[0].getContent());
-      expect(correctnessFeedbackParagraphs[1].isCodeParagraph()).toEqual(true);
+      expect(correctnessFeedbackParagraphs[1].isTextParagraph()).toEqual(true);
       var expectedExpectedOutputParagraph =
-        'Input: "Hi, world"\n' +
-        'Expected Output: "iH, dlrow"';
+        '<code>Input: "Hi, world"\n' +
+        'Expected Output: "iH, dlrow"</code>';
       expect(correctnessFeedbackParagraphs[1].getContent()).toEqual(
         expectedExpectedOutputParagraph);
     });
@@ -820,10 +820,9 @@ describe('FeedbackGeneratorService', function() {
       expect(paragraphs[0].getContent()).toEqual([
         'It looks like you deleted or modified the starter code!  Our ',
         'evaluation program requires the function names given in the ',
-        'starter code.  You can press the \'Reset Code\' button to start ',
-        'over.  Or, you can copy the starter code below:'
+        'starter code.  You can click the \'Starter Code\' snapshot in the ',
+        'previous snapshots dropdown to start over.'
       ].join(''));
-      expect(paragraphs[1].getContent()).toEqual(starterCode);
       expect(feedback.getFeedbackCategory()).toEqual(
         FEEDBACK_CATEGORIES.FAILS_STARTER_CODE_CHECK);
     });
@@ -840,11 +839,11 @@ describe('FeedbackGeneratorService', function() {
         "It looks like you're importing an external library. However, the ",
         'following libraries are not supported:\n'
       ].join(''));
-      expect(paragraphs[1].getContent()).toEqual('panda');
+      expect(paragraphs[1].getContent()).toEqual('<code>panda</code>');
       expect(paragraphs[2].getContent()).toEqual('Here is a list of libraries' +
         ' we currently support:\n');
-      expect(paragraphs[3].getContent()).toEqual('collections, ' +
-        'math, operator, random, re, string, time');
+      expect(paragraphs[3].getContent()).toEqual('<code>collections, ' +
+        'math, operator, random, re, string, time</code>');
       expect(feedback.getFeedbackCategory()).toEqual(
         FEEDBACK_CATEGORIES.FAILS_BAD_IMPORT_CHECK);
     });
@@ -999,7 +998,7 @@ describe('FeedbackGeneratorService', function() {
         "packages. In Python, your imports should be in the format: "
       ].join(''));
       expect(paragraphs[1].getContent()).toEqual(
-          "import [insert package name here]");
+          "<code>import [insert package name here]</code>");
     });
 
     it('should throw an error if it uses a NOT operator that is not valid ' +
@@ -1056,11 +1055,11 @@ describe('FeedbackGeneratorService', function() {
         ].join(' '));
         expect(paragraphs[0].isTextParagraph()).toBe(true);
         expect(paragraphs[1].getContent()).toEqual([
-          'ForbiddenNamespaceError: It looks like you\'re trying to call ',
-          'the AuxiliaryCode class or its methods, which is forbidden. ',
-          'Please resubmit without using this class.'
+          '<code>ForbiddenNamespaceError: It looks like you\'re trying to ',
+          'call the AuxiliaryCode class or its methods, which is forbidden. ',
+          'Please resubmit without using this class.</code>'
         ].join(''));
-        expect(paragraphs[1].isCodeParagraph()).toBe(true);
+        expect(paragraphs[1].isTextParagraph()).toBe(true);
         expect(feedback.getFeedbackCategory()).toEqual(
           FEEDBACK_CATEGORIES.FAILS_FORBIDDEN_NAMESPACE_CHECK);
       }
@@ -1080,11 +1079,11 @@ describe('FeedbackGeneratorService', function() {
         ].join(' '));
         expect(paragraphs[0].isTextParagraph()).toBe(true);
         expect(paragraphs[1].getContent()).toEqual([
-          'ForbiddenNamespaceError: It looks you\'re using the System class ',
-          'or its methods, which is forbidden. Please resubmit without ',
-          'using this class.'
+          '<code>ForbiddenNamespaceError: It looks you\'re using the System ',
+          'class or its methods, which is forbidden. Please resubmit without ',
+          'using this class.</code>'
         ].join(''));
-        expect(paragraphs[1].isCodeParagraph()).toBe(true);
+        expect(paragraphs[1].isTextParagraph()).toBe(true);
         expect(feedback.getFeedbackCategory()).toEqual(
           FEEDBACK_CATEGORIES.FAILS_FORBIDDEN_NAMESPACE_CHECK);
       }
@@ -1104,11 +1103,11 @@ describe('FeedbackGeneratorService', function() {
         ].join(' '));
         expect(paragraphs[0].isTextParagraph()).toBe(true);
         expect(paragraphs[1].getContent()).toEqual([
-          'ForbiddenNamespaceError: It looks you\'re trying to call the ',
+          '<code>ForbiddenNamespaceError: It looks you\'re trying to call the ',
           'StudentCode class or its methods, which is forbidden. Please ',
-          'resubmit without using this class.'
+          'resubmit without using this class.</code>'
         ].join(''));
-        expect(paragraphs[1].isCodeParagraph()).toBe(true);
+        expect(paragraphs[1].isTextParagraph()).toBe(true);
         expect(feedback.getFeedbackCategory()).toEqual(
           FEEDBACK_CATEGORIES.FAILS_FORBIDDEN_NAMESPACE_CHECK);
       }

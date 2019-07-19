@@ -256,10 +256,9 @@ tie.factory('FeedbackGeneratorService', [
           feedback.appendTextParagraph([
             'It looks like you deleted or modified the starter code!  Our ',
             'evaluation program requires the function names given in the ',
-            'starter code.  You can press the \'Reset Code\' button to start ',
-            'over.  Or, you can copy the starter code below:'
+            'starter code.  You can click the \'Starter Code\' snapshot in ',
+            'the previous snapshots dropdown to start over.'
           ].join(''));
-          feedback.appendCodeParagraph(prereqCheckFailure.getStarterCode());
         } else if (prereqCheckFailure.isBadImport()) {
           feedback = FeedbackObjectFactory.create(
             FEEDBACK_CATEGORIES.FAILS_BAD_IMPORT_CHECK);
@@ -267,11 +266,12 @@ tie.factory('FeedbackGeneratorService', [
             "It looks like you're importing an external library. However, the ",
             'following libraries are not supported:\n'
           ].join(''));
-          feedback.appendCodeParagraph(
-            prereqCheckFailure.getBadImports().join('\n'));
+          feedback.appendTextParagraph('<code>' +
+            prereqCheckFailure.getBadImports().join('\n') + '</code>');
           feedback.appendTextParagraph(
             'Here is a list of libraries we currently support:\n');
-          feedback.appendCodeParagraph(SUPPORTED_PYTHON_LIBS.join(', '));
+          feedback.appendTextParagraph('<code>' +
+            SUPPORTED_PYTHON_LIBS.join(', ') + '</code>');
         } else if (prereqCheckFailure.hasGlobalCode()) {
           feedback = FeedbackObjectFactory.create(
             FEEDBACK_CATEGORIES.FAILS_GLOBAL_CODE_CHECK);
@@ -289,7 +289,8 @@ tie.factory('FeedbackGeneratorService', [
                 if (paragraph.type === PARAGRAPH_TYPE_TEXT) {
                   feedback.appendTextParagraph(paragraph.content);
                 } else if (paragraph.type === PARAGRAPH_TYPE_CODE) {
-                  feedback.appendCodeParagraph(paragraph.content);
+                  feedback.appendTextParagraph('<code>' +
+                    paragraph.content + '</code>');
                 } else if (paragraph.type === PARAGRAPH_TYPE_ERROR) {
                   feedback.appendTextParagraph(
                     'It looks like your code has a syntax error. ' +
@@ -313,10 +314,12 @@ tie.factory('FeedbackGeneratorService', [
             'Looks like your code had a runtime error. Here is the error ',
             'message: '
           ].join(''));
-          feedback.appendCodeParagraph([
+          feedback.appendTextParagraph([
+            '<code>' +
             'ForbiddenNamespaceError: It looks like you\'re trying to call ',
             'the ' + CLASS_NAME_AUXILIARY_CODE + ' class or its methods, ',
-            'which is forbidden. Please resubmit without using this class.'
+            'which is forbidden. Please resubmit without using this class.' +
+            '</code>'
           ].join(''));
         } else if (prereqCheckFailure.hasInvalidSystemCall()) {
           feedback = FeedbackObjectFactory.create(
@@ -325,10 +328,12 @@ tie.factory('FeedbackGeneratorService', [
             'Looks like your code had a runtime error. Here is the error ',
             'message: '
           ].join(''));
-          feedback.appendCodeParagraph([
+          feedback.appendTextParagraph([
+            '<code>' +
             'ForbiddenNamespaceError: It looks you\'re using the ' +
             CLASS_NAME_SYSTEM_CODE + ' class or its methods, which is ',
-            'forbidden. Please resubmit without using this class.'
+            'forbidden. Please resubmit without using this class.' +
+            '</code>'
           ].join(''));
         } else if (prereqCheckFailure.hasInvalidStudentCodeCall()) {
           feedback = FeedbackObjectFactory.create(
@@ -337,10 +342,12 @@ tie.factory('FeedbackGeneratorService', [
             'Looks like your code had a runtime error. Here is the error ',
             'message: '
           ].join(''));
-          feedback.appendCodeParagraph([
+          feedback.appendTextParagraph([
+            '<code>' +
             'ForbiddenNamespaceError: It looks you\'re trying to call the ' +
             CLASS_NAME_STUDENT_CODE + ' class or its methods, which is ',
-            'forbidden. Please resubmit without using this class.'
+            'forbidden. Please resubmit without using this class.' +
+            '</code>'
           ].join(''));
         } else {
           // Prereq check failure type not handled; throw an error.
@@ -523,16 +530,20 @@ tie.factory('FeedbackGeneratorService', [
           // Allow the user to view the input of the failing test.
           feedback.appendTextParagraph(
             _getCorrectnessFeedbackString(correctnessState));
-          feedback.appendCodeParagraph(
-              'Input: ' + _jsToHumanReadable(testCase.getInput()));
+          feedback.appendTextParagraph(
+              '<code>' +
+              'Input: ' + _jsToHumanReadable(testCase.getInput()) +
+              '</code>');
         } else if (
           correctnessState === CORRECTNESS_STATE_EXPECTED_OUTPUT_DISPLAYED) {
           // Allow the user to view the expected output of the failing test.
           feedback.appendTextParagraph(
             _getCorrectnessFeedbackString(correctnessState));
-          feedback.appendCodeParagraph(
+          feedback.appendTextParagraph(
+              '<code>' +
               'Input: ' + _jsToHumanReadable(testCase.getInput()) + '\n' +
-              'Expected Output: ' + _jsToHumanReadable(allowedOutputExample));
+              'Expected Output: ' + _jsToHumanReadable(allowedOutputExample) +
+              '</code>');
         } else if (
           correctnessState === CORRECTNESS_STATE_OBSERVED_OUTPUT_DISPLAYED) {
           // Allow the user to view the output produced by their code for the

@@ -362,7 +362,7 @@ tie.directive('learnerView', [function() {
           margin: 8px;
         }
         .tie-question-code {
-          background: rgb(242, 242, 242);
+          background-color: #ffffff;
           border: 1px solid #ccc;
           font-family: monospace;
           font-size: 13px;
@@ -469,7 +469,7 @@ tie.directive('learnerView', [function() {
           font-family: monospace;
           font-size: 13px;
           line-height: 1.2em;
-          padding: 5%;
+          padding: 10% 5% 10% 5%;
           white-space: pre-wrap;
         }
         .tie-submit-button {
