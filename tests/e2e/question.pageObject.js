@@ -35,11 +35,11 @@ var QuestionPage = function() {
   var tieWrapperElement = element(by.css('.protractor-test-tie-wrapper'));
 
   /**
-   * Question UI element.
+   * Feedback UI element.
    *
    * @type {webdriver.WebElement}
    */
-  var questionUiElement = element(by.css('.protractor-test-question-ui'));
+  var feedbackUiElement = element(by.css('.protractor-test-feedback-ui'));
 
   /**
    * Coding UI element.
@@ -47,6 +47,13 @@ var QuestionPage = function() {
    * @type {webdriver.WebElement}
    */
   var codingUiElement = element(by.css('.protractor-test-coding-ui'));
+
+  /**
+   * Output UI element.
+   *
+   * @type {webdriver.WebElement}
+   */
+  var outputUiElement = element(by.css('.protractor-test-output-ui'));
 
   /**
    * Run Code button.
@@ -247,16 +254,16 @@ var QuestionPage = function() {
    * Returns the question UI element location.
    *
    */
-  this.getQuestionUiLocation = async function() {
-    return await questionUiElement.getLocation();
+  this.getFeedbackUiLocation = async function() {
+    return await feedbackUiElement.getLocation();
   };
 
   /**
    * Returns the question UI element size.
    *
    */
-  this.getQuestionUiSize = async function() {
-    return await questionUiElement.getSize();
+  this.getFeedbackUiSize = async function() {
+    return await feedbackUiElement.getSize();
   };
 
   /**
@@ -273,6 +280,22 @@ var QuestionPage = function() {
    */
   this.getCodingUiSize = async function() {
     return await codingUiElement.getSize();
+  };
+
+  /**
+   * Returns the output UI element location.
+   *
+   */
+  this.getOutputUiLocation = async function() {
+    return await outputUiElement.getLocation();
+  };
+
+  /**
+   * Returns the output UI element size.
+   *
+   */
+  this.getOutputUiSize = async function() {
+    return await outputUiElement.getSize();
   };
 };
 

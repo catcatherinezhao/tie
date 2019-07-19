@@ -109,71 +109,90 @@ describe('Question Page', function() {
     expect(await questionPage.isAboutLinkDisplayed()).toBe(true);
   });
 
-  it('should display question and coding UIs in 2 columns on large screens',
+  it('should display question, coding, and output UIs in 3 columns on large screens',
      async function() {
        await testUtils.setLargeScreen();
 
-       let questionUiLocation = await questionPage.getQuestionUiLocation();
-       let questionUiSize = await questionPage.getQuestionUiSize();
+       let feedbackUiLocation = await questionPage.getFeedbackUiLocation();
+       let feedbackUiSize = await questionPage.getFeedbackUiSize();
        let codingUiLocation = await questionPage.getCodingUiLocation();
+       let codingUiSize = await questionPage.getCodingUiSize();
+       let outputUiLocation = await questionPage.getOutputUiLocation();
 
-       // Coding and Question UIs should be horizontally aligned.
-       expect(codingUiLocation.y).toEqual(questionUiLocation.y);
+       // Feedback, Coding, and Output UIs should be horizontally aligned.
+       expect(codingUiLocation.y).toEqual(feedbackUiLocation.y);
+       expect(feedbackUiLocation.y).toEqual(outputUiLocation.y);
 
-       // Coding UI should be to the right of Question UI.
+       // Coding UI should be to the right of Feedback UI.
        expect(codingUiLocation.x)
-           .toBeGreaterThan(questionUiLocation.x + questionUiSize.width);
+           .toBeGreaterThan(feedbackUiLocation.x + feedbackUiSize.width);
+
+       // Output UI should be to the right of Coding UI.
+       expect(outputUiLocation.x)
+           .toBeGreaterThan(codingUiLocation.x + codingUiSize.width);
      });
 
-  it('should display question and coding UIs in 2 rows on small screens',
+  it('should display question, coding, and output UIs in 3 rows on small screens',
      async function() {
        await testUtils.setSmallScreen();
 
-       let questionUiLocation = await questionPage.getQuestionUiLocation();
-       let questionUiSize = await questionPage.getQuestionUiSize();
+       let feedbackUiLocation = await questionPage.getFeedbackUiLocation();
+       let feedbackUiSize = await questionPage.getFeedbackUiSize();
        let codingUiLocation = await questionPage.getCodingUiLocation();
+       let codingUiSize = await questionPage.getCodingUiSize();
+       let outputUiLocation = await questionPage.getOutputUiLocation();
 
-       // Coding and Question UI should be vertically aligned.
-       expect(codingUiLocation.x).toEqual(questionUiLocation.x);
+       // Feedback, Coding, and Output UIs should be vertically aligned.
+       expect(codingUiLocation.x).toEqual(feedbackUiLocation.x);
+       expect(feedbackUiLocation.x).toEqual(outputUiLocation.x);
 
-       // Question UI should be above Coding UI.
+       // Feedback UI should be above Coding UI.
        expect(codingUiLocation.y)
-           .toBeGreaterThan(questionUiLocation.y + questionUiSize.height);
+           .toBeGreaterThan(feedbackUiLocation.y + feedbackUiSize.height);
+
+       // Coding UI should be above Output UI.
+       expect(outputUiLocation.y)
+           .toBeGreaterThan(codingUiLocation.y + codingUiSize.height);
      });
 
-  it('should fit the question and coding UIs in page width on large screens',
+  it('should fit the feedback, coding, and output UIs in page width on large screens',
      async function() {
        await testUtils.setLargeScreen();
 
        let windowSize = await testUtils.getWindowSize();
 
-       let codingUiLocation = await questionPage.getCodingUiLocation();
-       let codingUiSize = await questionPage.getCodingUiSize();
+       let outputUiLocation = await questionPage.getOutputUiLocation();
+       let outputUiSize = await questionPage.getOutputUiSize();
 
-       // The right edge of the coding UI should be less than the window width.
-       expect(codingUiLocation.x + codingUiSize.width)
+       // The right edge of the output UI should be less than the window width.
+       expect(outputUiLocation.x + outputUiSize.width)
            .toBeLessThan(windowSize.width);
      });
 
-  it('should fit the question and coding UIs in page width on small screens',
+  it('should fit the feedback, coding, and output UIs in page width on small screens',
      async function() {
        await testUtils.setSmallScreen();
 
        let windowSize = await testUtils.getWindowSize();
 
+       let feedbackUiLocation = await questionPage.getFeedbackUiLocation();
+       let feedbackUiSize = await questionPage.getFeedbackUiSize();
        let codingUiLocation = await questionPage.getCodingUiLocation();
        let codingUiSize = await questionPage.getCodingUiSize();
+       let outputUiLocation = await questionPage.getOutputUiLocation();
+       let outputUiSize = await questionPage.getOutputUiSize();
 
-       let questionUiLocation = await questionPage.getQuestionUiLocation();
-       let questionUiSize = await questionPage.getQuestionUiSize();
-
-       // The right edge of the question UI should be less than the window
+       // The right edge of the feedback UI should be less than the window
        // width.
-       expect(questionUiLocation.x + questionUiSize.width)
+       expect(feedbackUiLocation.x + feedbackUiSize.width)
            .toBeLessThan(windowSize.width);
 
        // The right edge of the coding UI should be less than the window width.
        expect(codingUiLocation.x + codingUiSize.width)
+           .toBeLessThan(windowSize.width);
+
+       // The right edge of the output UI should be less than the window width.
+       expect(outputUiLocation.x + outputUiSize.width)
            .toBeLessThan(windowSize.width);
      });
 });
