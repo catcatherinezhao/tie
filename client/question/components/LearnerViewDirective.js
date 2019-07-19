@@ -113,8 +113,11 @@ tie.directive('learnerView', [function() {
             <div class="tie-output-ui protractor-test-coding-ui">
               <div class="tie-lang-terminal">
                 <div class="tie-user-terminal" ng-class="{'print-mode': printingIsSupported}">
-                  <div class="tie-print-terminal" ng-if="printingIsSupported">
+                  <div class="tie-print-terminal" ng-if="printingIsSupported && errorPrintingIsSupported">
                     <div class="tie-stdout">{{(stdout || syntaxError)}}</div>
+                  </div>
+                  <div class="tie-print-terminal" ng-if="printingIsSupported && !errorPrintingIsSupported">
+                    <div class="tie-stdout">{{(stdout)}}</div>
                   </div>
                 </div>
               </div>
@@ -623,6 +626,13 @@ tie.directive('learnerView', [function() {
          * terminal should be displayed.
          */
         $scope.printingIsSupported = PrintTerminalService.isPrintingSupported();
+
+        /**
+         * Defines whether error printing is supported, and thus whether syntax
+         * errors should be displayed in the output window.
+         */
+        $scope.errorPrintingIsSupported =
+          PrintTerminalService.isErrorPrintingSupported();
 
         /**
          * Defines whether TIE is currently being framed by the expected
