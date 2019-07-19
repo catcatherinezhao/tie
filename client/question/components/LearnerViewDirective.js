@@ -50,7 +50,8 @@ tie.directive('learnerView', [function() {
               <div class="tie-feedback-ui protractor-test-feedback-ui">
                 <div class="tie-feedback-window">
                   <div class="tie-feedback-container" ng-class="{'pulse-animation-enabled': pulseAnimationEnabled}">
-                    <speech-balloons-container></speech-balloons-container>
+                    <pre class="tie-feedback-text" ng-if="!feedbackIsDisplayed">{{feedbackWindowMessage}}</pre>
+                    <speech-balloons-container ng-if="feedbackIsDisplayed"></speech-balloons-container>
                   </div>
                 </div>
               </div>
@@ -291,6 +292,10 @@ tie.directive('learnerView', [function() {
         .tie-feedback-container {
           line-height: 1.2em;
           padding: 5%;
+        }
+        .tie-feedback-text {
+          white-space: pre-line;
+          font-family: sans-serif;
         }
         .tie-feedback-window {
           background-color: #FFFFF7;
@@ -622,6 +627,19 @@ tie.directive('learnerView', [function() {
          * Defines whether the previous button is disabled.
          */
         $scope.previousButtonIsDisabled = false;
+
+        /**
+         * Defines the feedback message to be displayed in the feedback window.
+         */
+        $scope.feedbackWindowMessage = "As you run your code feedback will " +
+          "appear here.\n\nYou can also use the STEP THROUGH button to walk " +
+          "through your code line by line, or the PREVIOUS button to return " +
+          "to any submissions you've made previously for this exercise.";
+
+        /**
+         * Defines whether the feedback is displayed in the feedback window.
+         */
+        $scope.feedbackIsDisplayed = false;
 
         /**
          * Defines the output to be displayed.
@@ -992,6 +1010,7 @@ tie.directive('learnerView', [function() {
           }
           SessionHistoryService.addFeedbackBalloon(
             congratulatoryFeedback.getParagraphs());
+          $scope.feedbackIsDisplayed = true;
           EventHandlerService.createQuestionCompleteEvent();
         };
 
@@ -1030,6 +1049,7 @@ tie.directive('learnerView', [function() {
               }
             }
             SessionHistoryService.addFeedbackBalloon(feedbackParagraphs);
+            $scope.feedbackIsDisplayed = true;
           }
 
           // Skulpt processing happens outside an Angular context, so
@@ -1308,6 +1328,7 @@ tie.directive('learnerView', [function() {
               if (potentialFeedbackParagraphs !== null) {
                 SessionHistoryService.addFeedbackBalloon(
                   potentialFeedbackParagraphs);
+                $scope.feedbackIsDisplayed = true;
               }
             }, CODE_CHANGE_DEBOUNCE_SECONDS * SECONDS_TO_MILLISECONDS);
           }
