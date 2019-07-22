@@ -13,10 +13,10 @@
 // limitations under the License.
 
 /**
- * @fileoverview Directive for the speech balloon container.
+ * @fileoverview Directive for the transcript paragraph container.
  */
 
-tie.directive('speechBalloonsContainer', [function() {
+tie.directive('transcriptParagraphsContainer', [function() {
   return {
     restrict: 'E',
     scope: {},
@@ -27,10 +27,10 @@ tie.directive('speechBalloonsContainer', [function() {
           <div class="tie-dot tie-dot-2"></div>
           <div class="tie-dot tie-dot-3"></div>
         </div>
-        <div class="tie-feedback-container" ng-repeat="balloon in sessionTranscript" aria-live="assertive">
+        <div class="tie-feedback-container" ng-repeat="paragraph in sessionTranscript" aria-live="assertive">
           <tie-feedback-content-container>
             <div>
-              <p ng-repeat="paragraph in balloon.getFeedbackParagraphs() track by $index" class="tie-feedback-paragraph protractor-test-feedback-paragraph" ng-class="{'tie-feedback-paragraph-code': paragraph.isCodeParagraph()}">
+              <p ng-repeat="paragraph in paragraph.getFeedbackParagraphs() track by $index" class="tie-feedback-paragraph protractor-test-feedback-paragraph" ng-class="{'tie-feedback-paragraph-code': paragraph.isCodeParagraph()}">
                 <span ng-if="paragraph.isTextParagraph()">
                   <html-with-markdown-links-snippet content="paragraph.getContent()">
                   </html-with-markdown-links-snippet>

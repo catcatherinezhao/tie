@@ -51,7 +51,7 @@ tie.directive('learnerView', [function() {
                 <div class="tie-feedback-window">
                   <div class="tie-feedback-container" ng-class="{'pulse-animation-enabled': pulseAnimationEnabled}">
                     <pre class="tie-feedback-text" ng-if="!feedbackIsDisplayed">{{feedbackWindowMessage}}</pre>
-                    <speech-balloons-container ng-if="feedbackIsDisplayed"></speech-balloons-container>
+                    <transcript-paragraphs-container ng-if="feedbackIsDisplayed"></transcript-paragraphs-container>
                   </div>
                 </div>
               </div>
@@ -85,7 +85,7 @@ tie.directive('learnerView', [function() {
                   <button class="tie-submit-button tie-button tie-button-green protractor-test-submit-code-button" ng-if="pageIsIframed" ng-click="submitToParentPage(editorContents.code)" title="Click anytime you want to submit your code">
                     Submit for Grading
                   </button>
-                  <button class="tie-run-button tie-button protractor-test-run-code-button" ng-class="{'tie-button-green': !pageIsIframed}" ng-click="submitCode(editorContents.code)" ng-disabled="SessionHistoryService.isNewBalloonPending()" title="Click anytime you want feedback on your code">
+                  <button class="tie-run-button tie-button protractor-test-run-code-button" ng-class="{'tie-button-green': !pageIsIframed}" ng-click="submitCode(editorContents.code)" ng-disabled="SessionHistoryService.isNewTranscriptParagraphPending()" title="Click anytime you want feedback on your code">
                     RUN
                   </button>
                   <div class="tie-snapshot-container">
@@ -882,9 +882,10 @@ tie.directive('learnerView', [function() {
         var initLearnerViewDirective = function() {
           SessionHistoryService.init();
 
-          // The pulseAnimationEnabled var is set to false to prevent balloon
-          // pulse animation when switching from light to dark mode and
-          // vise versa. This is set to false in resetCode.
+          // The pulseAnimationEnabled var is set to false to prevent
+          // transcript paragraph pulse animation when switching from
+          // light to dark mode and vise versa. This is set to false
+          // in resetCode.
           $scope.pulseAnimationEnabled = false;
           SessionIdService.resetSessionId();
 
@@ -956,7 +957,7 @@ tie.directive('learnerView', [function() {
           // window.
           if (ParentPageService.isIframed() &&
             SessionHistoryService.getBindableSessionTranscript().length === 0) {
-            SessionHistoryService.addIntroMessageBalloon();
+            SessionHistoryService.addIntroMessageToTranscript();
           }
         };
 
@@ -1008,7 +1009,7 @@ tie.directive('learnerView', [function() {
                 "(You can continue to submit additional answers, " +
                 "if you wish.)");
           }
-          SessionHistoryService.addFeedbackBalloon(
+          SessionHistoryService.addFeedbackToTranscript(
             congratulatoryFeedback.getParagraphs());
           $scope.feedbackIsDisplayed = true;
           EventHandlerService.createQuestionCompleteEvent();
@@ -1048,7 +1049,7 @@ tie.directive('learnerView', [function() {
                 break;
               }
             }
-            SessionHistoryService.addFeedbackBalloon(feedbackParagraphs);
+            SessionHistoryService.addFeedbackToTranscript(feedbackParagraphs);
             $scope.feedbackIsDisplayed = true;
           }
 
@@ -1210,7 +1211,7 @@ tie.directive('learnerView', [function() {
          * @param {string} code
          */
         $scope.submitCode = function(code) {
-          SessionHistoryService.addCodeBalloon(code);
+          SessionHistoryService.addCodeToTranscript(code);
 
           // Find the index of the snapshot with the title "Latest" in the menu.
           var latestSnapshotIndex = -1;
@@ -1260,8 +1261,8 @@ tie.directive('learnerView', [function() {
          */
         $scope.submitToParentPage = function(rawCode) {
           ParentPageService.sendRawCode(rawCode);
-          SessionHistoryService.addCodeBalloon(rawCode);
-          SessionHistoryService.addSubmissionConfirmationBalloon();
+          SessionHistoryService.addCodeToTranscript(rawCode);
+          SessionHistoryService.addSubmissionConfirmationToTranscript();
         };
 
         /**
@@ -1326,7 +1327,7 @@ tie.directive('learnerView', [function() {
                   language, $scope.editorContents.code,
                   tasks[currentTaskIndex].getId()));
               if (potentialFeedbackParagraphs !== null) {
-                SessionHistoryService.addFeedbackBalloon(
+                SessionHistoryService.addFeedbackToTranscript(
                   potentialFeedbackParagraphs);
                 $scope.feedbackIsDisplayed = true;
               }
