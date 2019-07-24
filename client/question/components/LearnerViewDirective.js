@@ -291,11 +291,11 @@ tie.directive('learnerView', [function() {
         }
         .tie-feedback-container {
           line-height: 1.2em;
-          padding: 5%;
         }
         .tie-feedback-text {
           white-space: pre-line;
           font-family: sans-serif;
+          padding: 5%;
         }
         .tie-feedback-window {
           background-color: #FFFFF7;
@@ -916,7 +916,7 @@ tie.directive('learnerView', [function() {
           var snapshotIndex = SessionHistoryService.getSnapshotIndex();
           if (snapshotIndex === 0) {
             // Save starter code if this is the first time seeing the question.
-            SessionHistoryService.saveSnapshot(
+            SessionHistoryService.saveStarterCodeSnapshot(
               question.getStarterCode(language));
             $scope.totalSnapshots.push({number: snapshotIndex,
               title: 'Starter Code'});

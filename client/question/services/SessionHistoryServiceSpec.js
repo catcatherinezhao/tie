@@ -68,7 +68,7 @@ describe('SessionHistoryService', function() {
       SessionHistoryService.reset();
       expect(transcript.length).toBe(0);
 
-      SessionHistoryService.saveSnapshot('starter code');
+      SessionHistoryService.saveStarterCodeSnapshot('starter code');
 
       SessionHistoryService.addCodeToTranscript('first submission');
       var firstSnapshotIndex = SessionHistoryService.getSnapshotIndex();

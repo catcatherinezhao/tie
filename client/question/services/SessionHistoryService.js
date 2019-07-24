@@ -127,14 +127,35 @@ tie.factory('SessionHistoryService', [
         }
       },
       /**
-       * Saves code as a snapshot when it is not submitted as a
-       * new code paragraph.
+       * Returns the feedback from a previous snapshot.
        */
-      saveSnapshot: function(codeEditorContent) {
+      getPreviousFeedback: function(snapshotIndex) {
+        if (snapshotIndex > 0 && snapshotIndex <= data.snapshotIndex) {
+          var questionId = CurrentQuestionService.getCurrentQuestionId();
+          localStorageKey = (
+            LocalStorageKeyManagerService.getSessionHistoryKey(
+              questionId, snapshotIndex
+            )
+          );
+          if (LocalStorageService.get(localStorageKey) === null) {
+            throw Error('Cannot retrieve snapshot index ' + snapshotIndex +
+              ' from local storage.');
+          } else {
+            return LocalStorageService.get(
+              localStorageKey)[0].feedbackParagraphContentDicts;
+          }
+        } else {
+          throw Error('Requested snapshot index ' + snapshotIndex +
+            ' is out of range.');
+        }
+      },
+      /**
+       * Saves starter code as a snapshot.
+       */
+      saveStarterCodeSnapshot: function(codeEditorContent) {
         data.sessionTranscript.unshift(
           TranscriptParagraphObjectFactory.createCodeParagraph(
-            codeEditorContent
-          ));
+            codeEditorContent, data.snapshotIndex));
         var questionId = CurrentQuestionService.getCurrentQuestionId();
         // Store as a new snapshot.
         localStorageKey = (
@@ -146,20 +167,18 @@ tie.factory('SessionHistoryService', [
             return transcriptParagraph.toDict();
           })
         );
-        // Reset in order to not add a new code paragraph.
-        data.sessionTranscript.length = 0;
-        data.numParagraphsPending = 0;
       },
       /**
        * Adds a new code paragraph to the beginning of the list.
        */
       addCodeToTranscript: function(submittedCode) {
-        data.sessionTranscript.unshift(
-          TranscriptParagraphObjectFactory.createCodeParagraph(submittedCode));
-        var questionId = CurrentQuestionService.getCurrentQuestionId();
         // Increment the snapshot number to create a new submission key.
-        // Store as a new snapshot.
         data.snapshotIndex++;
+        data.sessionTranscript.unshift(
+          TranscriptParagraphObjectFactory.createCodeParagraph(
+            submittedCode, data.snapshotIndex));
+        var questionId = CurrentQuestionService.getCurrentQuestionId();
+        // Store as a new snapshot.
         localStorageKey = (
           LocalStorageKeyManagerService.getSessionHistoryKey(
             questionId, data.snapshotIndex));
@@ -180,7 +199,7 @@ tie.factory('SessionHistoryService', [
         $timeout(function() {
           data.sessionTranscript.unshift(
             TranscriptParagraphObjectFactory.createFeedbackParagraph(
-              feedbackParagraphs));
+              feedbackParagraphs, data.snapshotIndex));
           // This signifies that the feedback paragraph has been added and
           // thus completes the code-feedback pairing as there is a feedback
           // paragraph for every code paragraph.
@@ -210,7 +229,7 @@ tie.factory('SessionHistoryService', [
         $timeout(function() {
           data.sessionTranscript.unshift(
           TranscriptParagraphObjectFactory.createFeedbackParagraph(
-            [submissionParagraph]));
+            [submissionParagraph], data.snapshotIndex));
 
           LocalStorageService.put(
             localStorageKey,
@@ -243,7 +262,7 @@ tie.factory('SessionHistoryService', [
           FeedbackParagraphObjectFactory.createTextParagraph(introText);
         data.sessionTranscript.unshift(
             TranscriptParagraphObjectFactory.createFeedbackParagraph(
-              [introParagraph]));
+              [introParagraph], data.snapshotIndex));
         LocalStorageService.put(
           localStorageKey,
           data.sessionTranscript.map(function(transcriptParagraph) {

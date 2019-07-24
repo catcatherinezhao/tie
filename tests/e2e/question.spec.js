@@ -49,9 +49,46 @@ describe('Question Page', function() {
   it('should display a feedback text paragraph after a run', async function() {
     await questionPage.runCode();
 
-    // After running code, there should be one or more paragraphs of feedback,
-    // since there's no way to reset.
-    expect(await questionPage.countFeedbackParagraphs()).toBeGreaterThanOrEqual(1);
+    // After running code, there should be one paragraph of feedback.
+    // Only one paragraph of feedback should be displayed at a time.
+    expect(await questionPage.countFeedbackParagraphs()).toEqual(1);
+  });
+
+  it('should allow switching to the previous and next feedback', async function() {
+    // Before any code is submitted, a starter message should be displayed in the
+    // feedback window.
+    expect(await questionPage.isUpFeedbackButtonPresent()).toBe(false);
+    expect(await questionPage.isDownFeedbackButtonPresent()).toBe(false);
+
+    await questionPage.runCode();
+    var firstSubmissionFeedback = await questionPage.getFeedbackParagraphText(0);
+    expect(await questionPage.countFeedbackParagraphs()).toEqual(1);
+    // The up and down arrow buttons should be displayed when feedback is displayed.
+    expect(await questionPage.isUpFeedbackButtonDisplayed()).toBe(true);
+    expect(await questionPage.isDownFeedbackButtonDisplayed()).toBe(true);
+    // There is only one feedback paragraph in the session transcript so the user
+    // should not be able to go to the previous or next feedback paragraph.
+    expect(await questionPage.isUpFeedbackButtonEnabled()).toBe(false);
+    expect(await questionPage.isDownFeedbackButtonEnabled()).toBe(false);
+
+    await questionPage.setCode('code');
+    await questionPage.runCode();
+    var secondSubmissionFeedback = await questionPage.getFeedbackParagraphText(0);
+    expect(await questionPage.countFeedbackParagraphs()).toEqual(1);
+    expect(await questionPage.isUpFeedbackButtonDisplayed()).toBe(true);
+    expect(await questionPage.isDownFeedbackButtonDisplayed()).toBe(true);
+    // There are two feedback paragraphs in the session transcript so the user can
+    // go to the previous feedback paragraph.
+    expect(await questionPage.isUpFeedbackButtonEnabled()).toBe(true);
+    expect(await questionPage.isDownFeedbackButtonEnabled()).toBe(false);
+    await questionPage.clickUpFeedbackButton();
+    expect(await questionPage.getFeedbackParagraphText(0)).toEqual(firstSubmissionFeedback);
+    // There are only two feedback paragraphs, so the user can go to the next feedback
+    // paragraph but should not be able to go to the previous paragraph.
+    expect(await questionPage.isUpFeedbackButtonEnabled()).toBe(false);
+    expect(await questionPage.isDownFeedbackButtonEnabled()).toBe(true);
+    await questionPage.clickDownFeedbackButton();
+    expect(await questionPage.getFeedbackParagraphText(0)).toEqual(secondSubmissionFeedback);
   });
 
   it('should allow switching to previous snapshot with previous button', async function() {

@@ -38,7 +38,8 @@ tie.factory('TranscriptParagraphObjectFactory', [
      *   paragraph, represented as FeedbackParagraph objects.
      * @constructor
      */
-    var TranscriptParagraph = function(type, feedbackParagraphs) {
+    var TranscriptParagraph = function(
+      type, feedbackParagraphs, snapshotIndex) {
       /**
        * @type {string}
        * @private
@@ -50,6 +51,12 @@ tie.factory('TranscriptParagraphObjectFactory', [
        * @private
        */
       this._feedbackParagraphs = feedbackParagraphs;
+
+      /**
+       * @type {number}
+       * @private
+       */
+      this._snapshotIndex = snapshotIndex;
     };
 
     // Instance methods.
@@ -61,6 +68,15 @@ tie.factory('TranscriptParagraphObjectFactory', [
      */
     TranscriptParagraph.prototype.getFeedbackParagraphs = function() {
       return this._feedbackParagraphs;
+    };
+
+    /**
+     * A getter for the snapshotIndex number for this transcript paragraph.
+     *
+     * @returns {number}
+     */
+    TranscriptParagraph.prototype.getSnapshotIndex = function() {
+      return this._snapshotIndex;
     };
 
     /**
@@ -87,7 +103,8 @@ tie.factory('TranscriptParagraphObjectFactory', [
           function(feedbackParagraph) {
             return feedbackParagraph.toDict();
           }
-        )
+        ),
+        snapshotIndex: this.getSnapshotIndex()
       };
     };
 
@@ -99,11 +116,13 @@ tie.factory('TranscriptParagraphObjectFactory', [
      *
      * @param {Array<FeedbackParagraph>} feedbackParagraphs The contents of the
      *   paragraph, represented as FeedbackParagraph objects.
+     * @param {number} snapshotIndex The snapshot index of the paragraph.
      * @returns {TranscriptParagraph}
      */
-    TranscriptParagraph.createFeedbackParagraph = function(feedbackParagraphs) {
+    TranscriptParagraph.createFeedbackParagraph = function(
+      feedbackParagraphs, snapshotIndex) {
       return new TranscriptParagraph(
-        TRANSCRIPT_PARAGRAPH_TYPE_FEEDBACK, feedbackParagraphs);
+        TRANSCRIPT_PARAGRAPH_TYPE_FEEDBACK, feedbackParagraphs, snapshotIndex);
     };
 
     /**
@@ -111,13 +130,15 @@ tie.factory('TranscriptParagraphObjectFactory', [
      * paragraph.
      *
      * @param {string} submittedCode The code submitted by the learner.
+     * @param {number} snapshotIndex The snapshot index of the submission.
      * @returns {TranscriptParagraph}
      */
-    TranscriptParagraph.createCodeParagraph = function(submittedCode) {
+    TranscriptParagraph.createCodeParagraph = function(
+      submittedCode, snapshotIndex) {
       var codeParagraphs =
         [FeedbackParagraphObjectFactory.createCodeParagraph(submittedCode)];
       return new TranscriptParagraph(
-        TRANSCRIPT_PARAGRAPH_TYPE_CODE, codeParagraphs);
+        TRANSCRIPT_PARAGRAPH_TYPE_CODE, codeParagraphs, snapshotIndex);
     };
 
     /**
@@ -141,7 +162,8 @@ tie.factory('TranscriptParagraphObjectFactory', [
             return FeedbackParagraphObjectFactory.fromDict(
               feedbackParagraphDict);
           }
-        )
+        ),
+        transcriptParagraphDict.snapshotIndex
       );
     };
 
