@@ -45,14 +45,6 @@ tie.directive('transcriptParagraphsContainer', [function() {
                 <html-with-markdown-links-snippet content="paragraph.getContent()">
                 </html-with-markdown-links-snippet>
               </span>
-              <span ng-if="paragraph.isErrorParagraph()">
-                <error-snippet content="paragraph.getContent()">
-                </error-snippet>
-              </span>
-              <span ng-if="paragraph.isOutputParagraph()">
-                <output-snippet content="paragraph.getContent()">
-                </output-snippet>
-              </span>
               <span ng-if="paragraph.isImageParagraph()">
                 <img class="tie-question-completion-image" ng-src="../assets/images/{{paragraph.getContent()}}">
               </span>

@@ -24,9 +24,9 @@ tie.factory('FeedbackGeneratorService', [
   'FRIENDLY_SYNTAX_ERROR_TRANSLATIONS', 'FRIENDLY_RUNTIME_ERROR_TRANSLATIONS',
   'WRONG_LANGUAGE_ERRORS', 'LANGUAGE_PYTHON', 'CLASS_NAME_AUXILIARY_CODE',
   'CLASS_NAME_SYSTEM_CODE', 'CLASS_NAME_STUDENT_CODE', 'PARAGRAPH_TYPE_TEXT',
-  'PARAGRAPH_TYPE_CODE', 'PARAGRAPH_TYPE_ERROR', 'PYTHON_PRIMER_BUTTON_NAME',
-  'CORRECTNESS_FEEDBACK_TEXT', 'FEEDBACK_CATEGORIES',
-  'TEST_SUITE_ID_SAMPLE_INPUT', 'CORRECTNESS_STATE_INPUT_DISPLAYED',
+  'PARAGRAPH_TYPE_CODE', 'PARAGRAPH_TYPE_ERROR', 'CORRECTNESS_FEEDBACK_TEXT',
+  'FEEDBACK_CATEGORIES', 'TEST_SUITE_ID_SAMPLE_INPUT',
+  'CORRECTNESS_STATE_INPUT_DISPLAYED',
   'CORRECTNESS_STATE_EXPECTED_OUTPUT_DISPLAYED',
   'CORRECTNESS_STATE_OBSERVED_OUTPUT_DISPLAYED',
   'CORRECTNESS_STATE_NO_MORE_FEEDBACK',
@@ -36,9 +36,9 @@ tie.factory('FeedbackGeneratorService', [
     FRIENDLY_SYNTAX_ERROR_TRANSLATIONS, FRIENDLY_RUNTIME_ERROR_TRANSLATIONS,
     WRONG_LANGUAGE_ERRORS, LANGUAGE_PYTHON, CLASS_NAME_AUXILIARY_CODE,
     CLASS_NAME_SYSTEM_CODE, CLASS_NAME_STUDENT_CODE, PARAGRAPH_TYPE_TEXT,
-    PARAGRAPH_TYPE_CODE, PARAGRAPH_TYPE_ERROR, PYTHON_PRIMER_BUTTON_NAME,
-    CORRECTNESS_FEEDBACK_TEXT, FEEDBACK_CATEGORIES,
-    TEST_SUITE_ID_SAMPLE_INPUT, CORRECTNESS_STATE_INPUT_DISPLAYED,
+    PARAGRAPH_TYPE_CODE, PARAGRAPH_TYPE_ERROR, CORRECTNESS_FEEDBACK_TEXT,
+    FEEDBACK_CATEGORIES, TEST_SUITE_ID_SAMPLE_INPUT,
+    CORRECTNESS_STATE_INPUT_DISPLAYED,
     CORRECTNESS_STATE_EXPECTED_OUTPUT_DISPLAYED,
     CORRECTNESS_STATE_OBSERVED_OUTPUT_DISPLAYED,
     CORRECTNESS_STATE_NO_MORE_FEEDBACK) {
@@ -194,9 +194,8 @@ tie.factory('FeedbackGeneratorService', [
     var _getUnfamiliarLanguageFeedback = function(language) {
       if (language === LANGUAGE_PYTHON) {
         return [
-          "Seems like you're having some trouble with Python. Why ",
-          "don't you take a look at the page linked through the '",
-          PYTHON_PRIMER_BUTTON_NAME + "' button at the bottom of the screen?"
+          "Seems like you're having some trouble with Python. If you need ",
+          "check out the [primer](primer-url#strings)."
         ].join('');
       } else {
         return '';
@@ -295,7 +294,8 @@ tie.factory('FeedbackGeneratorService', [
                   feedback.appendTextParagraph(
                     'It looks like your code has a syntax error. ' +
                     'Try to figure out what the error is.');
-                  feedback.appendErrorParagraph(paragraph.content);
+                  feedback.appendTextParagraph('<code>' + paragraph.content +
+                    '</code>');
                 }
               });
 
@@ -475,7 +475,7 @@ tie.factory('FeedbackGeneratorService', [
           feedback.appendTextParagraph(
             'Looks like your code had a runtime error when evaluating the ' +
             'input ' + _jsToHumanReadable(errorInput) + '.');
-          feedback.appendErrorParagraph(errorString);
+          feedback.appendTextParagraph('<code>' + errorString + '</code>');
         }
         if (languageUnfamiliarityFeedbackIsNeeded) {
           feedback.appendTextParagraph(
@@ -550,18 +550,22 @@ tie.factory('FeedbackGeneratorService', [
           // failing test.
           feedback.appendTextParagraph(
             _getCorrectnessFeedbackString(correctnessState));
-          feedback.appendOutputParagraph(
+          feedback.appendTextParagraph(
+              '<code>' +
               'Input: ' + _jsToHumanReadable(testCase.getInput()) +
               '\nExpected Output: ' + _jsToHumanReadable(allowedOutputExample) +
-              '\nActual Output: ' + _jsToHumanReadable(observedOutput));
+              '\nActual Output: ' + _jsToHumanReadable(observedOutput) +
+              '</code>');
         } else if (
           correctnessState === CORRECTNESS_STATE_NO_MORE_FEEDBACK) {
           feedback.appendTextParagraph(
             _getCorrectnessFeedbackString(correctnessState));
-          feedback.appendOutputParagraph(
+          feedback.appendTextParagraph(
+              '<code>' +
               'Input: ' + _jsToHumanReadable(testCase.getInput()) +
               '\nExpected Output: ' + _jsToHumanReadable(allowedOutputExample) +
-              '\nActual Output: ' + _jsToHumanReadable(observedOutput));
+              '\nActual Output: ' + _jsToHumanReadable(observedOutput) +
+              '</code>');
         } else {
           throw Error('Invalid correctness state: ' + correctnessState);
         }

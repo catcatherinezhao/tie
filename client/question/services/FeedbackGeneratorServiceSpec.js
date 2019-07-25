@@ -206,12 +206,14 @@ describe('FeedbackGeneratorService', function() {
       expect(
         CORRECTNESS_FEEDBACK_TEXT[CORRECTNESS_STATE_OBSERVED_OUTPUT_DISPLAYED]
       ).toContain(correctnessFeedbackParagraphs[0].getContent());
-      expect(correctnessFeedbackParagraphs[1].isOutputParagraph()).toEqual(
+      expect(correctnessFeedbackParagraphs[1].isTextParagraph()).toEqual(
         true);
       var expectedOutputParagraph =
+        '<code>' +
         'Input: "Hi, world"\n' +
         'Expected Output: "iH, dlrow"\n' +
-        'Actual Output: "yeH, uoyerawoh"';
+        'Actual Output: "yeH, uoyerawoh"' +
+        '</code>';
       expect(correctnessFeedbackParagraphs[1].getContent()).toEqual(
         expectedOutputParagraph);
     });
@@ -231,12 +233,14 @@ describe('FeedbackGeneratorService', function() {
       expect(
         CORRECTNESS_FEEDBACK_TEXT[CORRECTNESS_STATE_NO_MORE_FEEDBACK]
       ).toContain(correctnessFeedbackParagraphs[0].getContent());
-      expect(correctnessFeedbackParagraphs[1].isOutputParagraph()).toEqual(
+      expect(correctnessFeedbackParagraphs[1].isTextParagraph()).toEqual(
         true);
       var expectedOutputParagraph =
+        '<code>' +
         'Input: "Hi, world"\n' +
         'Expected Output: "iH, dlrow"\n' +
-        'Actual Output: "yeH, uoyerawoh"';
+        'Actual Output: "yeH, uoyerawoh"' +
+        '</code>';
       expect(correctnessFeedbackParagraphs[1].getContent()).toEqual(
         expectedOutputParagraph);
     });
@@ -329,9 +333,9 @@ describe('FeedbackGeneratorService', function() {
         'Looks like your code had a runtime error when evaluating the input ' +
         '"testInput".'
       ].join(''));
-      expect(paragraphs[1].isErrorParagraph()).toBe(true);
+      expect(paragraphs[1].isTextParagraph()).toBe(true);
       expect(paragraphs[1].getContent()).toBe(
-        'ZeroDivisionError: integer division or modulo by zero');
+        '<code>ZeroDivisionError: integer division or modulo by zero</code>');
     });
 
     it('should throw an error if the line number index is less than 0',
@@ -397,9 +401,9 @@ describe('FeedbackGeneratorService', function() {
         'Looks like your code had a runtime error when evaluating the input ' +
         '"testInput".'
       ].join(''));
-      expect(paragraphs[1].isErrorParagraph()).toBe(true);
+      expect(paragraphs[1].isTextParagraph()).toBe(true);
       expect(paragraphs[1].getContent()).toBe(
-        'ZeroDivisionError: integer division or modulo by zero');
+        '<code>ZeroDivisionError: integer division or modulo by zero</code>');
     });
 
     it('should correctly handle errors due to the test code', function() {
@@ -420,9 +424,9 @@ describe('FeedbackGeneratorService', function() {
         'Looks like your code had a runtime error when evaluating the input ' +
         '"testInput".'
       ].join(''));
-      expect(paragraphs[1].isErrorParagraph()).toBe(true);
+      expect(paragraphs[1].isTextParagraph()).toBe(true);
       expect(paragraphs[1].getContent()).toBe(
-        'ZeroDivisionError: integer division or modulo by zero');
+        '<code>ZeroDivisionError: integer division or modulo by zero</code>');
     });
   });
 
@@ -760,9 +764,8 @@ describe('FeedbackGeneratorService', function() {
       ].join(''));
       expect(paragraphs[0].isTextParagraph()).toBe(true);
       expect(paragraphs[1].getContent()).toEqual(
-        "Seems like you're having some trouble with Python. Why don't you " +
-        "take a look at the page linked through the 'New to Python?' button " +
-        "at the bottom of the screen?");
+          "Seems like you're having some trouble with Python. If you need " +
+          "check out the [primer](primer-url#strings).");
       expect(paragraphs[1].isTextParagraph()).toBe(true);
     });
 
@@ -784,9 +787,9 @@ describe('FeedbackGeneratorService', function() {
         'Looks like your code had a runtime error when evaluating the input ' +
         '"testInput".'
       ].join(''));
-      expect(paragraphs[1].isErrorParagraph()).toBe(true);
+      expect(paragraphs[1].isTextParagraph()).toBe(true);
       expect(paragraphs[1].getContent()).toBe(
-        'ZeroDivisionError: integer division or modulo by zero');
+        '<code>ZeroDivisionError: integer division or modulo by zero</code>');
       expect(paragraphs[2].isTextParagraph()).toBe(true);
       expect(paragraphs[2].getContent()).toBe(
         FeedbackGeneratorService._getUnfamiliarLanguageFeedback(
