@@ -61,6 +61,8 @@ tie.factory('SessionHistoryService', [
 
         var potentialSessionTranscript = LocalStorageService.get(
           localStorageKey);
+        var code = null;
+        var feedbackParagraphs = null;
 
         if (potentialSessionTranscript !== null) {
           while (potentialSessionTranscript !== null) {
@@ -70,6 +72,18 @@ tie.factory('SessionHistoryService', [
                 questionId, data.snapshotIndex));
             potentialSessionTranscript = LocalStorageService.get(
               localStorageKey);
+            if (potentialSessionTranscript !== null) {
+              code = potentialSessionTranscript[
+                1].feedbackParagraphContentDicts[0].content;
+              feedbackParagraphs = TranscriptParagraphObjectFactory.fromDict(
+                potentialSessionTranscript[0]).getFeedbackParagraphs();
+              data.sessionTranscript.unshift(
+                TranscriptParagraphObjectFactory.createCodeParagraph(
+                  code, data.snapshotIndex));
+              data.sessionTranscript.unshift(
+               TranscriptParagraphObjectFactory.createFeedbackParagraph(
+                 feedbackParagraphs, data.snapshotIndex));
+            }
           }
           data.snapshotIndex--;
         }

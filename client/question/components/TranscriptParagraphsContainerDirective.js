@@ -38,8 +38,8 @@ tie.directive('transcriptParagraphsContainer', [function() {
           </button>
         </div>
         <p class="tie-feedback-title protractor-test-feedback-title" ng-if="!sessionTranscript[0].isCodeSubmission()">Snapshot {{currentSnapshotIndex}}</p>
-        <div class="tie-feedback-container" ng-repeat="paragraph in sessionTranscript track by $index" aria-live="assertive">
-          <tie-feedback-content-container ng-if="currentFeedbackIndex == $index">
+        <div class="tie-feedback-container" ng-repeat="paragraph in feedbackTranscriptParagraphs track by $index" aria-live="assertive">
+          <tie-feedback-content-container ng-if="currentFeedbackIndex == $index && !sessionTranscript[0].isCodeSubmission()">
             <p ng-repeat="paragraph in paragraph.getFeedbackParagraphs() track by $index" class="tie-feedback-paragraph protractor-test-feedback-paragraph" ng-class="{'tie-feedback-paragraph-code': paragraph.isCodeParagraph()}">
               <span ng-if="paragraph.isTextParagraph()">
                 <html-with-markdown-links-snippet content="paragraph.getContent()">
@@ -157,9 +157,10 @@ tie.directive('transcriptParagraphsContainer', [function() {
           SessionHistoryService.getBindableSessionTranscript());
 
         /**
-         * Sets a variable to the number of feedback paragraphs.
+         * Sets a variable to the list of feedback paragraphs in the
+         * session transcript.
          */
-        $scope.numFeedbackParagraphs = 0;
+        $scope.feedbackTranscriptParagraphs = [];
 
         /**
          * Sets a variable to the index of the current feedback displayed
@@ -184,16 +185,17 @@ tie.directive('transcriptParagraphsContainer', [function() {
         $scope.downButtonIsDisabled = true;
 
         /**
-         * Counts the number of feedback paragraphs in the session transcript.
+         * Find and store all feedback paragraphs in the session transcript.
          */
-        $scope.countNumFeedbackParagraphs = function() {
-          var numFeedbackParagraphs = 0;
+        $scope.findFeedbackTranscriptParagraphs = function() {
+          $scope.feedbackTranscriptParagraphs = [];
           for (var i = 0; i < $scope.sessionTranscript.length; i++) {
             if (!$scope.sessionTranscript[i].isCodeSubmission()) {
-              numFeedbackParagraphs++;
+              $scope.feedbackTranscriptParagraphs.push(
+                $scope.sessionTranscript[i]);
             }
           }
-          return numFeedbackParagraphs;
+          return $scope.feedbackTranscriptParagraphs;
         };
 
         /**
@@ -203,8 +205,9 @@ tie.directive('transcriptParagraphsContainer', [function() {
         $scope.checkButtonEnabledOrDisabled = function() {
           // When there are no more previous feedback to go back to in the
           // session transcript, disable the up button.
-          if ($scope.numFeedbackParagraphs > 1 &&
-            $scope.currentFeedbackIndex < $scope.numFeedbackParagraphs) {
+          if ($scope.feedbackTranscriptParagraphs.length > 1 &&
+            $scope.currentFeedbackIndex <
+            $scope.feedbackTranscriptParagraphs.length - 1) {
             $scope.upButtonIsDisabled = false;
           } else {
             $scope.upButtonIsDisabled = true;
@@ -223,17 +226,16 @@ tie.directive('transcriptParagraphsContainer', [function() {
          * previous feedback displayed when the up arrow is pressed.
          */
         $scope.onUpButtonPress = function() {
-          if ($scope.currentFeedbackIndex < $scope.numFeedbackParagraphs) {
+          if ($scope.currentFeedbackIndex <
+            $scope.feedbackTranscriptParagraphs.length) {
             // The most recent feedback is appended to the front of the session
             // transcript, so to go back to the previous feedback paragraph the
             // index is increased.
-            // The index is increased in increments of 2 because every other
-            // paragraph in the session transcript is a feedback paragraph.
-            $scope.currentFeedbackIndex += 2;
+            $scope.currentFeedbackIndex += 1;
           } else {
             throw Error('Current feedback index is out of range.');
           }
-          $scope.currentSnapshotIndex = $scope.sessionTranscript[
+          $scope.currentSnapshotIndex = $scope.feedbackTranscriptParagraphs[
             $scope.currentFeedbackIndex].getSnapshotIndex();
           $scope.checkButtonEnabledOrDisabled();
         };
@@ -243,17 +245,15 @@ tie.directive('transcriptParagraphsContainer', [function() {
          * feedback displayed when the down arrow is pressed.
          */
         $scope.onDownButtonPress = function() {
-          if ($scope.currentFeedbackIndex - 2 >= 0) {
+          if ($scope.currentFeedbackIndex - 1 >= 0) {
             // The most recent feedback is appended to the front of the session
             // transcript, so to go forward to the next feedback paragraph the
             // index is increased.
-            // The index is decreased in decrements of 2 because every other
-            // paragraph in the session transcript is a feedback paragraph.
-            $scope.currentFeedbackIndex -= 2;
+            $scope.currentFeedbackIndex -= 1;
           } else {
             throw Error('Current feedback index is out of range.');
           }
-          $scope.currentSnapshotIndex = $scope.sessionTranscript[
+          $scope.currentSnapshotIndex = $scope.feedbackTranscriptParagraphs[
             $scope.currentFeedbackIndex].getSnapshotIndex();
           $scope.checkButtonEnabledOrDisabled();
         };
@@ -266,9 +266,14 @@ tie.directive('transcriptParagraphsContainer', [function() {
         $scope.$watch('sessionTranscript.length', function() {
           // Display the most recent feedback in the feedback window.
           $scope.currentFeedbackIndex = 0;
-          $scope.currentSnapshotIndex = $scope.sessionTranscript[
-            $scope.currentFeedbackIndex].getSnapshotIndex();
-          $scope.numFeedbackParagraphs = $scope.countNumFeedbackParagraphs();
+          // Get new feedback paragraphs.
+          $scope.feedbackTranscriptParagraphs =
+            $scope.findFeedbackTranscriptParagraphs();
+          // Get the most recent snapshot index.
+          if ($scope.feedbackTranscriptParagraphs.length > 0) {
+            $scope.currentSnapshotIndex = $scope.feedbackTranscriptParagraphs[
+              $scope.currentFeedbackIndex].getSnapshotIndex();
+          }
           $scope.checkButtonEnabledOrDisabled();
         });
       }
