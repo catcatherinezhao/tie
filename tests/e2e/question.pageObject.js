@@ -63,6 +63,13 @@ var QuestionPage = function() {
   var runCodeButton = element(by.css('.protractor-test-run-code-button'));
 
   /**
+   * Feedback title with snapshot index.
+   *
+   * @type {webdriver.WebElement}
+   */
+  var feedbackTitle = element(by.css('.protractor-test-feedback-title'));
+
+  /**
    * Set of all of the feedback text paragraphs rendered in the DOM.
    *
    * @type {Array.<webdriver.WebElement>}
@@ -179,6 +186,15 @@ var QuestionPage = function() {
    */
   this.countFeedbackParagraphs = async function() {
     return await feedbackParagraphs.count();
+  };
+
+  /**
+   * Returns the content of the feedback title.
+   *
+   * @returns {string}
+   */
+  this.getFeedbackTitleText = async function(index) {
+    return await feedbackTitle.getText();
   };
 
   /**

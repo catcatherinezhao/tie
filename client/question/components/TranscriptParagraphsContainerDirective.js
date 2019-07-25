@@ -37,7 +37,7 @@ tie.directive('transcriptParagraphsContainer', [function() {
             &#9650;
           </button>
         </div>
-        <p class="tie-feedback-title" ng-if="!sessionTranscript[0].isCodeSubmission()">Snapshot {{currentSnapshotIndex}}</p>
+        <p class="tie-feedback-title protractor-test-feedback-title" ng-if="!sessionTranscript[0].isCodeSubmission()">Snapshot {{currentSnapshotIndex}}</p>
         <div class="tie-feedback-container" ng-repeat="paragraph in sessionTranscript track by $index" aria-live="assertive">
           <tie-feedback-content-container ng-if="currentFeedbackIndex == $index">
             <p ng-repeat="paragraph in paragraph.getFeedbackParagraphs() track by $index" class="tie-feedback-paragraph protractor-test-feedback-paragraph" ng-class="{'tie-feedback-paragraph-code': paragraph.isCodeParagraph()}">

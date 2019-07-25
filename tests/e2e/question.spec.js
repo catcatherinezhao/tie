@@ -82,12 +82,14 @@ describe('Question Page', function() {
     expect(await questionPage.isUpFeedbackButtonEnabled()).toBe(true);
     expect(await questionPage.isDownFeedbackButtonEnabled()).toBe(false);
     await questionPage.clickUpFeedbackButton();
+    expect(await questionPage.getFeedbackTitleText()).toEqual('Snapshot 1');
     expect(await questionPage.getFeedbackParagraphText(0)).toEqual(firstSubmissionFeedback);
     // There are only two feedback paragraphs, so the user can go to the next feedback
     // paragraph but should not be able to go to the previous paragraph.
     expect(await questionPage.isUpFeedbackButtonEnabled()).toBe(false);
     expect(await questionPage.isDownFeedbackButtonEnabled()).toBe(true);
     await questionPage.clickDownFeedbackButton();
+    expect(await questionPage.getFeedbackTitleText()).toEqual('Snapshot 2');
     expect(await questionPage.getFeedbackParagraphText(0)).toEqual(secondSubmissionFeedback);
   });
 
