@@ -226,7 +226,7 @@ tie.factory('FeedbackGeneratorService', [
         } else {
           feedback.appendTextParagraph('Error detected:');
         }
-        feedback.appendTextParagraph('<code>' + errorString + '</code>');
+        feedback.appendErrorParagraph(errorString);
         if (friendlySyntaxFeedbackString) {
           feedback.appendTextParagraph(friendlySyntaxFeedbackString);
         }
@@ -265,12 +265,11 @@ tie.factory('FeedbackGeneratorService', [
             "It looks like you're importing an external library. However, the ",
             'following libraries are not supported:\n'
           ].join(''));
-          feedback.appendTextParagraph('<code>' +
-            prereqCheckFailure.getBadImports().join('\n') + '</code>');
+          feedback.appendCodeParagraph(
+            prereqCheckFailure.getBadImports().join('\n'));
           feedback.appendTextParagraph(
             'Here is a list of libraries we currently support:\n');
-          feedback.appendTextParagraph('<code>' +
-            SUPPORTED_PYTHON_LIBS.join(', ') + '</code>');
+          feedback.appendCodeParagraph(SUPPORTED_PYTHON_LIBS.join(', '));
         } else if (prereqCheckFailure.hasGlobalCode()) {
           feedback = FeedbackObjectFactory.create(
             FEEDBACK_CATEGORIES.FAILS_GLOBAL_CODE_CHECK);
@@ -288,14 +287,12 @@ tie.factory('FeedbackGeneratorService', [
                 if (paragraph.type === PARAGRAPH_TYPE_TEXT) {
                   feedback.appendTextParagraph(paragraph.content);
                 } else if (paragraph.type === PARAGRAPH_TYPE_CODE) {
-                  feedback.appendTextParagraph('<code>' +
-                    paragraph.content + '</code>');
+                  feedback.appendCodeParagraph(paragraph.content);
                 } else if (paragraph.type === PARAGRAPH_TYPE_ERROR) {
                   feedback.appendTextParagraph(
                     'It looks like your code has a syntax error. ' +
                     'Try to figure out what the error is.');
-                  feedback.appendTextParagraph('<code>' + paragraph.content +
-                    '</code>');
+                  feedback.appendErrorParagraph(paragraph.content);
                 }
               });
 
@@ -314,12 +311,10 @@ tie.factory('FeedbackGeneratorService', [
             'Looks like your code had a runtime error. Here is the error ',
             'message: '
           ].join(''));
-          feedback.appendTextParagraph([
-            '<code>' +
+          feedback.appendCodeParagraph([
             'ForbiddenNamespaceError: It looks like you\'re trying to call ',
             'the ' + CLASS_NAME_AUXILIARY_CODE + ' class or its methods, ',
-            'which is forbidden. Please resubmit without using this class.' +
-            '</code>'
+            'which is forbidden. Please resubmit without using this class.'
           ].join(''));
         } else if (prereqCheckFailure.hasInvalidSystemCall()) {
           feedback = FeedbackObjectFactory.create(
@@ -328,12 +323,10 @@ tie.factory('FeedbackGeneratorService', [
             'Looks like your code had a runtime error. Here is the error ',
             'message: '
           ].join(''));
-          feedback.appendTextParagraph([
-            '<code>' +
+          feedback.appendCodeParagraph([
             'ForbiddenNamespaceError: It looks you\'re using the ' +
             CLASS_NAME_SYSTEM_CODE + ' class or its methods, which is ',
-            'forbidden. Please resubmit without using this class.' +
-            '</code>'
+            'forbidden. Please resubmit without using this class.'
           ].join(''));
         } else if (prereqCheckFailure.hasInvalidStudentCodeCall()) {
           feedback = FeedbackObjectFactory.create(
@@ -342,12 +335,10 @@ tie.factory('FeedbackGeneratorService', [
             'Looks like your code had a runtime error. Here is the error ',
             'message: '
           ].join(''));
-          feedback.appendTextParagraph([
-            '<code>' +
+          feedback.appendCodeParagraph([
             'ForbiddenNamespaceError: It looks you\'re trying to call the ' +
             CLASS_NAME_STUDENT_CODE + ' class or its methods, which is ',
-            'forbidden. Please resubmit without using this class.' +
-            '</code>'
+            'forbidden. Please resubmit without using this class.'
           ].join(''));
         } else {
           // Prereq check failure type not handled; throw an error.
@@ -475,7 +466,7 @@ tie.factory('FeedbackGeneratorService', [
           feedback.appendTextParagraph(
             'Looks like your code had a runtime error when evaluating the ' +
             'input ' + _jsToHumanReadable(errorInput) + '.');
-          feedback.appendTextParagraph('<code>' + errorString + '</code>');
+          feedback.appendErrorParagraph(errorString);
         }
         if (languageUnfamiliarityFeedbackIsNeeded) {
           feedback.appendTextParagraph(
@@ -530,42 +521,34 @@ tie.factory('FeedbackGeneratorService', [
           // Allow the user to view the input of the failing test.
           feedback.appendTextParagraph(
             _getCorrectnessFeedbackString(correctnessState));
-          feedback.appendTextParagraph(
-              '<code>' +
-              'Input: ' + _jsToHumanReadable(testCase.getInput()) +
-              '</code>');
+          feedback.appendCodeParagraph(
+              'Input: ' + _jsToHumanReadable(testCase.getInput()));
         } else if (
           correctnessState === CORRECTNESS_STATE_EXPECTED_OUTPUT_DISPLAYED) {
           // Allow the user to view the expected output of the failing test.
           feedback.appendTextParagraph(
             _getCorrectnessFeedbackString(correctnessState));
-          feedback.appendTextParagraph(
-              '<code>' +
+          feedback.appendOutputParagraph(
               'Input: ' + _jsToHumanReadable(testCase.getInput()) + '\n' +
-              'Expected Output: ' + _jsToHumanReadable(allowedOutputExample) +
-              '</code>');
+              'Expected Output: ' + _jsToHumanReadable(allowedOutputExample));
         } else if (
           correctnessState === CORRECTNESS_STATE_OBSERVED_OUTPUT_DISPLAYED) {
           // Allow the user to view the output produced by their code for the
           // failing test.
           feedback.appendTextParagraph(
             _getCorrectnessFeedbackString(correctnessState));
-          feedback.appendTextParagraph(
-              '<code>' +
+          feedback.appendOutputParagraph(
               'Input: ' + _jsToHumanReadable(testCase.getInput()) +
               '\nExpected Output: ' + _jsToHumanReadable(allowedOutputExample) +
-              '\nActual Output: ' + _jsToHumanReadable(observedOutput) +
-              '</code>');
+              '\nActual Output: ' + _jsToHumanReadable(observedOutput));
         } else if (
           correctnessState === CORRECTNESS_STATE_NO_MORE_FEEDBACK) {
           feedback.appendTextParagraph(
             _getCorrectnessFeedbackString(correctnessState));
-          feedback.appendTextParagraph(
-              '<code>' +
+          feedback.appendOutputParagraph(
               'Input: ' + _jsToHumanReadable(testCase.getInput()) +
               '\nExpected Output: ' + _jsToHumanReadable(allowedOutputExample) +
-              '\nActual Output: ' + _jsToHumanReadable(observedOutput) +
-              '</code>');
+              '\nActual Output: ' + _jsToHumanReadable(observedOutput));
         } else {
           throw Error('Invalid correctness state: ' + correctnessState);
         }

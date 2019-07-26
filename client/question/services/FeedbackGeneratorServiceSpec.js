@@ -164,8 +164,8 @@ describe('FeedbackGeneratorService', function() {
       expect(
         CORRECTNESS_FEEDBACK_TEXT[CORRECTNESS_STATE_INPUT_DISPLAYED]
       ).toContain(correctnessFeedbackParagraphs[0].getContent());
-      expect(correctnessFeedbackParagraphs[1].isTextParagraph()).toEqual(true);
-      var expectedInputCodeParagraph = '<code>Input: "Hi, world"</code>';
+      expect(correctnessFeedbackParagraphs[1].isCodeParagraph()).toEqual(true);
+      var expectedInputCodeParagraph = 'Input: "Hi, world"';
       expect(correctnessFeedbackParagraphs[1].getContent()).toEqual(
         expectedInputCodeParagraph);
     });
@@ -184,10 +184,12 @@ describe('FeedbackGeneratorService', function() {
       expect(
         CORRECTNESS_FEEDBACK_TEXT[CORRECTNESS_STATE_EXPECTED_OUTPUT_DISPLAYED]
       ).toContain(correctnessFeedbackParagraphs[0].getContent());
-      expect(correctnessFeedbackParagraphs[1].isTextParagraph()).toEqual(true);
+      expect(
+        correctnessFeedbackParagraphs[1].isOutputParagraph()
+      ).toEqual(true);
       var expectedExpectedOutputParagraph =
-        '<code>Input: "Hi, world"\n' +
-        'Expected Output: "iH, dlrow"</code>';
+        'Input: "Hi, world"\n' +
+        'Expected Output: "iH, dlrow"';
       expect(correctnessFeedbackParagraphs[1].getContent()).toEqual(
         expectedExpectedOutputParagraph);
     });
@@ -206,14 +208,12 @@ describe('FeedbackGeneratorService', function() {
       expect(
         CORRECTNESS_FEEDBACK_TEXT[CORRECTNESS_STATE_OBSERVED_OUTPUT_DISPLAYED]
       ).toContain(correctnessFeedbackParagraphs[0].getContent());
-      expect(correctnessFeedbackParagraphs[1].isTextParagraph()).toEqual(
+      expect(correctnessFeedbackParagraphs[1].isOutputParagraph()).toEqual(
         true);
       var expectedOutputParagraph =
-        '<code>' +
         'Input: "Hi, world"\n' +
         'Expected Output: "iH, dlrow"\n' +
-        'Actual Output: "yeH, uoyerawoh"' +
-        '</code>';
+        'Actual Output: "yeH, uoyerawoh"';
       expect(correctnessFeedbackParagraphs[1].getContent()).toEqual(
         expectedOutputParagraph);
     });
@@ -233,14 +233,12 @@ describe('FeedbackGeneratorService', function() {
       expect(
         CORRECTNESS_FEEDBACK_TEXT[CORRECTNESS_STATE_NO_MORE_FEEDBACK]
       ).toContain(correctnessFeedbackParagraphs[0].getContent());
-      expect(correctnessFeedbackParagraphs[1].isTextParagraph()).toEqual(
+      expect(correctnessFeedbackParagraphs[1].isOutputParagraph()).toEqual(
         true);
       var expectedOutputParagraph =
-        '<code>' +
         'Input: "Hi, world"\n' +
         'Expected Output: "iH, dlrow"\n' +
-        'Actual Output: "yeH, uoyerawoh"' +
-        '</code>';
+        'Actual Output: "yeH, uoyerawoh"';
       expect(correctnessFeedbackParagraphs[1].getContent()).toEqual(
         expectedOutputParagraph);
     });
@@ -333,9 +331,9 @@ describe('FeedbackGeneratorService', function() {
         'Looks like your code had a runtime error when evaluating the input ' +
         '"testInput".'
       ].join(''));
-      expect(paragraphs[1].isTextParagraph()).toBe(true);
+      expect(paragraphs[1].isErrorParagraph()).toBe(true);
       expect(paragraphs[1].getContent()).toBe(
-        '<code>ZeroDivisionError: integer division or modulo by zero</code>');
+        'ZeroDivisionError: integer division or modulo by zero');
     });
 
     it('should throw an error if the line number index is less than 0',
@@ -401,9 +399,9 @@ describe('FeedbackGeneratorService', function() {
         'Looks like your code had a runtime error when evaluating the input ' +
         '"testInput".'
       ].join(''));
-      expect(paragraphs[1].isTextParagraph()).toBe(true);
+      expect(paragraphs[1].isErrorParagraph()).toBe(true);
       expect(paragraphs[1].getContent()).toBe(
-        '<code>ZeroDivisionError: integer division or modulo by zero</code>');
+        'ZeroDivisionError: integer division or modulo by zero');
     });
 
     it('should correctly handle errors due to the test code', function() {
@@ -424,9 +422,9 @@ describe('FeedbackGeneratorService', function() {
         'Looks like your code had a runtime error when evaluating the input ' +
         '"testInput".'
       ].join(''));
-      expect(paragraphs[1].isTextParagraph()).toBe(true);
+      expect(paragraphs[1].isErrorParagraph()).toBe(true);
       expect(paragraphs[1].getContent()).toBe(
-        '<code>ZeroDivisionError: integer division or modulo by zero</code>');
+        'ZeroDivisionError: integer division or modulo by zero');
     });
   });
 
@@ -602,11 +600,11 @@ describe('FeedbackGeneratorService', function() {
         FEEDBACK_CATEGORIES.SYNTAX_ERROR);
       expect(paragraphs.length).toEqual(2);
       expect(paragraphs[0].isTextParagraph()).toBe(true);
-      expect(paragraphs[1].isTextParagraph()).toBe(true);
+      expect(paragraphs[1].isErrorParagraph()).toBe(true);
       expect(paragraphs[0].getContent()).toBe(
           'Error detected on or near line 5:');
       expect(paragraphs[1].getContent()).toBe(
-        '<code>ZeroDivisionError: integer division or modulo by zero</code>');
+        'ZeroDivisionError: integer division or modulo by zero');
     });
 
     it('should correctly append language unfamiliarity feedback if ' +
@@ -624,9 +622,9 @@ describe('FeedbackGeneratorService', function() {
       expect(paragraphs[0].isTextParagraph()).toBe(true);
       expect(paragraphs[0].getContent()).toBe(
           'Error detected on or near line 5:');
-      expect(paragraphs[1].isTextParagraph()).toBe(true);
+      expect(paragraphs[1].isErrorParagraph()).toBe(true);
       expect(paragraphs[1].getContent()).toEqual(
-        '<code>ZeroDivisionError: integer division or modulo by zero</code>');
+        'ZeroDivisionError: integer division or modulo by zero');
       expect(paragraphs[2].isTextParagraph()).toBe(true);
       expect(paragraphs[2].getContent()).toEqual(
         FeedbackGeneratorService._getUnfamiliarLanguageFeedback(
@@ -787,9 +785,9 @@ describe('FeedbackGeneratorService', function() {
         'Looks like your code had a runtime error when evaluating the input ' +
         '"testInput".'
       ].join(''));
-      expect(paragraphs[1].isTextParagraph()).toBe(true);
+      expect(paragraphs[1].isErrorParagraph()).toBe(true);
       expect(paragraphs[1].getContent()).toBe(
-        '<code>ZeroDivisionError: integer division or modulo by zero</code>');
+        'ZeroDivisionError: integer division or modulo by zero');
       expect(paragraphs[2].isTextParagraph()).toBe(true);
       expect(paragraphs[2].getContent()).toBe(
         FeedbackGeneratorService._getUnfamiliarLanguageFeedback(
@@ -842,11 +840,11 @@ describe('FeedbackGeneratorService', function() {
         "It looks like you're importing an external library. However, the ",
         'following libraries are not supported:\n'
       ].join(''));
-      expect(paragraphs[1].getContent()).toEqual('<code>panda</code>');
+      expect(paragraphs[1].getContent()).toEqual('panda');
       expect(paragraphs[2].getContent()).toEqual('Here is a list of libraries' +
         ' we currently support:\n');
-      expect(paragraphs[3].getContent()).toEqual('<code>collections, ' +
-        'math, operator, random, re, string, time</code>');
+      expect(paragraphs[3].getContent()).toEqual('collections, ' +
+        'math, operator, random, re, string, time');
       expect(feedback.getFeedbackCategory()).toEqual(
         FEEDBACK_CATEGORIES.FAILS_BAD_IMPORT_CHECK);
     });
@@ -1001,7 +999,7 @@ describe('FeedbackGeneratorService', function() {
         "packages. In Python, your imports should be in the format: "
       ].join(''));
       expect(paragraphs[1].getContent()).toEqual(
-          "<code>import [insert package name here]</code>");
+          "import [insert package name here]");
     });
 
     it('should throw an error if it uses a NOT operator that is not valid ' +
@@ -1058,11 +1056,11 @@ describe('FeedbackGeneratorService', function() {
         ].join(' '));
         expect(paragraphs[0].isTextParagraph()).toBe(true);
         expect(paragraphs[1].getContent()).toEqual([
-          '<code>ForbiddenNamespaceError: It looks like you\'re trying to ',
+          'ForbiddenNamespaceError: It looks like you\'re trying to ',
           'call the AuxiliaryCode class or its methods, which is forbidden. ',
-          'Please resubmit without using this class.</code>'
+          'Please resubmit without using this class.'
         ].join(''));
-        expect(paragraphs[1].isTextParagraph()).toBe(true);
+        expect(paragraphs[1].isCodeParagraph()).toBe(true);
         expect(feedback.getFeedbackCategory()).toEqual(
           FEEDBACK_CATEGORIES.FAILS_FORBIDDEN_NAMESPACE_CHECK);
       }
@@ -1082,11 +1080,11 @@ describe('FeedbackGeneratorService', function() {
         ].join(' '));
         expect(paragraphs[0].isTextParagraph()).toBe(true);
         expect(paragraphs[1].getContent()).toEqual([
-          '<code>ForbiddenNamespaceError: It looks you\'re using the System ',
+          'ForbiddenNamespaceError: It looks you\'re using the System ',
           'class or its methods, which is forbidden. Please resubmit without ',
-          'using this class.</code>'
+          'using this class.'
         ].join(''));
-        expect(paragraphs[1].isTextParagraph()).toBe(true);
+        expect(paragraphs[1].isCodeParagraph()).toBe(true);
         expect(feedback.getFeedbackCategory()).toEqual(
           FEEDBACK_CATEGORIES.FAILS_FORBIDDEN_NAMESPACE_CHECK);
       }
@@ -1106,11 +1104,11 @@ describe('FeedbackGeneratorService', function() {
         ].join(' '));
         expect(paragraphs[0].isTextParagraph()).toBe(true);
         expect(paragraphs[1].getContent()).toEqual([
-          '<code>ForbiddenNamespaceError: It looks you\'re trying to call the ',
+          'ForbiddenNamespaceError: It looks you\'re trying to call the ',
           'StudentCode class or its methods, which is forbidden. Please ',
-          'resubmit without using this class.</code>'
+          'resubmit without using this class.'
         ].join(''));
-        expect(paragraphs[1].isTextParagraph()).toBe(true);
+        expect(paragraphs[1].isCodeParagraph()).toBe(true);
         expect(feedback.getFeedbackCategory()).toEqual(
           FEEDBACK_CATEGORIES.FAILS_FORBIDDEN_NAMESPACE_CHECK);
       }

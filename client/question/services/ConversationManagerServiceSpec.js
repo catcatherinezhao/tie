@@ -309,7 +309,7 @@ describe('ConversationManagerService', function() {
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
           [["It looks like you're importing an external library. However, ",
             'the following libraries are not supported:\n'].join(''),
-            '<code>pandas</code>'],
+            'pandas'],
           null, false, function(submissionResult) {
             var errorMessages = [];
             var feedback = submissionResult.getFeedback();
@@ -318,7 +318,7 @@ describe('ConversationManagerService', function() {
               errorMessages.append('Bad content in 3rd paragraph');
             }
             if (feedback.getParagraphs()[3].getContent() !==
-                '<code>' + SUPPORTED_PYTHON_LIBS.join(', ') + '</code>') {
+                SUPPORTED_PYTHON_LIBS.join(', ')) {
               errorMessages.append('Bad content in 4th paragraph');
             }
 
@@ -366,7 +366,7 @@ describe('ConversationManagerService', function() {
         ].join('\n'),
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
           ['Error detected on or near line 2:',
-            '<code>SyntaxError: bad input</code>'],
+            'SyntaxError: bad input'],
             null)
       }]);
     });
@@ -383,8 +383,8 @@ describe('ConversationManagerService', function() {
         ].join('\n'),
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
           ['Error detected on or near line 3:',
-            '<code>IndentationError: unindent does not match any outer ' +
-            'indentation level</code>',
+            'IndentationError: unindent does not match any outer ' +
+            'indentation level',
             'It looks like your code has some inconsistencies with ' +
             'indentation. Double-check that you indent after every statement ' +
             'that ends with a ":" and un-indent when necessary.'],
@@ -445,7 +445,7 @@ describe('ConversationManagerService', function() {
       verifySubmissions([], done, [{
         code: codeThatFailsBuggyOutputForTaskTwo,
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
-          [null, "<code>Input: \"task1suite1test1\"</code>"])
+          [null, "Input: \"task1suite1test1\""])
       }]);
     });
 
@@ -667,7 +667,7 @@ describe('ConversationManagerService', function() {
       verifySubmissions([], done, [{
         code: codeThatFailsFirstTaskOnly,
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
-          [null, '<code>Input: "task1suite1test1"</code>'])
+          [null, 'Input: "task1suite1test1"'])
       }]);
     });
 
@@ -675,7 +675,7 @@ describe('ConversationManagerService', function() {
       verifySubmissions([], done, [{
         code: codeThatFailsSecondTaskOnly,
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
-          [null, '<code>Input: "first test in task2!!!"</code>'])
+          [null, 'Input: "first test in task2!!!"'])
       }]);
     });
 
@@ -683,7 +683,7 @@ describe('ConversationManagerService', function() {
       verifySubmissions([], done, [{
         code: codeThatFailsBothTasks,
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
-          [null, '<code>Input: "task1suite1test1"</code>'])
+          [null, 'Input: "task1suite1test1"'])
       }]);
     });
   });
@@ -701,7 +701,7 @@ describe('ConversationManagerService', function() {
       verifySubmissions([], done, [{
         code: codeThatPrintsAndFailsFinalTest,
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
-          [null, '<code>Input: "absolutely final test!"</code>'],
+          [null, 'Input: "absolutely final test!"'],
           'absolutely final test!\n')
       }]);
     });
@@ -710,7 +710,7 @@ describe('ConversationManagerService', function() {
       verifySubmissions([], done, [{
         code: codeThatPrintsAndFailsSecondTaskOnly,
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
-          [null, '<code>Input: "first test in task2!!!"</code>'],
+          [null, 'Input: "first test in task2!!!"'],
           'first test in task2!!!\n')
       }]);
     });
@@ -719,7 +719,7 @@ describe('ConversationManagerService', function() {
       verifySubmissions([], done, [{
         code: codeThatPrintsAndFailsBothTasks,
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
-          [null, '<code>Input: "task1suite1test1"</code>'],
+          [null, 'Input: "task1suite1test1"'],
           'task1suite1test1\n')
       }]);
     });

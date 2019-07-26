@@ -45,6 +45,15 @@ tie.directive('transcriptParagraphsContainer', [function() {
                 <html-with-markdown-links-snippet content="paragraph.getContent()">
                 </html-with-markdown-links-snippet>
               </span>
+              <span class="tie-code-paragraph" ng-if="paragraph.isCodeParagraph()">
+                {{paragraph.getContent()}}
+              </span>
+              <span class="tie-error-paragraph" ng-if="paragraph.isErrorParagraph()">
+                {{paragraph.getContent()}}
+              </span>
+              <span class="tie-output-paragraph" ng-if="paragraph.isOutputParagraph()">
+                {{paragraph.getContent()}}
+              </span>
               <span ng-if="paragraph.isImageParagraph()">
                 <img class="tie-question-completion-image" ng-src="../assets/images/{{paragraph.getContent()}}">
               </span>
@@ -115,6 +124,9 @@ tie.directive('transcriptParagraphsContainer', [function() {
         }
         .tie-display-dots {
           opacity: 1;
+        }
+        .tie-code-paragraph, .tie-error-paragraph, .tie-output-paragraph {
+          font-family: monospace;
         }
         .tie-feedback-paragraph {
           width: 100%;
