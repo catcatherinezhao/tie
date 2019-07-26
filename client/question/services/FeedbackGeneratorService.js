@@ -195,7 +195,7 @@ tie.factory('FeedbackGeneratorService', [
       if (language === LANGUAGE_PYTHON) {
         return [
           "Seems like you're having some trouble with Python. If you need ",
-          "check out the [primer](primer-url#strings)."
+          "help, check out the [primer](primer-url#strings)."
         ].join('');
       } else {
         return '';

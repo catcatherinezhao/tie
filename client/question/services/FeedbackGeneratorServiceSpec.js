@@ -763,7 +763,7 @@ describe('FeedbackGeneratorService', function() {
       expect(paragraphs[0].isTextParagraph()).toBe(true);
       expect(paragraphs[1].getContent()).toEqual(
           "Seems like you're having some trouble with Python. If you need " +
-          "check out the [primer](primer-url#strings).");
+          "help, check out the [primer](primer-url#strings).");
       expect(paragraphs[1].isTextParagraph()).toBe(true);
     });
 

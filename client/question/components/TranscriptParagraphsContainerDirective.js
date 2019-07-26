@@ -175,8 +175,8 @@ tie.directive('transcriptParagraphsContainer', [function() {
         $scope.feedbackTranscriptParagraphs = [];
 
         /**
-         * Sets a variable to the index of the current feedback displayed
-         * in the feedback window.
+         * Sets a variable to the index of the current feedback statement
+         * displayed in the feedback window.
          */
         $scope.currentFeedbackIndex = 0;
 
@@ -215,8 +215,8 @@ tie.directive('transcriptParagraphsContainer', [function() {
          * and enables or disables the buttons.
          */
         $scope.checkButtonEnabledOrDisabled = function() {
-          // When there are no more previous feedback to go back to in the
-          // session transcript, disable the up button.
+          // When there are no more previous feedback statements to go back to
+          // in the session transcript, disable the up button.
           if ($scope.feedbackTranscriptParagraphs.length > 1 &&
             $scope.currentFeedbackIndex <
             $scope.feedbackTranscriptParagraphs.length - 1) {
@@ -224,7 +224,7 @@ tie.directive('transcriptParagraphsContainer', [function() {
           } else {
             $scope.upButtonIsDisabled = true;
           }
-          // When there are no more feedback to go forward to in the
+          // When there are no more feedback statements to go forward to in the
           // session transcript, disable the down button.
           if ($scope.currentFeedbackIndex === 0) {
             $scope.downButtonIsDisabled = true;
@@ -240,9 +240,9 @@ tie.directive('transcriptParagraphsContainer', [function() {
         $scope.onUpButtonPress = function() {
           if ($scope.currentFeedbackIndex <
             $scope.feedbackTranscriptParagraphs.length) {
-            // The most recent feedback is appended to the front of the session
-            // transcript, so to go back to the previous feedback paragraph the
-            // index is increased.
+            // The most recent feedback statement is appended to the front of
+            // the session transcript, so to go back to the previous feedback
+            // statement the index is increased.
             $scope.currentFeedbackIndex += 1;
           } else {
             throw Error('Current feedback index is out of range.');
@@ -258,9 +258,9 @@ tie.directive('transcriptParagraphsContainer', [function() {
          */
         $scope.onDownButtonPress = function() {
           if ($scope.currentFeedbackIndex - 1 >= 0) {
-            // The most recent feedback is appended to the front of the session
-            // transcript, so to go forward to the next feedback paragraph the
-            // index is increased.
+            // The most recent feedback statement is appended to the front of
+            // the session transcript, so to go forward to the next feedback
+            // statement the index is increased.
             $scope.currentFeedbackIndex -= 1;
           } else {
             throw Error('Current feedback index is out of range.');
@@ -276,7 +276,7 @@ tie.directive('transcriptParagraphsContainer', [function() {
          * changes.
          */
         $scope.$watch('sessionTranscript.length', function() {
-          // Display the most recent feedback in the feedback window.
+          // Display the most recent feedback statement in the feedback window.
           $scope.currentFeedbackIndex = 0;
           // Get new feedback paragraphs.
           $scope.feedbackTranscriptParagraphs =
