@@ -48,7 +48,7 @@ tie.directive('learnerView', [function() {
             </div>
             <div class="tie-window-container">
               <div class="tie-feedback-ui protractor-test-feedback-ui">
-                <div class="tie-feedback-window">
+                <div class="tie-feedback-window" ng-if="feedbackIsSupported">
                   <div class="tie-feedback-container" ng-class="{'pulse-animation-enabled': pulseAnimationEnabled}">
                     <pre class="tie-feedback-text" ng-if="!feedbackIsDisplayed">{{feedbackWindowMessage}}</pre>
                     <transcript-paragraphs-container ng-if="feedbackIsDisplayed"></transcript-paragraphs-container>
@@ -543,13 +543,14 @@ tie.directive('learnerView', [function() {
       'EventHandlerService', 'LocalStorageService',
       'ServerHandlerService', 'SessionIdService', 'ThemeNameService',
       'UnpromptedFeedbackManagerService', 'CurrentQuestionService',
-      'PrintTerminalService', 'ParentPageService', 'ALL_SUPPORTED_LANGUAGES',
-      'SUPPORTED_LANGUAGE_LABELS', 'SessionHistoryService', 'AutosaveService',
-      'SECONDS_TO_MILLISECONDS', 'CODE_CHANGE_DEBOUNCE_SECONDS',
-      'DISPLAY_AUTOSAVE_TEXT_SECONDS', 'SERVER_URL', 'DEFAULT_QUESTION_ID',
-      'FEEDBACK_CATEGORIES', 'DEFAULT_EVENT_BATCH_PERIOD_SECONDS',
-      'DELAY_STYLE_CHANGES', 'CODE_RESET_CONFIRMATION_MESSAGE', 'PRIVACY_URL',
-      'ABOUT_TIE_URL', 'ABOUT_TIE_LABEL', 'TERMS_OF_USE_URL',
+      'FeedbackDisplayService', 'PrintTerminalService', 'ParentPageService',
+      'ALL_SUPPORTED_LANGUAGES', 'SUPPORTED_LANGUAGE_LABELS',
+      'SessionHistoryService', 'AutosaveService', 'SECONDS_TO_MILLISECONDS',
+      'CODE_CHANGE_DEBOUNCE_SECONDS', 'DISPLAY_AUTOSAVE_TEXT_SECONDS',
+      'SERVER_URL', 'DEFAULT_QUESTION_ID', 'FEEDBACK_CATEGORIES',
+      'DEFAULT_EVENT_BATCH_PERIOD_SECONDS', 'DELAY_STYLE_CHANGES',
+      'CODE_RESET_CONFIRMATION_MESSAGE', 'PRIVACY_URL', 'ABOUT_TIE_URL',
+      'ABOUT_TIE_LABEL', 'TERMS_OF_USE_URL',
       function(
           $scope, $interval, $timeout, $location, $window,
           ConversationManagerService, QuestionDataService, LANGUAGE_PYTHON,
@@ -557,13 +558,14 @@ tie.directive('learnerView', [function() {
           EventHandlerService, LocalStorageService,
           ServerHandlerService, SessionIdService, ThemeNameService,
           UnpromptedFeedbackManagerService, CurrentQuestionService,
-          PrintTerminalService, ParentPageService, ALL_SUPPORTED_LANGUAGES,
-          SUPPORTED_LANGUAGE_LABELS, SessionHistoryService, AutosaveService,
-          SECONDS_TO_MILLISECONDS, CODE_CHANGE_DEBOUNCE_SECONDS,
-          DISPLAY_AUTOSAVE_TEXT_SECONDS, SERVER_URL, DEFAULT_QUESTION_ID,
-          FEEDBACK_CATEGORIES, DEFAULT_EVENT_BATCH_PERIOD_SECONDS,
-          DELAY_STYLE_CHANGES, CODE_RESET_CONFIRMATION_MESSAGE, PRIVACY_URL,
-          ABOUT_TIE_URL, ABOUT_TIE_LABEL, TERMS_OF_USE_URL) {
+          FeedbackDisplayService, PrintTerminalService, ParentPageService,
+          ALL_SUPPORTED_LANGUAGES, SUPPORTED_LANGUAGE_LABELS,
+          SessionHistoryService, AutosaveService, SECONDS_TO_MILLISECONDS,
+          CODE_CHANGE_DEBOUNCE_SECONDS, DISPLAY_AUTOSAVE_TEXT_SECONDS,
+          SERVER_URL, DEFAULT_QUESTION_ID, FEEDBACK_CATEGORIES,
+          DEFAULT_EVENT_BATCH_PERIOD_SECONDS, DELAY_STYLE_CHANGES,
+          CODE_RESET_CONFIRMATION_MESSAGE, PRIVACY_URL, ABOUT_TIE_URL,
+          ABOUT_TIE_LABEL, TERMS_OF_USE_URL) {
         $scope.PRIVACY_URL = PRIVACY_URL;
         $scope.ABOUT_TIE_URL = ABOUT_TIE_URL;
         $scope.ABOUT_TIE_LABEL = ABOUT_TIE_LABEL;
@@ -645,6 +647,13 @@ tie.directive('learnerView', [function() {
          * Defines the output to be displayed.
          */
         $scope.stdout = "Click 'Run' to see the output of your code.";
+
+        /**
+         * Defines whether feedback is supported, and thus whether the feedback
+         * window should be displayed.
+         */
+        $scope.feedbackIsSupported =
+          FeedbackDisplayService.isFeedbackSupported();
 
         /**
          * Defines whether printing is supported, and thus whether the print
@@ -1185,7 +1194,9 @@ tie.directive('learnerView', [function() {
          * Sets the question window to scroll to the top.
          */
         $scope.scrollToTopOfFeedbackWindow = function() {
-          feedbackWindowDiv.scrollTop = 0;
+          if ($scope.isFeedbackSupported) {
+            feedbackWindowDiv.scrollTop = 0;
+          }
         };
 
         /**

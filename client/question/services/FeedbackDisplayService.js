@@ -1,4 +1,4 @@
-// Copyright 2019 The TIE Authors. All Rights Reserved.
+// Copyright 2017 The TIE Authors. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@
  * @fileoverview Service that provides a way to run different methods on the
  * feedback-enabled and feedback-disabled versions of TIE.
  */
-tie.factory('FeedbackWindowService', [
-  'ALLOW_FEEDBACK', function(ALLOW_FEEDBACK) {
+tie.factory('FeedbackDisplayService', [
+  'ALLOW_FEEDBACK',
+  function(ALLOW_FEEDBACK) {
     return {
       /**
-       * Returns whether or not providing feedback is supported.
+       * Returns whether or not displaying the feedback window is supported.
        *
        * @return {boolean} True if feedback is supported, false if not.
        */
