@@ -24,9 +24,9 @@ tie.factory('FeedbackGeneratorService', [
   'FRIENDLY_SYNTAX_ERROR_TRANSLATIONS', 'FRIENDLY_RUNTIME_ERROR_TRANSLATIONS',
   'WRONG_LANGUAGE_ERRORS', 'LANGUAGE_PYTHON', 'CLASS_NAME_AUXILIARY_CODE',
   'CLASS_NAME_SYSTEM_CODE', 'CLASS_NAME_STUDENT_CODE', 'PARAGRAPH_TYPE_TEXT',
-  'PARAGRAPH_TYPE_CODE', 'PARAGRAPH_TYPE_ERROR', 'PYTHON_PRIMER_BUTTON_NAME',
-  'CORRECTNESS_FEEDBACK_TEXT', 'FEEDBACK_CATEGORIES',
-  'TEST_SUITE_ID_SAMPLE_INPUT', 'CORRECTNESS_STATE_INPUT_DISPLAYED',
+  'PARAGRAPH_TYPE_CODE', 'PARAGRAPH_TYPE_ERROR', 'CORRECTNESS_FEEDBACK_TEXT',
+  'FEEDBACK_CATEGORIES', 'TEST_SUITE_ID_SAMPLE_INPUT',
+  'CORRECTNESS_STATE_INPUT_DISPLAYED',
   'CORRECTNESS_STATE_EXPECTED_OUTPUT_DISPLAYED',
   'CORRECTNESS_STATE_OBSERVED_OUTPUT_DISPLAYED',
   'CORRECTNESS_STATE_NO_MORE_FEEDBACK',
@@ -36,9 +36,9 @@ tie.factory('FeedbackGeneratorService', [
     FRIENDLY_SYNTAX_ERROR_TRANSLATIONS, FRIENDLY_RUNTIME_ERROR_TRANSLATIONS,
     WRONG_LANGUAGE_ERRORS, LANGUAGE_PYTHON, CLASS_NAME_AUXILIARY_CODE,
     CLASS_NAME_SYSTEM_CODE, CLASS_NAME_STUDENT_CODE, PARAGRAPH_TYPE_TEXT,
-    PARAGRAPH_TYPE_CODE, PARAGRAPH_TYPE_ERROR, PYTHON_PRIMER_BUTTON_NAME,
-    CORRECTNESS_FEEDBACK_TEXT, FEEDBACK_CATEGORIES,
-    TEST_SUITE_ID_SAMPLE_INPUT, CORRECTNESS_STATE_INPUT_DISPLAYED,
+    PARAGRAPH_TYPE_CODE, PARAGRAPH_TYPE_ERROR, CORRECTNESS_FEEDBACK_TEXT,
+    FEEDBACK_CATEGORIES, TEST_SUITE_ID_SAMPLE_INPUT,
+    CORRECTNESS_STATE_INPUT_DISPLAYED,
     CORRECTNESS_STATE_EXPECTED_OUTPUT_DISPLAYED,
     CORRECTNESS_STATE_OBSERVED_OUTPUT_DISPLAYED,
     CORRECTNESS_STATE_NO_MORE_FEEDBACK) {
@@ -194,9 +194,8 @@ tie.factory('FeedbackGeneratorService', [
     var _getUnfamiliarLanguageFeedback = function(language) {
       if (language === LANGUAGE_PYTHON) {
         return [
-          "Seems like you're having some trouble with Python. Why ",
-          "don't you take a look at the page linked through the '",
-          PYTHON_PRIMER_BUTTON_NAME + "' button at the bottom of the screen?"
+          "Seems like you're having some trouble with Python. If you need ",
+          "help, check out the [primer](primer-url#strings)."
         ].join('');
       } else {
         return '';
@@ -227,7 +226,7 @@ tie.factory('FeedbackGeneratorService', [
         } else {
           feedback.appendTextParagraph('Error detected:');
         }
-        feedback.appendTextParagraph('<code>' + errorString + '</code>');
+        feedback.appendErrorParagraph(errorString);
         if (friendlySyntaxFeedbackString) {
           feedback.appendTextParagraph(friendlySyntaxFeedbackString);
         }
@@ -256,10 +255,9 @@ tie.factory('FeedbackGeneratorService', [
           feedback.appendTextParagraph([
             'It looks like you deleted or modified the starter code!  Our ',
             'evaluation program requires the function names given in the ',
-            'starter code.  You can press the \'Reset Code\' button to start ',
-            'over.  Or, you can copy the starter code below:'
+            'starter code.  You can click the \'Starter Code\' snapshot in ',
+            'the previous snapshots dropdown to start over.'
           ].join(''));
-          feedback.appendCodeParagraph(prereqCheckFailure.getStarterCode());
         } else if (prereqCheckFailure.isBadImport()) {
           feedback = FeedbackObjectFactory.create(
             FEEDBACK_CATEGORIES.FAILS_BAD_IMPORT_CHECK);
@@ -530,7 +528,7 @@ tie.factory('FeedbackGeneratorService', [
           // Allow the user to view the expected output of the failing test.
           feedback.appendTextParagraph(
             _getCorrectnessFeedbackString(correctnessState));
-          feedback.appendCodeParagraph(
+          feedback.appendOutputParagraph(
               'Input: ' + _jsToHumanReadable(testCase.getInput()) + '\n' +
               'Expected Output: ' + _jsToHumanReadable(allowedOutputExample));
         } else if (

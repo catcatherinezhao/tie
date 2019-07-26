@@ -32,7 +32,7 @@
       * user code
       * @param {string} stdout Output from user code
       */
-     var LearnerViewSubmissionResult = function(feedback, stdout) {
+     var LearnerViewSubmissionResult = function(feedback, stdout, syntaxError) {
        /**
         * @type {Feedback}
         * @private
@@ -44,6 +44,12 @@
         * @private
         */
        this._stdout = stdout;
+
+       /**
+        * @type {string}
+        * @private
+        */
+       this._syntaxError = syntaxError;
      };
 
      // Instance methods.
@@ -71,6 +77,16 @@
        return this._stdout;
      };
 
+     /**
+      * A getter for the _syntaxError property.
+      * It should return a string with the syntax error in the code submission.
+      *
+      * @returns {string}
+      */
+     LearnerViewSubmissionResult.prototype.getSyntaxError = function() {
+       return this._syntaxError;
+     };
+
      // Static class methods.
      /**
       * This method creates and returns a LearnerViewSubmissionResult object
@@ -82,8 +98,8 @@
       * @returns {LearnerViewSubmissionResult}
       */
      LearnerViewSubmissionResult.create = function(
-       feedback, stdout) {
-       return new LearnerViewSubmissionResult(feedback, stdout);
+       feedback, stdout, syntaxError) {
+       return new LearnerViewSubmissionResult(feedback, stdout, syntaxError);
      };
 
      return LearnerViewSubmissionResult;

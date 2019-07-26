@@ -35,11 +35,11 @@ var QuestionPage = function() {
   var tieWrapperElement = element(by.css('.protractor-test-tie-wrapper'));
 
   /**
-   * Question UI element.
+   * Feedback UI element.
    *
    * @type {webdriver.WebElement}
    */
-  var questionUiElement = element(by.css('.protractor-test-question-ui'));
+  var feedbackUiElement = element(by.css('.protractor-test-feedback-ui'));
 
   /**
    * Coding UI element.
@@ -49,11 +49,25 @@ var QuestionPage = function() {
   var codingUiElement = element(by.css('.protractor-test-coding-ui'));
 
   /**
+   * Output UI element.
+   *
+   * @type {webdriver.WebElement}
+   */
+  var outputUiElement = element(by.css('.protractor-test-output-ui'));
+
+  /**
    * Run Code button.
    *
    * @type {webdriver.WebElement}
    */
   var runCodeButton = element(by.css('.protractor-test-run-code-button'));
+
+  /**
+   * Feedback title with snapshot index.
+   *
+   * @type {webdriver.WebElement}
+   */
+  var feedbackTitle = element(by.css('.protractor-test-feedback-title'));
 
   /**
    * Set of all of the feedback text paragraphs rendered in the DOM.
@@ -62,6 +76,20 @@ var QuestionPage = function() {
    */
   var feedbackParagraphs =
       element.all(by.css('.protractor-test-feedback-paragraph'));
+
+  /**
+   * Up button to go to previous feedback paragraph.
+   *
+   * @type {webdriver.WebElement}
+   */
+  var upFeedbackButton = element(by.css('.protractor-test-up-button'));
+
+  /**
+   * Down button to go to next feedback paragraph.
+   *
+   * @type {webdriver.WebElement}
+   */
+  var downFeedbackButton = element(by.css('.protractor-test-down-button'));
 
   /**
    * Previous button.
@@ -161,6 +189,15 @@ var QuestionPage = function() {
   };
 
   /**
+   * Returns the content of the feedback title.
+   *
+   * @returns {string}
+   */
+  this.getFeedbackTitleText = async function(index) {
+    return await feedbackTitle.getText();
+  };
+
+  /**
    * Returns the content of the feedback paragraph at the given index in the
    * feedback paragraph array.
    *
@@ -172,9 +209,25 @@ var QuestionPage = function() {
   };
 
   /**
+   * Simulates clicking on the up button in the feedback window.
+   */
+  this.clickUpFeedbackButton = async function() {
+    await browser.wait(ExpectedConditions.elementToBeClickable(upFeedbackButton));
+    await upFeedbackButton.click();
+  }
+
+  /**
+   * Simulates clicking on the down button in the feedback window.
+   */
+  this.clickDownFeedbackButton = async function() {
+    await browser.wait(ExpectedConditions.elementToBeClickable(downFeedbackButton));
+    await downFeedbackButton.click();
+  }
+
+  /**
    * Simulates clicking on the Previous button.
    */
-  this.clickPreviousButton = async function(index) {
+  this.clickPreviousButton = async function() {
     await browser.wait(ExpectedConditions.elementToBeClickable(previousButton));
     await previousButton.click();
   }
@@ -182,7 +235,7 @@ var QuestionPage = function() {
   /**
    * Simulates clicking on the Snapshot button.
    */
-  this.clickSnapshotButton = async function(index) {
+  this.clickSnapshotButton = async function() {
     await browser.wait(ExpectedConditions.elementToBeClickable(snapshotButton));
     await snapshotButton.click();
     await browser.wait(ExpectedConditions.elementToBeClickable(snapshotButton));
@@ -197,6 +250,60 @@ var QuestionPage = function() {
     await browser.wait(ExpectedConditions.elementToBeClickable(snapshotMenu.all(by.css('ul li')).get(snapshotIndex)));
     await snapshotMenu.all(by.css('ul li')).get(snapshotIndex).click();
   };
+
+  /**
+   * Returns true if the up feedback button is enabled.
+   *
+   * @returns {boolean}
+   */
+  this.isUpFeedbackButtonEnabled = async function() {
+    return await upFeedbackButton.isEnabled();
+  }
+
+  /**
+   * Returns true if the down feedback button is enabled.
+   *
+   * @returns {boolean}
+   */
+  this.isDownFeedbackButtonEnabled = async function() {
+    return await downFeedbackButton.isEnabled();
+  }
+
+  /**
+   * Returns true if the up feedback button is present on the page.
+   *
+   * @returns {boolean}
+   */
+  this.isUpFeedbackButtonPresent = async function() {
+    return await upFeedbackButton.isPresent();
+  }
+
+  /**
+   * Returns true if the down feedback button is present on the page.
+   *
+   * @returns {boolean}
+   */
+  this.isDownFeedbackButtonPresent = async function() {
+    return await downFeedbackButton.isPresent();
+  }
+
+  /**
+   * Returns true if the up feedback button is displayed on the page.
+   *
+   * @returns {boolean}
+   */
+  this.isUpFeedbackButtonDisplayed = async function() {
+    return await upFeedbackButton.isDisplayed();
+  }
+
+  /**
+   * Returns true if the down feedback button is displayed on the page.
+   *
+   * @returns {boolean}
+   */
+  this.isDownFeedbackButtonDisplayed = async function() {
+    return await downFeedbackButton.isDisplayed();
+  }
 
   /**
    * Returns true if the previous button is enabled.
@@ -247,16 +354,16 @@ var QuestionPage = function() {
    * Returns the question UI element location.
    *
    */
-  this.getQuestionUiLocation = async function() {
-    return await questionUiElement.getLocation();
+  this.getFeedbackUiLocation = async function() {
+    return await feedbackUiElement.getLocation();
   };
 
   /**
    * Returns the question UI element size.
    *
    */
-  this.getQuestionUiSize = async function() {
-    return await questionUiElement.getSize();
+  this.getFeedbackUiSize = async function() {
+    return await feedbackUiElement.getSize();
   };
 
   /**
@@ -273,6 +380,22 @@ var QuestionPage = function() {
    */
   this.getCodingUiSize = async function() {
     return await codingUiElement.getSize();
+  };
+
+  /**
+   * Returns the output UI element location.
+   *
+   */
+  this.getOutputUiLocation = async function() {
+    return await outputUiElement.getLocation();
+  };
+
+  /**
+   * Returns the output UI element size.
+   *
+   */
+  this.getOutputUiSize = async function() {
+    return await outputUiElement.getSize();
   };
 };
 

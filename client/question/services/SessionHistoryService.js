@@ -20,19 +20,19 @@
 
 tie.factory('SessionHistoryService', [
   '$timeout', 'CurrentQuestionService', 'LocalStorageService',
-  'LocalStorageKeyManagerService', 'SpeechBalloonObjectFactory',
+  'LocalStorageKeyManagerService', 'TranscriptParagraphObjectFactory',
   'FeedbackParagraphObjectFactory', 'DURATION_MSEC_WAIT_FOR_FEEDBACK',
   'DURATION_MSEC_WAIT_FOR_SUBMISSION_CONFIRMATION',
   function(
       $timeout, CurrentQuestionService, LocalStorageService,
-      LocalStorageKeyManagerService, SpeechBalloonObjectFactory,
+      LocalStorageKeyManagerService, TranscriptParagraphObjectFactory,
       FeedbackParagraphObjectFactory, DURATION_MSEC_WAIT_FOR_FEEDBACK,
       DURATION_MSEC_WAIT_FOR_SUBMISSION_CONFIRMATION) {
     var data = {
-      // A list of SpeechBalloon objects, from newest to oldest.
+      // A list of TranscriptParagraph objects, from newest to oldest.
       sessionTranscript: [],
-      // The number of pending speech balloons to add to the transcript.
-      numBalloonsPending: 0,
+      // The number of pending paragraphs to add to the transcript.
+      numParagraphsPending: 0,
       snapshotIndex: 0
     };
 
@@ -51,7 +51,7 @@ tie.factory('SessionHistoryService', [
         }
 
         data.sessionTranscript.length = 0;
-        data.numBalloonsPending = 0;
+        data.numParagraphsPending = 0;
         data.snapshotIndex = 0;
 
         var questionId = CurrentQuestionService.getCurrentQuestionId();
@@ -61,6 +61,8 @@ tie.factory('SessionHistoryService', [
 
         var potentialSessionTranscript = LocalStorageService.get(
           localStorageKey);
+        var code = null;
+        var feedbackParagraphs = null;
 
         if (potentialSessionTranscript !== null) {
           while (potentialSessionTranscript !== null) {
@@ -70,6 +72,18 @@ tie.factory('SessionHistoryService', [
                 questionId, data.snapshotIndex));
             potentialSessionTranscript = LocalStorageService.get(
               localStorageKey);
+            if (potentialSessionTranscript !== null) {
+              code = potentialSessionTranscript[
+                1].feedbackParagraphContentDicts[0].content;
+              feedbackParagraphs = TranscriptParagraphObjectFactory.fromDict(
+                potentialSessionTranscript[0]).getFeedbackParagraphs();
+              data.sessionTranscript.unshift(
+                TranscriptParagraphObjectFactory.createCodeParagraph(
+                  code, data.snapshotIndex));
+              data.sessionTranscript.unshift(
+               TranscriptParagraphObjectFactory.createFeedbackParagraph(
+                 feedbackParagraphs, data.snapshotIndex));
+            }
           }
           data.snapshotIndex--;
         }
@@ -100,7 +114,7 @@ tie.factory('SessionHistoryService', [
           throw Error('Cannot retrieve starter code from local storage.');
         } else {
           return LocalStorageService.get(
-            localStorageKey)[0].feedbackParagraphDicts[0].content;
+            localStorageKey)[0].feedbackParagraphContentDicts[0].content;
         }
       },
       /**
@@ -119,7 +133,7 @@ tie.factory('SessionHistoryService', [
               ' from local storage.');
           } else {
             return LocalStorageService.get(
-              localStorageKey)[1].feedbackParagraphDicts[0].content;
+              localStorageKey)[1].feedbackParagraphContentDicts[0].content;
           }
         } else {
           throw Error('Requested snapshot index ' + snapshotIndex +
@@ -127,14 +141,35 @@ tie.factory('SessionHistoryService', [
         }
       },
       /**
-       * Saves code as a snapshot when it is not submitted as a
-       * new code balloon.
+       * Returns the feedback from a previous snapshot.
        */
-      saveSnapshot: function(codeEditorContent) {
+      getPreviousFeedback: function(snapshotIndex) {
+        if (snapshotIndex > 0 && snapshotIndex <= data.snapshotIndex) {
+          var questionId = CurrentQuestionService.getCurrentQuestionId();
+          localStorageKey = (
+            LocalStorageKeyManagerService.getSessionHistoryKey(
+              questionId, snapshotIndex
+            )
+          );
+          if (LocalStorageService.get(localStorageKey) === null) {
+            throw Error('Cannot retrieve snapshot index ' + snapshotIndex +
+              ' from local storage.');
+          } else {
+            return LocalStorageService.get(
+              localStorageKey)[0].feedbackParagraphContentDicts;
+          }
+        } else {
+          throw Error('Requested snapshot index ' + snapshotIndex +
+            ' is out of range.');
+        }
+      },
+      /**
+       * Saves starter code as a snapshot.
+       */
+      saveStarterCodeSnapshot: function(codeEditorContent) {
         data.sessionTranscript.unshift(
-          SpeechBalloonObjectFactory.createCodeBalloon(
-            codeEditorContent
-          ));
+          TranscriptParagraphObjectFactory.createCodeParagraph(
+            codeEditorContent, data.snapshotIndex));
         var questionId = CurrentQuestionService.getCurrentQuestionId();
         // Store as a new snapshot.
         localStorageKey = (
@@ -142,63 +177,61 @@ tie.factory('SessionHistoryService', [
             questionId, 0));
         LocalStorageService.put(
           localStorageKey,
-          data.sessionTranscript.map(function(speechBalloon) {
-            return speechBalloon.toDict();
+          data.sessionTranscript.map(function(transcriptParagraph) {
+            return transcriptParagraph.toDict();
           })
         );
-        // Reset in order to not add a new code balloon.
-        data.sessionTranscript.length = 0;
-        data.numBalloonsPending = 0;
       },
       /**
-       * Adds a new code balloon to the beginning of the list.
+       * Adds a new code paragraph to the beginning of the list.
        */
-      addCodeBalloon: function(submittedCode) {
-        data.sessionTranscript.unshift(
-          SpeechBalloonObjectFactory.createCodeBalloon(submittedCode));
-        var questionId = CurrentQuestionService.getCurrentQuestionId();
+      addCodeToTranscript: function(submittedCode) {
         // Increment the snapshot number to create a new submission key.
-        // Store as a new snapshot.
         data.snapshotIndex++;
+        data.sessionTranscript.unshift(
+          TranscriptParagraphObjectFactory.createCodeParagraph(
+            submittedCode, data.snapshotIndex));
+        var questionId = CurrentQuestionService.getCurrentQuestionId();
+        // Store as a new snapshot.
         localStorageKey = (
           LocalStorageKeyManagerService.getSessionHistoryKey(
             questionId, data.snapshotIndex));
         LocalStorageService.put(
           localStorageKey,
-          data.sessionTranscript.map(function(speechBalloon) {
-            return speechBalloon.toDict();
+          data.sessionTranscript.map(function(transcriptParagraph) {
+            return transcriptParagraph.toDict();
           })
         );
-        // We increment the number of balloons here, because adding a
-        // code balloon implies that a feedback balloon will soon follow.
-        data.numBalloonsPending++;
+        // We increment the number of paragraphs here, because adding a
+        // code paragraph implies that a feedback paragraph will soon follow.
+        data.numParagraphsPending++;
       },
       /**
-       * Adds a new feedback balloon to the beginning of the list.
+       * Adds a new feedback paragraph to the beginning of the list.
        */
-      addFeedbackBalloon: function(feedbackParagraphs) {
+      addFeedbackToTranscript: function(feedbackParagraphs) {
         $timeout(function() {
           data.sessionTranscript.unshift(
-            SpeechBalloonObjectFactory.createFeedbackBalloon(
-              feedbackParagraphs));
-          // This signifies that the feedback balloon has been added and
+            TranscriptParagraphObjectFactory.createFeedbackParagraph(
+              feedbackParagraphs, data.snapshotIndex));
+          // This signifies that the feedback paragraph has been added and
           // thus completes the code-feedback pairing as there is a feedback
-          // balloon for every code balloon.
-          data.numBalloonsPending--;
+          // paragraph for every code paragraph.
+          data.numParagraphsPending--;
 
           LocalStorageService.put(
             localStorageKey,
-            data.sessionTranscript.map(function(speechBalloon) {
-              return speechBalloon.toDict();
+            data.sessionTranscript.map(function(transcriptParagraph) {
+              return transcriptParagraph.toDict();
             })
           );
         }, DURATION_MSEC_WAIT_FOR_FEEDBACK);
       },
       /**
-       * Adds a new feedback balloon to the beginning of the list which
+       * Adds a new feedback paragraph to the beginning of the list which
        * informs the user that their code was submitted.
        */
-      addSubmissionConfirmationBalloon: function() {
+      addSubmissionConfirmationToTranscript: function() {
         var submissionText = [
           'Your code has been submitted for grading. ',
           'Feel free to continue working on the exercise, ask for feedback ',
@@ -209,29 +242,29 @@ tie.factory('SessionHistoryService', [
           FeedbackParagraphObjectFactory.createTextParagraph(submissionText);
         $timeout(function() {
           data.sessionTranscript.unshift(
-          SpeechBalloonObjectFactory.createFeedbackBalloon(
-            [submissionParagraph]));
+          TranscriptParagraphObjectFactory.createFeedbackParagraph(
+            [submissionParagraph], data.snapshotIndex));
 
           LocalStorageService.put(
             localStorageKey,
-            data.sessionTranscript.map(function(speechBalloon) {
-              return speechBalloon.toDict();
+            data.sessionTranscript.map(function(transcriptParagraph) {
+              return transcriptParagraph.toDict();
             })
           );
         }, DURATION_MSEC_WAIT_FOR_SUBMISSION_CONFIRMATION);
 
-        // Since clicking "Submit for Grading" shows both a copy of the
+        // Since clicking "Submit for Grading" adds both a copy of the
         // code submitted as well as the feedback text confirmation,
-        // adding this feedback balloon completes the code-feedback pairing.
-        data.numBalloonsPending--;
+        // adding this feedback paragraph completes the code-feedback pairing.
+        data.numParagraphsPending--;
       },
       /**
-       * Adds a new feedback balloon to the beginning of the list which
-       * introduces TIE. Specifically, this intro balloon only appears when
+       * Adds a new feedback paragraph to the beginning of the list which
+       * introduces TIE. Specifically, this intro paragraph only appears when
        * TIE is iframed, which also removes the question from the feedback
        * window.
        */
-      addIntroMessageBalloon: function() {
+      addIntroMessageToTranscript: function() {
         var introText = [
           'Code your answer in the coding window. You can click the ',
           '"Get Feedback" button at any time to get feedback on your ',
@@ -242,11 +275,12 @@ tie.factory('SessionHistoryService', [
         var introParagraph =
           FeedbackParagraphObjectFactory.createTextParagraph(introText);
         data.sessionTranscript.unshift(
-            SpeechBalloonObjectFactory.createFeedbackBalloon([introParagraph]));
+            TranscriptParagraphObjectFactory.createFeedbackParagraph(
+              [introParagraph], data.snapshotIndex));
         LocalStorageService.put(
           localStorageKey,
-          data.sessionTranscript.map(function(speechBalloon) {
-            return speechBalloon.toDict();
+          data.sessionTranscript.map(function(transcriptParagraph) {
+            return transcriptParagraph.toDict();
           })
         );
       },
@@ -257,14 +291,14 @@ tie.factory('SessionHistoryService', [
         // Setting the length of the existing array to 0 allows us to preserve
         // the binding to data.sessionTranscript.
         data.sessionTranscript.length = 0;
-        data.numBalloonsPending = 0;
+        data.numParagraphsPending = 0;
         LocalStorageService.delete(localStorageKey);
       },
       /**
-       * Returns whether a new balloon is pending.
+       * Returns whether a new paragraph from the transcript is pending.
        */
-      isNewBalloonPending: function() {
-        return data.numBalloonsPending > 0;
+      isNewTranscriptParagraphPending: function() {
+        return data.numParagraphsPending > 0;
       },
       data: data
     };

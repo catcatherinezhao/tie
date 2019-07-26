@@ -22,6 +22,8 @@ tieConfig.constant('PRIMER_DIRECTORY_URL', 'docs/');
 
 tieConfig.constant('ALLOW_PRINTING', true);
 
+tieConfig.constant('ALLOW_ERROR_PRINTING', true);
+
 /**
  * Default question ID to use if no qid parameter is specified in the URL.
  *

@@ -25,6 +25,11 @@ describe('PrintTerminalService', function() {
       $provide.constant('ALLOW_PRINTING', isSupported);
     });
   };
+  var setErrorPrintingConfig = function(isSupported) {
+    module('tieConfig', function($provide) {
+      $provide.constant('ALLOW_ERROR_PRINTING', isSupported);
+    });
+  };
 
   describe("isPrintingSupported", function() {
     it('should return true if printing is supported', function() {
@@ -41,6 +46,24 @@ describe('PrintTerminalService', function() {
         PrintTerminalService = $injector.get('PrintTerminalService');
       });
       expect(PrintTerminalService.isPrintingSupported()).toEqual(false);
+    });
+  });
+
+  describe("isErrorPrintingSupported", function() {
+    it('should return true if error printing is supported', function() {
+      setErrorPrintingConfig(true);
+      inject(function($injector) {
+        PrintTerminalService = $injector.get('PrintTerminalService');
+      });
+      expect(PrintTerminalService.isErrorPrintingSupported()).toEqual(true);
+    });
+
+    it('should return false if error printing is not supported', function() {
+      setErrorPrintingConfig(false);
+      inject(function($injector) {
+        PrintTerminalService = $injector.get('PrintTerminalService');
+      });
+      expect(PrintTerminalService.isErrorPrintingSupported()).toEqual(false);
     });
   });
 });

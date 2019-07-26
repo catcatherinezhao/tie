@@ -24,101 +24,105 @@ tie.directive('learnerView', [function() {
       <div class="tie-wrapper protractor-test-tie-wrapper">
         <div class="tie-question-ui-outer">
           <div class="tie-question-ui-inner">
-            <monospace-display-modal
-                ng-show="MonospaceDisplayModalService.isDisplayed()"
-                content="content">
-            </monospace-display-modal>
-            <div class="tie-question-ui protractor-test-question-ui">
-              <div class="tie-question-window">
-                <div class="tie-question-container" ng-class="{'pulse-animation-enabled': pulseAnimationEnabled}" ng-attr-aria-hidden="{{MonospaceDisplayModalService.isDisplayed()}}">
-                  <h1 class="tie-question-title">{{title}}</h1>
-                  <div class="tie-previous-instructions" ng-if="!pageIsIframed">
-                    <div ng-repeat="previousInstruction in previousInstructions track by $index">
-                      <div ng-repeat="instruction in previousInstruction track by $index">
-                        <p ng-if="instruction.type == 'text'">
-                          {{instruction.content}}
-                        </p>
-                        <pre class="tie-question-code" ng-if="instruction.type == 'code'">{{instruction.content}}</pre>
+            <div class="tie-question-container">
+              <h1 class="tie-question-title">{{title}}</h1>
+              <div class="tie-previous-instructions" ng-if="!pageIsIframed">
+                <div ng-repeat="previousInstruction in previousInstructions track by $index">
+                  <div ng-repeat="instruction in previousInstruction track by $index">
+                    <p ng-if="instruction.type == 'text'">
+                      {{instruction.content}}
+                    </p>
+                    <pre class="tie-question-code" ng-if="instruction.type == 'code'">{{instruction.content}}</pre>
+                  </div>
+                  <hr>
+                </div>
+              </div>
+              <div class="tie-instructions" ng-if="!pageIsIframed">
+                <div ng-repeat="instruction in instructions">
+                  <p ng-if="instruction.type == 'text'">
+                    {{instruction.content}}
+                  </p>
+                  <pre class="tie-question-code" ng-if="instruction.type == 'code'">{{instruction.content}}</pre>
+                </div>
+              </div>
+            </div>
+            <div class="tie-window-container">
+              <div class="tie-feedback-ui protractor-test-feedback-ui">
+                <div class="tie-feedback-window">
+                  <div class="tie-feedback-container" ng-class="{'pulse-animation-enabled': pulseAnimationEnabled}">
+                    <pre class="tie-feedback-text" ng-if="!feedbackIsDisplayed">{{feedbackWindowMessage}}</pre>
+                    <transcript-paragraphs-container ng-if="feedbackIsDisplayed"></transcript-paragraphs-container>
+                  </div>
+                </div>
+              </div>
+              <div class="tie-coding-ui protractor-test-coding-ui">
+                <div class="tie-lang-terminal">
+                  <div class="tie-user-terminal" ng-class="{'print-mode': printingIsSupported}">
+                    <div class="tie-coding-terminal">
+                      <div class="tie-codemirror-container"
+                          tabindex="0"
+                          ng-keypress="onKeypressCodemirrorContainer($event)"
+                          ng-focus="onFocusCodemirrorContainer()">
+                        <ui-codemirror ui-codemirror-opts="codeMirrorOptions"
+                            ng-model="editorContents.code"
+                            ng-change="onCodeChange()"
+                            ng-if="!accessibleMode"
+                            class="protractor-test-code-input-element">
+                        </ui-codemirror>
+                        <ui-codemirror ng-model="editorContents.code"
+                            ui-codemirror-opts="accessibleCodeMirrorOptions"
+                            ng-change="onCodeChange()"
+                            ng-if="accessibleMode"
+                            class="protractor-test-code-input-element">
+                        </ui-codemirror>
                       </div>
-                      <hr>
                     </div>
                   </div>
-                  <div class="tie-instructions" ng-if="!pageIsIframed">
-                    <div ng-repeat="instruction in instructions">
-                      <p ng-if="instruction.type == 'text'">
-                        {{instruction.content}}
-                      </p>
-                      <pre class="tie-question-code" ng-if="instruction.type == 'code'">{{instruction.content}}</pre>
+                  <div class="tie-code-auto-save"
+                      ng-show="autosaveTextIsDisplayed">
+                    Saving code...
+                  </div>
+                  <button class="tie-submit-button tie-button tie-button-green protractor-test-submit-code-button" ng-if="pageIsIframed" ng-click="submitToParentPage(editorContents.code)" title="Click anytime you want to submit your code">
+                    Submit for Grading
+                  </button>
+                  <button class="tie-run-button tie-button protractor-test-run-code-button" ng-class="{'tie-button-green': !pageIsIframed}" ng-click="submitCode(editorContents.code)" ng-disabled="SessionHistoryService.isNewTranscriptParagraphPending()" title="Click anytime you want feedback on your code">
+                    RUN
+                  </button>
+                  <div class="tie-snapshot-container">
+                    <div class="tie-previous-snapshot-button-container">
+                      <button class="tie-previous-button tie-button protractor-test-previous-button"
+                        ng-click="revertToPreviousSnapshot()"
+                        ng-disabled="previousButtonIsDisabled"
+                        title="Click to go back to the previous snapshot.">
+                        PREVIOUS
+                      </button>
+                      <button class="tie-snapshot-button tie-button protractor-test-snapshot-button"
+                        ng-click="showSnapshotMenu()"
+                        title="Click to view all previous snapshots.">
+                        &#9660;
+                      </button>
                     </div>
-                  </div>
-                  <speech-balloons-container></speech-balloons-container>
-                </div>
-              </div>
-            </div>
-            <div class="tie-coding-ui protractor-test-coding-ui">
-              <div class="tie-lang-terminal">
-                <div class="tie-user-terminal" ng-class="{'print-mode': printingIsSupported}">
-                  <div class="tie-coding-terminal">
-                    <div class="tie-codemirror-container"
-                        tabindex="0"
-                        ng-keypress="onKeypressCodemirrorContainer($event)"
-                        ng-focus="onFocusCodemirrorContainer()">
-                      <ui-codemirror ui-codemirror-opts="codeMirrorOptions"
-                          ng-model="editorContents.code"
-                          ng-change="onCodeChange()"
-                          ng-if="!accessibleMode"
-                          class="protractor-test-code-input-element">
-                      </ui-codemirror>
-                      <ui-codemirror ng-model="editorContents.code"
-                          ui-codemirror-opts="accessibleCodeMirrorOptions"
-                          ng-change="onCodeChange()"
-                          ng-if="accessibleMode"
-                          class="protractor-test-code-input-element">
-                      </ui-codemirror>
+                    <div class="tie-snapshot-menu"
+                      ng-show="snapshotMenuIsOpen">
+                      <ul class="tie-snapshot-menu-content protractor-test-snapshot-menu">
+                        <li ng-repeat="i in totalSnapshots" 
+                          ng-click="revertToSelectedSnapshot(i.number)">
+                          {{i.title}}
+                        </li>
+                      </ul>
                     </div>
-                  </div>
-                </div>
-                <div class="tie-code-auto-save"
-                    ng-show="autosaveTextIsDisplayed">
-                  Saving code...
-                </div>
-                <button class="tie-submit-button tie-button tie-button-green protractor-test-submit-code-button" ng-if="pageIsIframed" ng-click="submitToParentPage(editorContents.code)" title="Click anytime you want to submit your code">
-                  Submit for Grading
-                </button>
-                <button class="tie-run-button tie-button protractor-test-run-code-button" ng-class="{'tie-button-green': !pageIsIframed}" ng-click="submitCode(editorContents.code)" ng-disabled="SessionHistoryService.isNewBalloonPending()" title="Click anytime you want feedback on your code">
-                  RUN
-                </button>
-                <div class="tie-snapshot-container">
-                  <div class="tie-previous-snapshot-button-container">
-                    <button class="tie-previous-button tie-button protractor-test-previous-button"
-                      ng-click="revertToPreviousSnapshot()"
-                      ng-disabled="previousButtonIsDisabled"
-                      title="Click to go back to the previous snapshot.">
-                      PREVIOUS
-                    </button>
-                    <button class="tie-snapshot-button tie-button protractor-test-snapshot-button"
-                      ng-click="showSnapshotMenu()"
-                      title="Click to view all previous snapshots.">
-                      &#9660;
-                    </button>
-                  </div>
-                  <div class="tie-snapshot-menu"
-                    ng-show="snapshotMenuIsOpen">
-                    <ul class="tie-snapshot-menu-content protractor-test-snapshot-menu">
-                      <li ng-repeat="i in totalSnapshots" 
-                        ng-click="revertToSelectedSnapshot(i.number)">
-                        {{i.title}}
-                      </li>
-                    </ul>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="tie-output-ui protractor-test-coding-ui">
-              <div class="tie-lang-terminal">
-                <div class="tie-user-terminal" ng-class="{'print-mode': printingIsSupported}">
-                  <div class="tie-print-terminal" ng-if="printingIsSupported">
-                    <div class="tie-stdout">{{stdout}}</div>
+              <div class="tie-output-ui protractor-test-output-ui">
+                <div class="tie-lang-terminal">
+                  <div class="tie-user-terminal" ng-class="{'print-mode': printingIsSupported}">
+                    <div class="tie-print-terminal" ng-if="printingIsSupported && errorPrintingIsSupported">
+                      <div class="tie-stdout">{{(stdout || syntaxError)}}</div>
+                    </div>
+                    <div class="tie-print-terminal" ng-if="printingIsSupported && !errorPrintingIsSupported">
+                      <div class="tie-stdout">{{(stdout)}}</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -274,7 +278,7 @@ tie.directive('learnerView', [function() {
             .tie-select-menu:focus {
           outline: 0;
         }
-        .tie-coding-ui, .tie-question-ui, .tie-output-ui {
+        .tie-coding-ui, .tie-feedback-ui, .tie-output-ui {
           display: inline-block;
           margin: 8px;
           white-space: normal;
@@ -285,24 +289,34 @@ tie.directive('learnerView', [function() {
         .tie-coding-ui {
           width: 50%;
         }
-        .tie-feedback-error-string {
-          color: #F44336;
+        .tie-feedback-container {
+          line-height: 1.2em;
+        }
+        .tie-feedback-text {
+          white-space: pre-line;
+          font-family: sans-serif;
+          padding: 5%;
         }
         .tie-feedback-window {
-          background-color: rgb(255, 255, 242);
+          background-color: #FFFFF7;
           font-size: 14px;
-          height: 128px;
+          height: 228px;
+          width: 100%;
+          max-width: 700px;
           overflow: auto;
-          padding: 10px;
-          resize: both;
-          width: 642px;
-          -webkit-font-smoothing: antialiased;
+          padding: 0;
+        }
+        .tie-feedback-error-string {
+          color: #F44336;
         }
         .tie-footer-left-aligned-link {
           float: left;
         }
         .tie-footer-right-aligned-link {
           float: right;
+        }
+        .tie-instructions {
+          white-space: normal;
         }
         .tie-lang-select-menu {
           float: left;
@@ -343,8 +357,12 @@ tie.directive('learnerView', [function() {
           overflow: auto;
           width: 100%;
         }
+        .tie-question-container {
+          width: 100%;
+          margin: 8px;
+        }
         .tie-question-code {
-          background: rgb(242, 242, 242);
+          background-color: #ffffff;
           border: 1px solid #ccc;
           font-family: monospace;
           font-size: 13px;
@@ -355,14 +373,11 @@ tie.directive('learnerView', [function() {
           white-space: pre-wrap;
           word-wrap: break-word;
         }
-        .tie-question-container {
-          padding: 10px;
-        }
         .tie-question-title {
           color: #212121;
           font-size: 18px;
         }
-        .tie-question-ui {
+        .tie-feedback-ui {
           width: 25%;
           vertical-align: top;
         }
@@ -372,6 +387,7 @@ tie.directive('learnerView', [function() {
           padding-right: 32px;
           white-space: nowrap;
           max-width: 1170px;
+          flex-direction: column;
         }
         .tie-question-ui-outer {
           margin-left: auto;
@@ -379,19 +395,6 @@ tie.directive('learnerView', [function() {
           max-width: 1170px;
           min-width: 1058px;
           padding-top: 30px;
-        }
-        .tie-question-window {
-          background-color: #FFFFF7;
-          font-size: 14px;
-          height: 228px;
-          width: 100%;
-          max-width: 700px;
-          overflow: auto;
-          padding: 0;
-        }
-        .tie-monospace-modal-container {
-          border: 1px solid #d3d3d3;
-          resize: none;
         }
         .tie-run-button, .tie-step-button, .tie-snapshot-button, .tie-previous-button {
           float: right;
@@ -466,7 +469,7 @@ tie.directive('learnerView', [function() {
           font-family: monospace;
           font-size: 13px;
           line-height: 1.2em;
-          padding: 5%;
+          padding: 10% 5% 10% 5%;
           white-space: pre-wrap;
         }
         .tie-submit-button {
@@ -479,6 +482,9 @@ tie.directive('learnerView', [function() {
         }
         .tie-user-terminal {
           height: 228px;
+          display: flex;
+        }
+        .tie-window-container {
           display: flex;
         }
         .CodeMirror-linenumber {
@@ -511,20 +517,21 @@ tie.directive('learnerView', [function() {
             padding-top: 30px;
             width: 662px;
           }
-          .tie-question-window {
+          .tie-feedback-window {
             background-color: #FFFFF7;
             font-size: 14px;
-            height: 528px;
-            min-height: 300px;
             overflow: auto;
             padding: 0;
             width: 662px;
           }
-          .tie-coding-ui, .tie-question-ui, .tie-output-ui {
+          .tie-coding-ui, .tie-feedback-ui, .tie-output-ui {
             width: 662px;
           }
-          .tie-question-ui-inner .tie-monospace-modal-container {
+          .tie-question-ui-inner {
             width: 662px;
+          }
+          .tie-window-container {
+            flex-direction: column;
           }
         }
       </style>
@@ -535,9 +542,8 @@ tie.directive('learnerView', [function() {
       'FeedbackObjectFactory', 'LearnerViewSubmissionResultObjectFactory',
       'EventHandlerService', 'LocalStorageService',
       'ServerHandlerService', 'SessionIdService', 'ThemeNameService',
-      'UnpromptedFeedbackManagerService', 'MonospaceDisplayModalService',
-      'CurrentQuestionService', 'PrintTerminalService',
-      'ParentPageService', 'ALL_SUPPORTED_LANGUAGES',
+      'UnpromptedFeedbackManagerService', 'CurrentQuestionService',
+      'PrintTerminalService', 'ParentPageService', 'ALL_SUPPORTED_LANGUAGES',
       'SUPPORTED_LANGUAGE_LABELS', 'SessionHistoryService', 'AutosaveService',
       'SECONDS_TO_MILLISECONDS', 'CODE_CHANGE_DEBOUNCE_SECONDS',
       'DISPLAY_AUTOSAVE_TEXT_SECONDS', 'SERVER_URL', 'DEFAULT_QUESTION_ID',
@@ -550,9 +556,8 @@ tie.directive('learnerView', [function() {
           FeedbackObjectFactory, LearnerViewSubmissionResultObjectFactory,
           EventHandlerService, LocalStorageService,
           ServerHandlerService, SessionIdService, ThemeNameService,
-          UnpromptedFeedbackManagerService, MonospaceDisplayModalService,
-          CurrentQuestionService, PrintTerminalService,
-          ParentPageService, ALL_SUPPORTED_LANGUAGES,
+          UnpromptedFeedbackManagerService, CurrentQuestionService,
+          PrintTerminalService, ParentPageService, ALL_SUPPORTED_LANGUAGES,
           SUPPORTED_LANGUAGE_LABELS, SessionHistoryService, AutosaveService,
           SECONDS_TO_MILLISECONDS, CODE_CHANGE_DEBOUNCE_SECONDS,
           DISPLAY_AUTOSAVE_TEXT_SECONDS, SERVER_URL, DEFAULT_QUESTION_ID,
@@ -565,7 +570,6 @@ tie.directive('learnerView', [function() {
         $scope.TERMS_OF_USE_URL = TERMS_OF_USE_URL;
 
         $scope.SessionHistoryService = SessionHistoryService;
-        $scope.MonospaceDisplayModalService = MonospaceDisplayModalService;
 
         var KEY_CODE_ENTER = 13;
 
@@ -625,6 +629,19 @@ tie.directive('learnerView', [function() {
         $scope.previousButtonIsDisabled = false;
 
         /**
+         * Defines the feedback message to be displayed in the feedback window.
+         */
+        $scope.feedbackWindowMessage = "As you run your code feedback will " +
+          "appear here.\n\nYou can also use the STEP THROUGH button to walk " +
+          "through your code line by line, or the PREVIOUS button to return " +
+          "to any submissions you've made previously for this exercise.";
+
+        /**
+         * Defines whether the feedback is displayed in the feedback window.
+         */
+        $scope.feedbackIsDisplayed = false;
+
+        /**
          * Defines the output to be displayed.
          */
         $scope.stdout = "Click 'Run' to see the output of your code.";
@@ -634,6 +651,13 @@ tie.directive('learnerView', [function() {
          * terminal should be displayed.
          */
         $scope.printingIsSupported = PrintTerminalService.isPrintingSupported();
+
+        /**
+         * Defines whether error printing is supported, and thus whether syntax
+         * errors should be displayed in the output window.
+         */
+        $scope.errorPrintingIsSupported =
+          PrintTerminalService.isErrorPrintingSupported();
 
         /**
          * Defines whether TIE is currently being framed by the expected
@@ -709,13 +733,13 @@ tie.directive('learnerView', [function() {
         var currentTaskIndex = null;
 
         /**
-         * Stores the `div` node from the DOM where the question instructions
-         * and feedback will be rendered.
+         * Stores the `div` node from the DOM where the feedback will be
+         * rendered.
          *
          * @type {DOM}
          */
-        var questionWindowDiv =
-            document.getElementsByClassName('tie-question-window')[0];
+        var feedbackWindowDiv =
+            document.getElementsByClassName('tie-feedback-window')[0];
 
         /**
          * Shows an aria-live message alert for 2 seconds.
@@ -858,9 +882,10 @@ tie.directive('learnerView', [function() {
         var initLearnerViewDirective = function() {
           SessionHistoryService.init();
 
-          // The pulseAnimationEnabled var is set to false to prevent balloon
-          // pulse animation when switching from light to dark mode and
-          // vise versa. This is set to false in resetCode.
+          // The pulseAnimationEnabled var is set to false to prevent
+          // transcript paragraph pulse animation when switching from
+          // light to dark mode and vise versa. This is set to false
+          // in resetCode.
           $scope.pulseAnimationEnabled = false;
           SessionIdService.resetSessionId();
 
@@ -891,7 +916,7 @@ tie.directive('learnerView', [function() {
           var snapshotIndex = SessionHistoryService.getSnapshotIndex();
           if (snapshotIndex === 0) {
             // Save starter code if this is the first time seeing the question.
-            SessionHistoryService.saveSnapshot(
+            SessionHistoryService.saveStarterCodeSnapshot(
               question.getStarterCode(language));
             $scope.totalSnapshots.push({number: snapshotIndex,
               title: 'Starter Code'});
@@ -932,7 +957,7 @@ tie.directive('learnerView', [function() {
           // window.
           if (ParentPageService.isIframed() &&
             SessionHistoryService.getBindableSessionTranscript().length === 0) {
-            SessionHistoryService.addIntroMessageBalloon();
+            SessionHistoryService.addIntroMessageToTranscript();
           }
         };
 
@@ -984,8 +1009,9 @@ tie.directive('learnerView', [function() {
                 "(You can continue to submit additional answers, " +
                 "if you wish.)");
           }
-          SessionHistoryService.addFeedbackBalloon(
+          SessionHistoryService.addFeedbackToTranscript(
             congratulatoryFeedback.getParagraphs());
+          $scope.feedbackIsDisplayed = true;
           EventHandlerService.createQuestionCompleteEvent();
         };
 
@@ -1023,7 +1049,8 @@ tie.directive('learnerView', [function() {
                 break;
               }
             }
-            SessionHistoryService.addFeedbackBalloon(feedbackParagraphs);
+            SessionHistoryService.addFeedbackToTranscript(feedbackParagraphs);
+            $scope.feedbackIsDisplayed = true;
           }
 
           // Skulpt processing happens outside an Angular context, so
@@ -1158,7 +1185,7 @@ tie.directive('learnerView', [function() {
          * Sets the question window to scroll to the top.
          */
         $scope.scrollToTopOfFeedbackWindow = function() {
-          questionWindowDiv.scrollTop = 0;
+          feedbackWindowDiv.scrollTop = 0;
         };
 
         /**
@@ -1184,8 +1211,7 @@ tie.directive('learnerView', [function() {
          * @param {string} code
          */
         $scope.submitCode = function(code) {
-          MonospaceDisplayModalService.hideModal();
-          SessionHistoryService.addCodeBalloon(code);
+          SessionHistoryService.addCodeToTranscript(code);
 
           // Find the index of the snapshot with the title "Latest" in the menu.
           var latestSnapshotIndex = -1;
@@ -1221,6 +1247,7 @@ tie.directive('learnerView', [function() {
             var feedback = learnerViewSubmissionResult.getFeedback();
             $scope.setFeedback(feedback, code);
             $scope.stdout = learnerViewSubmissionResult.getStdout();
+            $scope.syntaxError = learnerViewSubmissionResult.getSyntaxError();
           });
 
           $scope.autosaveCode();
@@ -1234,8 +1261,8 @@ tie.directive('learnerView', [function() {
          */
         $scope.submitToParentPage = function(rawCode) {
           ParentPageService.sendRawCode(rawCode);
-          SessionHistoryService.addCodeBalloon(rawCode);
-          SessionHistoryService.addSubmissionConfirmationBalloon();
+          SessionHistoryService.addCodeToTranscript(rawCode);
+          SessionHistoryService.addSubmissionConfirmationToTranscript();
         };
 
         /**
@@ -1300,8 +1327,9 @@ tie.directive('learnerView', [function() {
                   language, $scope.editorContents.code,
                   tasks[currentTaskIndex].getId()));
               if (potentialFeedbackParagraphs !== null) {
-                SessionHistoryService.addFeedbackBalloon(
+                SessionHistoryService.addFeedbackToTranscript(
                   potentialFeedbackParagraphs);
+                $scope.feedbackIsDisplayed = true;
               }
             }, CODE_CHANGE_DEBOUNCE_SECONDS * SECONDS_TO_MILLISECONDS);
           }

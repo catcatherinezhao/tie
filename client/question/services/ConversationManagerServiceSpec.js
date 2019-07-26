@@ -293,9 +293,8 @@ describe('ConversationManagerService', function() {
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
           [['It looks like you deleted or modified the starter code!  Our ',
             'evaluation program requires the function names given in the ',
-            'starter code.  You can press the \'Reset Code\' button to ',
-            'start over.  Or, you can copy the starter code below:'].join(''),
-            starterCode],
+            'starter code.  You can click the \'Starter Code\' snapshot in ',
+            'the previous snapshots dropdown to start over.'].join('')],
           null)
       }]);
     });
@@ -367,7 +366,7 @@ describe('ConversationManagerService', function() {
         ].join('\n'),
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
           ['Error detected on or near line 2:',
-            '<code>SyntaxError: bad input</code>'],
+            'SyntaxError: bad input'],
             null)
       }]);
     });
@@ -384,8 +383,8 @@ describe('ConversationManagerService', function() {
         ].join('\n'),
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
           ['Error detected on or near line 3:',
-            '<code>IndentationError: unindent does not match any outer ' +
-            'indentation level</code>',
+            'IndentationError: unindent does not match any outer ' +
+            'indentation level',
             'It looks like your code has some inconsistencies with ' +
             'indentation. Double-check that you indent after every statement ' +
             'that ends with a ":" and un-indent when necessary.'],
@@ -702,7 +701,8 @@ describe('ConversationManagerService', function() {
       verifySubmissions([], done, [{
         code: codeThatPrintsAndFailsFinalTest,
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
-          [null, 'Input: "absolutely final test!"'], 'absolutely final test!\n')
+          [null, 'Input: "absolutely final test!"'],
+          'absolutely final test!\n')
       }]);
     });
 
@@ -710,7 +710,8 @@ describe('ConversationManagerService', function() {
       verifySubmissions([], done, [{
         code: codeThatPrintsAndFailsSecondTaskOnly,
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
-          [null, 'Input: "first test in task2!!!"'], 'first test in task2!!!\n')
+          [null, 'Input: "first test in task2!!!"'],
+          'first test in task2!!!\n')
       }]);
     });
 
@@ -718,7 +719,8 @@ describe('ConversationManagerService', function() {
       verifySubmissions([], done, [{
         code: codeThatPrintsAndFailsBothTasks,
         expectedFeedback: ExpectedFeedbackObjectFactory.create(
-          [null, 'Input: "task1suite1test1"'], 'task1suite1test1\n')
+          [null, 'Input: "task1suite1test1"'],
+          'task1suite1test1\n')
       }]);
     });
   });

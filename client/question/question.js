@@ -185,14 +185,6 @@ tie.constant('SUPPORTED_PYTHON_LIBS', [
 tie.constant('CLASS_NAME_STUDENT_CODE', 'StudentCode');
 
 /**
- * Name of button that will direct users to Python language primer.
- *
- * @type {string}
- * @constant
- */
-tie.constant('PYTHON_PRIMER_BUTTON_NAME', 'New to Python?');
-
-/**
  * Enum of possible feedback categories representing the types of feedback a
  * TIE user could potentially receive.
  *

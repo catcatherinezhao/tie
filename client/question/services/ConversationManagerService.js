@@ -290,8 +290,10 @@ tie.factory('ConversationManagerService', [
           feedback = FeedbackGeneratorService.getPrereqFailureFeedback(
             potentialPrereqCheckFailure, languageUnfamiliarityFeedbackIsNeeded,
             language);
+
           return Promise.resolve(
-            LearnerViewSubmissionResultObjectFactory.create(feedback, null));
+            LearnerViewSubmissionResultObjectFactory.create(
+              feedback, null, null));
         } else {
           // Next, run the raw code to detect syntax errors. If any exist, we
           // return a promise with a Feedback object.
@@ -335,8 +337,9 @@ tie.factory('ConversationManagerService', [
               LearnerStateService.recordFeedbackDetails(
                 potentialFeedbackDetails);
 
+              var errorString = potentialFeedbackDetails.getErrorString();
               return LearnerViewSubmissionResultObjectFactory.create(
-                feedback, null);
+                feedback, null, errorString);
             }
 
             // If there are no syntax errors, generate a CodeSubmission object
@@ -420,7 +423,7 @@ tie.factory('ConversationManagerService', [
 
               var stdout = preprocessedCodeEvalResult.getStdoutToDisplay(tasks);
               return LearnerViewSubmissionResultObjectFactory.create(
-                feedback, stdout);
+                feedback, stdout, null);
             });
           });
         }

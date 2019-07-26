@@ -37,9 +37,9 @@ describe('SessionHistoryService', function() {
 
   describe('core behaviour', function() {
     it('should retrieve the correct previous snapshot', function() {
-      SessionHistoryService.addCodeBalloon('first submission');
+      SessionHistoryService.addCodeToTranscript('first submission');
       var firstSnapshotIndex = SessionHistoryService.getSnapshotIndex();
-      SessionHistoryService.addFeedbackBalloon([
+      SessionHistoryService.addFeedbackToTranscript([
         FeedbackParagraphObjectFactory.fromDict({
           type: 'text',
           content: 'first feedback'
@@ -47,9 +47,9 @@ describe('SessionHistoryService', function() {
       ]);
       $timeout.flush(DURATION_MSEC_WAIT_FOR_FEEDBACK);
 
-      SessionHistoryService.addCodeBalloon('second submission');
+      SessionHistoryService.addCodeToTranscript('second submission');
       var secondSnapshotIndex = SessionHistoryService.getSnapshotIndex();
-      SessionHistoryService.addFeedbackBalloon([
+      SessionHistoryService.addFeedbackToTranscript([
         FeedbackParagraphObjectFactory.fromDict({
           type: 'text',
           content: 'second feedback'
@@ -68,11 +68,11 @@ describe('SessionHistoryService', function() {
       SessionHistoryService.reset();
       expect(transcript.length).toBe(0);
 
-      SessionHistoryService.saveSnapshot('starter code');
+      SessionHistoryService.saveStarterCodeSnapshot('starter code');
 
-      SessionHistoryService.addCodeBalloon('first submission');
+      SessionHistoryService.addCodeToTranscript('first submission');
       var firstSnapshotIndex = SessionHistoryService.getSnapshotIndex();
-      SessionHistoryService.addFeedbackBalloon([
+      SessionHistoryService.addFeedbackToTranscript([
         FeedbackParagraphObjectFactory.fromDict({
           type: 'text',
           content: 'first feedback'
@@ -91,40 +91,40 @@ describe('SessionHistoryService', function() {
       }).toThrow(new Error('Requested snapshot index -1 is out of range.'));
     });
 
-    it('should add a new code balloon correctly', function() {
+    it('should add a new code paragraph correctly', function() {
       var transcript = SessionHistoryService.getBindableSessionTranscript();
       expect(transcript.length).toBe(0);
 
       var snapshotIndex = SessionHistoryService.getSnapshotIndex();
 
-      SessionHistoryService.addCodeBalloon('some code');
+      SessionHistoryService.addCodeToTranscript('some code');
 
       expect(transcript.length).toBe(1);
       expect(snapshotIndex).toBe(
         SessionHistoryService.getSnapshotIndex() - 1);
-      var firstBalloon = transcript[0];
-      expect(firstBalloon.isCodeSubmission()).toBe(true);
-      var firstBalloonParagraphs = firstBalloon.getFeedbackParagraphs();
-      expect(firstBalloonParagraphs.length).toBe(1);
-      expect(firstBalloonParagraphs[0].toDict()).toEqual({
+      var firstParagraph = transcript[0];
+      expect(firstParagraph.isCodeSubmission()).toBe(true);
+      var firstParagraphContent = firstParagraph.getFeedbackParagraphs();
+      expect(firstParagraphContent.length).toBe(1);
+      expect(firstParagraphContent[0].toDict()).toEqual({
         type: 'code',
         content: 'some code'
       });
     });
 
-    it('should add an intro balloon correctly', function() {
+    it('should add an intro paragraph correctly', function() {
       var transcript = SessionHistoryService.getBindableSessionTranscript();
       expect(transcript.length).toBe(0);
 
-      SessionHistoryService.addIntroMessageBalloon();
+      SessionHistoryService.addIntroMessageToTranscript();
 
       expect(transcript.length).toBe(1);
-      expect(SessionHistoryService.isNewBalloonPending()).toBe(false);
-      var firstBalloon = transcript[0];
-      expect(firstBalloon.isDisplayedOnLeft()).toBe(true);
-      var firstBalloonParagraphs = firstBalloon.getFeedbackParagraphs();
-      expect(firstBalloonParagraphs.length).toBe(1);
-      expect(firstBalloonParagraphs[0].toDict()).toEqual({
+      expect(SessionHistoryService.isNewTranscriptParagraphPending()).toBe(
+        false);
+      var firstParagraph = transcript[0];
+      var firstParagraphContent = firstParagraph.getFeedbackParagraphs();
+      expect(firstParagraphContent.length).toBe(1);
+      expect(firstParagraphContent[0].toDict()).toEqual({
         type: 'text',
         content: [
           'Code your answer in the coding window. You can click the ',
@@ -136,26 +136,28 @@ describe('SessionHistoryService', function() {
       });
     });
 
-    it('should add a new code balloon and signify awaiting a feedback balloon',
+    it('should add new code paragraph and signify awaiting feedback paragraph',
     function() {
       expect(
         SessionHistoryService.getBindableSessionTranscript().length
       ).toBe(0);
-      expect(SessionHistoryService.isNewBalloonPending()).toBe(false);
+      expect(SessionHistoryService.isNewTranscriptParagraphPending()).toBe(
+        false);
 
-      SessionHistoryService.addCodeBalloon('some code');
+      SessionHistoryService.addCodeToTranscript('some code');
 
       expect(
         SessionHistoryService.getBindableSessionTranscript().length
       ).toBe(1);
-      expect(SessionHistoryService.isNewBalloonPending()).toBe(true);
+      expect(SessionHistoryService.isNewTranscriptParagraphPending()).toBe(
+        true);
     });
 
-    it('should add a new feedback balloon correctly', function() {
+    it('should add a new feedback paragraph correctly', function() {
       var transcript = SessionHistoryService.getBindableSessionTranscript();
       expect(transcript.length).toBe(0);
 
-      SessionHistoryService.addFeedbackBalloon([
+      SessionHistoryService.addFeedbackToTranscript([
         FeedbackParagraphObjectFactory.fromDict({
           type: 'text',
           content: 'hello'
@@ -164,36 +166,39 @@ describe('SessionHistoryService', function() {
       $timeout.flush(DURATION_MSEC_WAIT_FOR_FEEDBACK);
 
       expect(transcript.length).toBe(1);
-      var firstBalloon = transcript[0];
-      expect(firstBalloon.isCodeSubmission()).toBe(false);
-      var firstBalloonParagraphs = firstBalloon.getFeedbackParagraphs();
-      expect(firstBalloonParagraphs.length).toBe(1);
-      expect(firstBalloonParagraphs[0].toDict()).toEqual({
+      var firstParagraph = transcript[0];
+      expect(firstParagraph.isCodeSubmission()).toBe(false);
+      var firstParagraphContent = firstParagraph.getFeedbackParagraphs();
+      expect(firstParagraphContent.length).toBe(1);
+      expect(firstParagraphContent[0].toDict()).toEqual({
         type: 'text',
         content: 'hello'
       });
     });
 
-    it('should add a new feedback balloon with a delay', function() {
+    it('should add a new feedback paragraph with a delay', function() {
       expect(
         SessionHistoryService.getBindableSessionTranscript().length
       ).toBe(0);
-      expect(SessionHistoryService.isNewBalloonPending()).toBe(false);
+      expect(SessionHistoryService.isNewTranscriptParagraphPending()).toBe(
+        false);
 
-      SessionHistoryService.addCodeBalloon('some code');
+      SessionHistoryService.addCodeToTranscript('some code');
 
       expect(
         SessionHistoryService.getBindableSessionTranscript().length
       ).toBe(1);
-      expect(SessionHistoryService.isNewBalloonPending()).toBe(true);
+      expect(SessionHistoryService.isNewTranscriptParagraphPending()).toBe(
+        true);
 
-      SessionHistoryService.addFeedbackBalloon([
+      SessionHistoryService.addFeedbackToTranscript([
         FeedbackParagraphObjectFactory.fromDict({
           type: 'text',
           content: 'hello'
         })
       ]);
-      expect(SessionHistoryService.isNewBalloonPending()).toBe(true);
+      expect(SessionHistoryService.isNewTranscriptParagraphPending()).toBe(
+        true);
       expect(
         SessionHistoryService.getBindableSessionTranscript().length).toBe(1);
 
@@ -201,39 +206,40 @@ describe('SessionHistoryService', function() {
       expect(
         SessionHistoryService.getBindableSessionTranscript().length
       ).toBe(2);
-      expect(SessionHistoryService.isNewBalloonPending()).toBe(false);
+      expect(SessionHistoryService.isNewTranscriptParagraphPending()).toBe(
+        false);
     });
 
     it('should reset the session transcript', function() {
       var transcript = SessionHistoryService.getBindableSessionTranscript();
-      SessionHistoryService.addCodeBalloon('some code');
+      SessionHistoryService.addCodeToTranscript('some code');
       expect(transcript.length).toBe(1);
 
       SessionHistoryService.reset();
       expect(transcript.length).toBe(0);
 
-      SessionHistoryService.addCodeBalloon('some other code');
+      SessionHistoryService.addCodeToTranscript('some other code');
       expect(transcript[0].getFeedbackParagraphs()[0].toDict()).toEqual({
         type: 'code',
         content: 'some other code'
       });
     });
 
-    it('should add a new submission confirmation balloon correctly',
+    it('should add a new submission confirmation paragraph correctly',
       function() {
         var transcript = SessionHistoryService.getBindableSessionTranscript();
         expect(transcript.length).toBe(0);
 
-        SessionHistoryService.addSubmissionConfirmationBalloon();
+        SessionHistoryService.addSubmissionConfirmationToTranscript();
         expect(transcript.length).toBe(0);
         $timeout.flush(DURATION_MSEC_WAIT_FOR_SUBMISSION_CONFIRMATION);
 
         expect(transcript.length).toBe(1);
-        var firstBalloon = transcript[0];
-        expect(firstBalloon.isCodeSubmission()).toBe(false);
-        var firstBalloonParagraphs = firstBalloon.getFeedbackParagraphs();
-        expect(firstBalloonParagraphs.length).toBe(1);
-        expect(firstBalloonParagraphs[0].toDict()).toEqual({
+        var firstParagraph = transcript[0];
+        expect(firstParagraph.isCodeSubmission()).toBe(false);
+        var firstParagraphContent = firstParagraph.getFeedbackParagraphs();
+        expect(firstParagraphContent.length).toBe(1);
+        expect(firstParagraphContent[0].toDict()).toEqual({
           type: 'text',
           content: [
             'Your code has been submitted for grading. ',

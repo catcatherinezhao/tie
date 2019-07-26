@@ -49,9 +49,48 @@ describe('Question Page', function() {
   it('should display a feedback text paragraph after a run', async function() {
     await questionPage.runCode();
 
-    // After running code, there should be one or more paragraphs of feedback,
-    // since there's no way to reset.
-    expect(await questionPage.countFeedbackParagraphs()).toBeGreaterThanOrEqual(1);
+    // After running code, there should be one paragraph of feedback.
+    // Only one paragraph of feedback should be displayed at a time.
+    expect(await questionPage.countFeedbackParagraphs()).toEqual(1);
+  });
+
+  it('should allow switching to the previous and next feedback', async function() {
+    // Before any code is submitted, a starter message should be displayed in the
+    // feedback window.
+    expect(await questionPage.isUpFeedbackButtonPresent()).toBe(false);
+    expect(await questionPage.isDownFeedbackButtonPresent()).toBe(false);
+
+    await questionPage.runCode();
+    var firstSubmissionFeedback = await questionPage.getFeedbackParagraphText(0);
+    expect(await questionPage.countFeedbackParagraphs()).toEqual(1);
+    // The up and down arrow buttons should be displayed when feedback is displayed.
+    expect(await questionPage.isUpFeedbackButtonDisplayed()).toBe(true);
+    expect(await questionPage.isDownFeedbackButtonDisplayed()).toBe(true);
+    // There is only one feedback paragraph in the session transcript so the user
+    // should not be able to go to the previous or next feedback paragraph.
+    expect(await questionPage.isUpFeedbackButtonEnabled()).toBe(false);
+    expect(await questionPage.isDownFeedbackButtonEnabled()).toBe(false);
+
+    await questionPage.setCode('code');
+    await questionPage.runCode();
+    var secondSubmissionFeedback = await questionPage.getFeedbackParagraphText(0);
+    expect(await questionPage.countFeedbackParagraphs()).toEqual(1);
+    expect(await questionPage.isUpFeedbackButtonDisplayed()).toBe(true);
+    expect(await questionPage.isDownFeedbackButtonDisplayed()).toBe(true);
+    // There are two feedback paragraphs in the session transcript so the user can
+    // go to the previous feedback paragraph.
+    expect(await questionPage.isUpFeedbackButtonEnabled()).toBe(true);
+    expect(await questionPage.isDownFeedbackButtonEnabled()).toBe(false);
+    await questionPage.clickUpFeedbackButton();
+    expect(await questionPage.getFeedbackTitleText()).toEqual('Snapshot 1');
+    expect(await questionPage.getFeedbackParagraphText(0)).toEqual(firstSubmissionFeedback);
+    // There are only two feedback paragraphs, so the user can go to the next feedback
+    // paragraph but should not be able to go to the previous paragraph.
+    expect(await questionPage.isUpFeedbackButtonEnabled()).toBe(false);
+    expect(await questionPage.isDownFeedbackButtonEnabled()).toBe(true);
+    await questionPage.clickDownFeedbackButton();
+    expect(await questionPage.getFeedbackTitleText()).toEqual('Snapshot 2');
+    expect(await questionPage.getFeedbackParagraphText(0)).toEqual(secondSubmissionFeedback);
   });
 
   it('should allow switching to previous snapshot with previous button', async function() {
@@ -109,71 +148,90 @@ describe('Question Page', function() {
     expect(await questionPage.isAboutLinkDisplayed()).toBe(true);
   });
 
-  it('should display question and coding UIs in 2 columns on large screens',
+  it('should display question, coding, and output UIs in 3 columns on large screens',
      async function() {
        await testUtils.setLargeScreen();
 
-       let questionUiLocation = await questionPage.getQuestionUiLocation();
-       let questionUiSize = await questionPage.getQuestionUiSize();
+       let feedbackUiLocation = await questionPage.getFeedbackUiLocation();
+       let feedbackUiSize = await questionPage.getFeedbackUiSize();
        let codingUiLocation = await questionPage.getCodingUiLocation();
+       let codingUiSize = await questionPage.getCodingUiSize();
+       let outputUiLocation = await questionPage.getOutputUiLocation();
 
-       // Coding and Question UIs should be horizontally aligned.
-       expect(codingUiLocation.y).toEqual(questionUiLocation.y);
+       // Feedback, Coding, and Output UIs should be horizontally aligned.
+       expect(codingUiLocation.y).toEqual(feedbackUiLocation.y);
+       expect(feedbackUiLocation.y).toEqual(outputUiLocation.y);
 
-       // Coding UI should be to the right of Question UI.
+       // Coding UI should be to the right of Feedback UI.
        expect(codingUiLocation.x)
-           .toBeGreaterThan(questionUiLocation.x + questionUiSize.width);
+           .toBeGreaterThan(feedbackUiLocation.x + feedbackUiSize.width);
+
+       // Output UI should be to the right of Coding UI.
+       expect(outputUiLocation.x)
+           .toBeGreaterThan(codingUiLocation.x + codingUiSize.width);
      });
 
-  it('should display question and coding UIs in 2 rows on small screens',
+  it('should display question, coding, and output UIs in 3 rows on small screens',
      async function() {
        await testUtils.setSmallScreen();
 
-       let questionUiLocation = await questionPage.getQuestionUiLocation();
-       let questionUiSize = await questionPage.getQuestionUiSize();
+       let feedbackUiLocation = await questionPage.getFeedbackUiLocation();
+       let feedbackUiSize = await questionPage.getFeedbackUiSize();
        let codingUiLocation = await questionPage.getCodingUiLocation();
+       let codingUiSize = await questionPage.getCodingUiSize();
+       let outputUiLocation = await questionPage.getOutputUiLocation();
 
-       // Coding and Question UI should be vertically aligned.
-       expect(codingUiLocation.x).toEqual(questionUiLocation.x);
+       // Feedback, Coding, and Output UIs should be vertically aligned.
+       expect(codingUiLocation.x).toEqual(feedbackUiLocation.x);
+       expect(feedbackUiLocation.x).toEqual(outputUiLocation.x);
 
-       // Question UI should be above Coding UI.
+       // Feedback UI should be above Coding UI.
        expect(codingUiLocation.y)
-           .toBeGreaterThan(questionUiLocation.y + questionUiSize.height);
+           .toBeGreaterThan(feedbackUiLocation.y + feedbackUiSize.height);
+
+       // Coding UI should be above Output UI.
+       expect(outputUiLocation.y)
+           .toBeGreaterThan(codingUiLocation.y + codingUiSize.height);
      });
 
-  it('should fit the question and coding UIs in page width on large screens',
+  it('should fit the feedback, coding, and output UIs in page width on large screens',
      async function() {
        await testUtils.setLargeScreen();
 
        let windowSize = await testUtils.getWindowSize();
 
-       let codingUiLocation = await questionPage.getCodingUiLocation();
-       let codingUiSize = await questionPage.getCodingUiSize();
+       let outputUiLocation = await questionPage.getOutputUiLocation();
+       let outputUiSize = await questionPage.getOutputUiSize();
 
-       // The right edge of the coding UI should be less than the window width.
-       expect(codingUiLocation.x + codingUiSize.width)
+       // The right edge of the output UI should be less than the window width.
+       expect(outputUiLocation.x + outputUiSize.width)
            .toBeLessThan(windowSize.width);
      });
 
-  it('should fit the question and coding UIs in page width on small screens',
+  it('should fit the feedback, coding, and output UIs in page width on small screens',
      async function() {
        await testUtils.setSmallScreen();
 
        let windowSize = await testUtils.getWindowSize();
 
+       let feedbackUiLocation = await questionPage.getFeedbackUiLocation();
+       let feedbackUiSize = await questionPage.getFeedbackUiSize();
        let codingUiLocation = await questionPage.getCodingUiLocation();
        let codingUiSize = await questionPage.getCodingUiSize();
+       let outputUiLocation = await questionPage.getOutputUiLocation();
+       let outputUiSize = await questionPage.getOutputUiSize();
 
-       let questionUiLocation = await questionPage.getQuestionUiLocation();
-       let questionUiSize = await questionPage.getQuestionUiSize();
-
-       // The right edge of the question UI should be less than the window
+       // The right edge of the feedback UI should be less than the window
        // width.
-       expect(questionUiLocation.x + questionUiSize.width)
+       expect(feedbackUiLocation.x + feedbackUiSize.width)
            .toBeLessThan(windowSize.width);
 
        // The right edge of the coding UI should be less than the window width.
        expect(codingUiLocation.x + codingUiSize.width)
+           .toBeLessThan(windowSize.width);
+
+       // The right edge of the output UI should be less than the window width.
+       expect(outputUiLocation.x + outputUiSize.width)
            .toBeLessThan(windowSize.width);
      });
 });

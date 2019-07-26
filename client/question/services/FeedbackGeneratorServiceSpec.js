@@ -184,7 +184,9 @@ describe('FeedbackGeneratorService', function() {
       expect(
         CORRECTNESS_FEEDBACK_TEXT[CORRECTNESS_STATE_EXPECTED_OUTPUT_DISPLAYED]
       ).toContain(correctnessFeedbackParagraphs[0].getContent());
-      expect(correctnessFeedbackParagraphs[1].isCodeParagraph()).toEqual(true);
+      expect(
+        correctnessFeedbackParagraphs[1].isOutputParagraph()
+      ).toEqual(true);
       var expectedExpectedOutputParagraph =
         'Input: "Hi, world"\n' +
         'Expected Output: "iH, dlrow"';
@@ -598,11 +600,11 @@ describe('FeedbackGeneratorService', function() {
         FEEDBACK_CATEGORIES.SYNTAX_ERROR);
       expect(paragraphs.length).toEqual(2);
       expect(paragraphs[0].isTextParagraph()).toBe(true);
-      expect(paragraphs[1].isTextParagraph()).toBe(true);
+      expect(paragraphs[1].isErrorParagraph()).toBe(true);
       expect(paragraphs[0].getContent()).toBe(
           'Error detected on or near line 5:');
       expect(paragraphs[1].getContent()).toBe(
-        '<code>ZeroDivisionError: integer division or modulo by zero</code>');
+        'ZeroDivisionError: integer division or modulo by zero');
     });
 
     it('should correctly append language unfamiliarity feedback if ' +
@@ -620,9 +622,9 @@ describe('FeedbackGeneratorService', function() {
       expect(paragraphs[0].isTextParagraph()).toBe(true);
       expect(paragraphs[0].getContent()).toBe(
           'Error detected on or near line 5:');
-      expect(paragraphs[1].isTextParagraph()).toBe(true);
+      expect(paragraphs[1].isErrorParagraph()).toBe(true);
       expect(paragraphs[1].getContent()).toEqual(
-        '<code>ZeroDivisionError: integer division or modulo by zero</code>');
+        'ZeroDivisionError: integer division or modulo by zero');
       expect(paragraphs[2].isTextParagraph()).toBe(true);
       expect(paragraphs[2].getContent()).toEqual(
         FeedbackGeneratorService._getUnfamiliarLanguageFeedback(
@@ -760,9 +762,8 @@ describe('FeedbackGeneratorService', function() {
       ].join(''));
       expect(paragraphs[0].isTextParagraph()).toBe(true);
       expect(paragraphs[1].getContent()).toEqual(
-        "Seems like you're having some trouble with Python. Why don't you " +
-        "take a look at the page linked through the 'New to Python?' button " +
-        "at the bottom of the screen?");
+          "Seems like you're having some trouble with Python. If you need " +
+          "help, check out the [primer](primer-url#strings).");
       expect(paragraphs[1].isTextParagraph()).toBe(true);
     });
 
@@ -820,10 +821,9 @@ describe('FeedbackGeneratorService', function() {
       expect(paragraphs[0].getContent()).toEqual([
         'It looks like you deleted or modified the starter code!  Our ',
         'evaluation program requires the function names given in the ',
-        'starter code.  You can press the \'Reset Code\' button to start ',
-        'over.  Or, you can copy the starter code below:'
+        'starter code.  You can click the \'Starter Code\' snapshot in the ',
+        'previous snapshots dropdown to start over.'
       ].join(''));
-      expect(paragraphs[1].getContent()).toEqual(starterCode);
       expect(feedback.getFeedbackCategory()).toEqual(
         FEEDBACK_CATEGORIES.FAILS_STARTER_CODE_CHECK);
     });
@@ -1056,8 +1056,8 @@ describe('FeedbackGeneratorService', function() {
         ].join(' '));
         expect(paragraphs[0].isTextParagraph()).toBe(true);
         expect(paragraphs[1].getContent()).toEqual([
-          'ForbiddenNamespaceError: It looks like you\'re trying to call ',
-          'the AuxiliaryCode class or its methods, which is forbidden. ',
+          'ForbiddenNamespaceError: It looks like you\'re trying to ',
+          'call the AuxiliaryCode class or its methods, which is forbidden. ',
           'Please resubmit without using this class.'
         ].join(''));
         expect(paragraphs[1].isCodeParagraph()).toBe(true);
@@ -1080,8 +1080,8 @@ describe('FeedbackGeneratorService', function() {
         ].join(' '));
         expect(paragraphs[0].isTextParagraph()).toBe(true);
         expect(paragraphs[1].getContent()).toEqual([
-          'ForbiddenNamespaceError: It looks you\'re using the System class ',
-          'or its methods, which is forbidden. Please resubmit without ',
+          'ForbiddenNamespaceError: It looks you\'re using the System ',
+          'class or its methods, which is forbidden. Please resubmit without ',
           'using this class.'
         ].join(''));
         expect(paragraphs[1].isCodeParagraph()).toBe(true);

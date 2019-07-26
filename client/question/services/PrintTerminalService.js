@@ -17,7 +17,8 @@
  * print-enabled and print-disabled versions of TIE.
  */
 tie.factory('PrintTerminalService', [
-  'ALLOW_PRINTING', function(ALLOW_PRINTING) {
+  'ALLOW_PRINTING', 'ALLOW_ERROR_PRINTING',
+  function(ALLOW_PRINTING, ALLOW_ERROR_PRINTING) {
     return {
       /**
        * Returns whether or not printing to stdout is supported.
@@ -26,6 +27,14 @@ tie.factory('PrintTerminalService', [
        */
       isPrintingSupported: function() {
         return ALLOW_PRINTING;
+      },
+      /**
+       * Returns whether or not printing errors to stdout is supported.
+       *
+       * @return {boolean} True if printing errors is supported, false if not.
+       */
+      isErrorPrintingSupported: function() {
+        return ALLOW_ERROR_PRINTING;
       }
     };
   }

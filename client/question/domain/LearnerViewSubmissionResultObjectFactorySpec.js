@@ -33,7 +33,7 @@ describe('LearnerViewSubmissionResultObjectFactory', function() {
         var feedback = FeedbackGeneratorService.getSuccessFeedback();
         var learnerViewSubmissionResult =
           LearnerViewSubmissionResultObjectFactory.create(
-            feedback, 'some output');
+            feedback, 'some output', null);
         expect(learnerViewSubmissionResult.getFeedback()).toEqual(feedback);
       });
 
@@ -42,7 +42,7 @@ describe('LearnerViewSubmissionResultObjectFactory', function() {
         var feedback = FeedbackGeneratorService.getTimeoutErrorFeedback();
         var learnerViewSubmissionResult =
           LearnerViewSubmissionResultObjectFactory.create(
-            feedback, null);
+            feedback, null, null);
         expect(learnerViewSubmissionResult.getFeedback()).toEqual(feedback);
       });
   });
@@ -53,7 +53,7 @@ describe('LearnerViewSubmissionResultObjectFactory', function() {
         var feedback = FeedbackGeneratorService.getSuccessFeedback();
         var learnerViewSubmissionResult =
           LearnerViewSubmissionResultObjectFactory.create(
-            feedback, 'some output');
+            feedback, 'some output', null);
         expect(learnerViewSubmissionResult.getStdout()).toEqual('some output');
       });
 
@@ -62,8 +62,29 @@ describe('LearnerViewSubmissionResultObjectFactory', function() {
         var feedback = FeedbackGeneratorService.getTimeoutErrorFeedback();
         var learnerViewSubmissionResult =
           LearnerViewSubmissionResultObjectFactory.create(
-            feedback, null);
+            feedback, null, null);
         expect(learnerViewSubmissionResult.getStdout()).toEqual(null);
+      });
+  });
+
+  describe('getSyntaxError', function() {
+    it('should retrive corresponding error string for code with no errors',
+    function() {
+      var feedback = FeedbackGeneratorService.getSuccessFeedback();
+      var learnerViewSubmissionResult =
+        LearnerViewSubmissionResultObjectFactory.create(
+          feedback, 'some output', null);
+      expect(learnerViewSubmissionResult.getSyntaxError()).toEqual(null);
+    });
+
+    it('should retrive corresponding error string for code with syntax error',
+      function() {
+        var feedback = FeedbackGeneratorService.getSuccessFeedback();
+        var learnerViewSubmissionResult =
+          LearnerViewSubmissionResultObjectFactory.create(
+            feedback, 'some output with syntax error', 'syntax error');
+        expect(learnerViewSubmissionResult.getSyntaxError()).toEqual(
+          'syntax error');
       });
   });
 });
