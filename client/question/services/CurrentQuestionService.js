@@ -26,8 +26,12 @@ tie.factory('CurrentQuestionService', [
     var serviceIsInitialized = false;
 
     return {
-      init: function(callbackFunction) {
+      init: function(callbackFunction, inputQuestionId) {
         var that = this;
+
+        if (inputQuestionId) {
+          questionId = inputQuestionId;
+        }
 
         var questionPromise = QuestionDataService.fetchQuestionAsync(
           questionId);

@@ -39,7 +39,7 @@ describe('AutosaveService', function() {
       CurrentQuestionService.init(function() {
         expect(AutosaveService.getLastSavedCode('python')).toEqual(null);
         done();
-      });
+      }, null);
       $rootScope.$digest();
     });
 
@@ -50,7 +50,7 @@ describe('AutosaveService', function() {
         expect(AutosaveService.getLastSavedCode('python')).toEqual('py_code');
         expect(AutosaveService.getLastSavedCode('java')).toEqual('java_code');
         done();
-      });
+      }, null);
       $rootScope.$digest();
     });
 
@@ -58,7 +58,7 @@ describe('AutosaveService', function() {
       CurrentQuestionService.init(function() {
         expect(AutosaveService.getLastSavedCode('python')).toEqual(null);
         done();
-      });
+      }, null);
       $rootScope.$digest();
     });
   });

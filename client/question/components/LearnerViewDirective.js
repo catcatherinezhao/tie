@@ -19,7 +19,12 @@
 tie.directive('learnerView', [function() {
   return {
     restrict: 'E',
-    scope: {},
+    scope: {
+      questionId: '@',
+      showOutput: '=',
+      showError: '=',
+      showFeedback: '='
+    },
     template: `
       <div class="tie-wrapper protractor-test-tie-wrapper">
         <div class="tie-question-ui-outer">
@@ -48,7 +53,7 @@ tie.directive('learnerView', [function() {
             </div>
             <div class="tie-window-container">
               <div class="tie-feedback-ui protractor-test-feedback-ui">
-                <div class="tie-feedback-window" ng-if="feedbackIsSupported">
+                <div class="tie-feedback-window" ng-if="showFeedback">
                   <div class="tie-feedback-container" ng-class="{'pulse-animation-enabled': pulseAnimationEnabled}">
                     <pre class="tie-feedback-text" ng-if="!feedbackIsDisplayed">{{feedbackWindowMessage}}</pre>
                     <transcript-paragraphs-container ng-if="feedbackIsDisplayed"></transcript-paragraphs-container>
@@ -57,7 +62,7 @@ tie.directive('learnerView', [function() {
               </div>
               <div class="tie-coding-ui protractor-test-coding-ui">
                 <div class="tie-lang-terminal">
-                  <div class="tie-user-terminal" ng-class="{'print-mode': printingIsSupported}">
+                  <div class="tie-user-terminal" ng-class="{'print-mode': showOutput}">
                     <div class="tie-coding-terminal">
                       <div class="tie-codemirror-container"
                           tabindex="0"
@@ -116,11 +121,11 @@ tie.directive('learnerView', [function() {
               </div>
               <div class="tie-output-ui protractor-test-output-ui">
                 <div class="tie-lang-terminal">
-                  <div class="tie-user-terminal" ng-class="{'print-mode': printingIsSupported}">
-                    <div class="tie-print-terminal" ng-if="printingIsSupported && errorPrintingIsSupported">
+                  <div class="tie-user-terminal" ng-class="{'print-mode': showOutput}">
+                    <div class="tie-print-terminal" ng-if="showOutput && showError">
                       <div class="tie-stdout">{{(stdout || syntaxError)}}</div>
                     </div>
-                    <div class="tie-print-terminal" ng-if="printingIsSupported && !errorPrintingIsSupported">
+                    <div class="tie-print-terminal" ng-if="showOutput && !showError">
                       <div class="tie-stdout">{{(stdout)}}</div>
                     </div>
                   </div>
@@ -1359,7 +1364,8 @@ tie.directive('learnerView', [function() {
         };
 
         $scope.autosaveTextIsDisplayed = false;
-        CurrentQuestionService.init(initLearnerViewDirective);
+        CurrentQuestionService.init(
+          initLearnerViewDirective, $scope.questionId);
 
         /**
          * Refreshes UI if window loads at 0 height or width (Firefox IFrame

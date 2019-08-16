@@ -40,7 +40,32 @@ describe('CurrentQuestionService', function() {
       CurrentQuestionService.init(function() {
         expect(CurrentQuestionService.isInitialized()).toBe(true);
         done();
-      });
+      }, null);
+      $rootScope.$digest();
+    });
+
+    it('should change current question based on user input', function(done) {
+      expect(CurrentQuestionService.isInitialized()).toBe(false);
+      CurrentQuestionService.init(function() {
+        expect(CurrentQuestionService.isInitialized()).toBe(true);
+        done();
+      }, null);
+      expect(CurrentQuestionService.getCurrentQuestionId()).toEqual(
+        'reverseWords');
+
+      CurrentQuestionService.init(function() {
+        expect(CurrentQuestionService.isInitialized()).toBe(true);
+        done();
+      }, 'sortItinerary');
+      expect(CurrentQuestionService.getCurrentQuestionId()).toEqual(
+        'sortItinerary');
+
+      CurrentQuestionService.init(function() {
+        expect(CurrentQuestionService.isInitialized()).toBe(true);
+        done();
+      }, 'longestSubstring');
+      expect(CurrentQuestionService.getCurrentQuestionId()).toEqual(
+        'longestSubstring');
       $rootScope.$digest();
     });
   });
@@ -63,7 +88,7 @@ describe('CurrentQuestionService', function() {
         expect(CurrentQuestionService.getCurrentQuestion().getTitle()).toEqual(
           'Balanced Parentheses');
         done();
-      });
+      }, null);
       $rootScope.$digest();
     });
   });
@@ -86,7 +111,7 @@ describe('CurrentQuestionService', function() {
         expect(CurrentQuestionService.getCurrentQuestion().getTitle()).toEqual(
           'Reverse Words');
         done();
-      });
+      }, null);
       $rootScope.$digest();
     });
   });
@@ -142,7 +167,7 @@ describe('CurrentQuestionService - Server', function() {
       CurrentQuestionService.init(function() {
         expect(CurrentQuestionService.getCurrentQuestionId()).toEqual(null);
         done();
-      });
+      }, null);
       $rootScope.$digest();
       $httpBackend.flush();
       $httpBackend.verifyNoOutstandingExpectation();
