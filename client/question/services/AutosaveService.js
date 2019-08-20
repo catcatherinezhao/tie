@@ -38,9 +38,10 @@ tie.factory('AutosaveService', [
         }
 
         var questionId = CurrentQuestionService.getCurrentQuestionId();
+        var tieId = LocalStorageService.getTieId();
         var localStorageKey = (
           LocalStorageKeyManagerService.getLastSavedCodeKey(
-            questionId, language));
+            tieId, questionId, language));
         return LocalStorageService.get(localStorageKey);
       },
 
@@ -54,9 +55,10 @@ tie.factory('AutosaveService', [
        */
       saveCode: function(language, code) {
         var questionId = CurrentQuestionService.getCurrentQuestionId();
+        var tieId = LocalStorageService.getTieId();
         var localStorageKey = (
           LocalStorageKeyManagerService.getLastSavedCodeKey(
-            questionId, language));
+            tieId, questionId, language));
         LocalStorageService.put(localStorageKey, code);
       }
     };

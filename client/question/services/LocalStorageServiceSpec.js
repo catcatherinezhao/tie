@@ -65,6 +65,12 @@ describe('LocalStorageService', function() {
         localStorage.clear();
       }));
 
+      it('should be initialized and return the correct TIE id', function() {
+        expect(LocalStorageService.getTieId()).toBe(null);
+        LocalStorageService.init('id');
+        expect(LocalStorageService.getTieId()).toBe('id');
+      });
+
       it('should be available', function() {
         expect(LocalStorageService.isAvailable()).toBe(true);
       });

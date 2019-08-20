@@ -23,6 +23,7 @@
 tie.factory('LocalStorageService', [
   'ServerHandlerService', function(ServerHandlerService) {
     var localStorageIsAvailable = false;
+    var tieId = null;
     // We only use localStorage in the standalone version of the application.
     if (!ServerHandlerService.doesServerExist()) {
       // In some browsers, localStorage is not available and its invocation
@@ -35,6 +36,22 @@ tie.factory('LocalStorageService', [
     }
 
     return {
+      /**
+       * Initializes the local storage by giving it an id.
+       */
+      init: function(inputTieId) {
+        if (inputTieId) {
+          tieId = inputTieId;
+        }
+      },
+      /**
+       * Returns the id for the local storage for this instance of TIE.
+       *
+       * @returns {string} tieId
+       */
+      getTieId: function() {
+        return tieId;
+      },
       /**
        * Checks if the local storage is available.
        *
