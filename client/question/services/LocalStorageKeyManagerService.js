@@ -35,23 +35,25 @@ tie.factory('LocalStorageKeyManagerService', [
        * Returns the local storage key for the last saved code for a given
        * question.
        *
+       * @param {string} tieId
        * @param {string} questionId
        * @param {string} language
        * @returns {string}
        */
-      getLastSavedCodeKey: function(questionId, language) {
-        return 'tie:1:lastSavedCode:' + questionId + ':' + language;
+      getLastSavedCodeKey: function(tieId, questionId, language) {
+        return 'tie:' + tieId + ':lastSavedCode:' + questionId + ':' + language;
       },
 
       /**
        * Returns the local storage key for the session history.
        *
+       * @param {string} tieId
        * @param {string} questionId
        * @param {number} snapshotIndex
        * @returns {string}
        */
-      getSessionHistoryKey: function(questionId, snapshotIndex) {
-        return 'tie:1:sessionHistory:' + questionId + ':' +
+      getSessionHistoryKey: function(tieId, questionId, snapshotIndex) {
+        return 'tie:' + tieId + ':sessionHistory:' + questionId + ':' +
           snapshotIndex.toString();
       }
     };

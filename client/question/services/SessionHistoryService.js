@@ -55,9 +55,10 @@ tie.factory('SessionHistoryService', [
         data.snapshotIndex = 0;
 
         var questionId = CurrentQuestionService.getCurrentQuestionId();
+        var tieId = LocalStorageService.getTieId();
         localStorageKey = (
           LocalStorageKeyManagerService.getSessionHistoryKey(
-            questionId, data.snapshotIndex));
+            tieId, questionId, data.snapshotIndex));
 
         var potentialSessionTranscript = LocalStorageService.get(
           localStorageKey);
@@ -69,7 +70,7 @@ tie.factory('SessionHistoryService', [
             data.snapshotIndex++;
             localStorageKey = (
               LocalStorageKeyManagerService.getSessionHistoryKey(
-                questionId, data.snapshotIndex));
+                tieId, questionId, data.snapshotIndex));
             potentialSessionTranscript = LocalStorageService.get(
               localStorageKey);
             if (potentialSessionTranscript !== null) {
@@ -105,9 +106,10 @@ tie.factory('SessionHistoryService', [
        */
       getStarterCodeSnapshot: function() {
         var questionId = CurrentQuestionService.getCurrentQuestionId();
+        var tieId = LocalStorageService.getTieId();
         localStorageKey = (
           LocalStorageKeyManagerService.getSessionHistoryKey(
-            questionId, 0
+            tieId, questionId, 0
           )
         );
         if (LocalStorageService.get(localStorageKey) === null) {
@@ -123,9 +125,10 @@ tie.factory('SessionHistoryService', [
       getPreviousSnapshot: function(snapshotIndex) {
         if (snapshotIndex > 0 && snapshotIndex <= data.snapshotIndex) {
           var questionId = CurrentQuestionService.getCurrentQuestionId();
+          var tieId = LocalStorageService.getTieId();
           localStorageKey = (
             LocalStorageKeyManagerService.getSessionHistoryKey(
-              questionId, snapshotIndex
+              tieId, questionId, snapshotIndex
             )
           );
           if (LocalStorageService.get(localStorageKey) === null) {
@@ -146,9 +149,10 @@ tie.factory('SessionHistoryService', [
       getPreviousFeedback: function(snapshotIndex) {
         if (snapshotIndex > 0 && snapshotIndex <= data.snapshotIndex) {
           var questionId = CurrentQuestionService.getCurrentQuestionId();
+          var tieId = LocalStorageService.getTieId();
           localStorageKey = (
             LocalStorageKeyManagerService.getSessionHistoryKey(
-              questionId, snapshotIndex
+              tieId, questionId, snapshotIndex
             )
           );
           if (LocalStorageService.get(localStorageKey) === null) {
@@ -171,10 +175,11 @@ tie.factory('SessionHistoryService', [
           TranscriptParagraphObjectFactory.createCodeParagraph(
             codeEditorContent, data.snapshotIndex));
         var questionId = CurrentQuestionService.getCurrentQuestionId();
+        var tieId = LocalStorageService.getTieId();
         // Store as a new snapshot.
         localStorageKey = (
           LocalStorageKeyManagerService.getSessionHistoryKey(
-            questionId, 0));
+            tieId, questionId, 0));
         LocalStorageService.put(
           localStorageKey,
           data.sessionTranscript.map(function(transcriptParagraph) {
@@ -192,10 +197,11 @@ tie.factory('SessionHistoryService', [
           TranscriptParagraphObjectFactory.createCodeParagraph(
             submittedCode, data.snapshotIndex));
         var questionId = CurrentQuestionService.getCurrentQuestionId();
+        var tieId = LocalStorageService.getTieId();
         // Store as a new snapshot.
         localStorageKey = (
           LocalStorageKeyManagerService.getSessionHistoryKey(
-            questionId, data.snapshotIndex));
+            tieId, questionId, data.snapshotIndex));
         LocalStorageService.put(
           localStorageKey,
           data.sessionTranscript.map(function(transcriptParagraph) {

@@ -20,6 +20,7 @@ tie.directive('learnerView', [function() {
   return {
     restrict: 'E',
     scope: {
+      tieId: '@',
       questionId: '@',
       showOutput: '=',
       showError: '=',
@@ -894,6 +895,7 @@ tie.directive('learnerView', [function() {
          * instructions, stored code, starter code and feedback.
          */
         var initLearnerViewDirective = function() {
+          LocalStorageService.init($scope.tieId);
           SessionHistoryService.init();
 
           // The pulseAnimationEnabled var is set to false to prevent

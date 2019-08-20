@@ -28,18 +28,22 @@ describe('LocalStorageKeyManagerService', function() {
   describe('last-saved code key generation', function() {
     it('should correctly generate last-saved code key', function() {
       expect(LocalStorageKeyManagerService.getLastSavedCodeKey(
-        'qid', 'python')).toBe('tie:1:lastSavedCode:qid:python');
+        'tieid', 'qid', 'python')).toBe(
+        'tie:tieid:lastSavedCode:qid:python');
       expect(LocalStorageKeyManagerService.getLastSavedCodeKey(
-        'qid2', 'python')).toBe('tie:1:lastSavedCode:qid2:python');
+        'tieid2', 'qid2', 'python')).toBe(
+        'tie:tieid2:lastSavedCode:qid2:python');
     });
   });
 
   describe('session history key generation', function() {
     it('should correctly generate session history key', function() {
       expect(LocalStorageKeyManagerService.getSessionHistoryKey(
-        'qid', 1)).toBe('tie:1:sessionHistory:qid:1');
+        'tieid', 'qid', 1)).toBe(
+        'tie:tieid:sessionHistory:qid:1');
       expect(LocalStorageKeyManagerService.getSessionHistoryKey(
-        'qid2', 2)).toBe('tie:1:sessionHistory:qid2:2');
+        'tieid2', 'qid2', 2)).toBe(
+        'tie:tieid2:sessionHistory:qid2:2');
     });
   });
 });
